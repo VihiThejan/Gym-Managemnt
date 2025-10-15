@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model admin {
+  User_ID      Int            @id @default(autoincrement())
+  Name         String
+  Password     String
+  UserName     String
+  Contact      String?
+  announcement announcement[]
+  attendance   attendance[]
+  chat         chat[]
+  feedback     feedback[]
+  payment      payment[]
+}
+
+model announcement {
+  Announcement_ID Int      @id @default(autoincrement())
+  Staff_ID        Int
+  Message         String
+  Date_Time       DateTime
+  admin           admin    @relation(fields: [Staff_ID], references: [User_ID], map: "Announcement_User_ID_fkey")
+
+  @@index([Staff_ID], map: "Announcement_User_ID_fkey")
+}
+
+model appointment {
+  App_ID        Int         @id @default(autoincrement())
+  Member_Id     Int
+  Staff_ID      Int
+  Date_and_Time DateTime
+  Contact       String
+  member        member      @relation(fields: [Member_Id], references: [Member_Id], map: "Appointment_Member_Id_fkey")
+  staffmember   staffmember @relation(fields: [Staff_ID], references: [Staff_ID], map: "Appointment_Staff_ID_fkey")
+
+  @@index([Member_Id], map: "Appointment_Member_Id_fkey")
+  @@index([Staff_ID], map: "Appointment_Staff_ID_fkey")
+}
+
+model attendance {
+  Attendance_ID Int      @id @default(autoincrement())
+  Member_Id     Int
+  Current_date  DateTime
+  In_time       DateTime
+  Out_time      DateTime
+  admin         admin    @relation(fields: [Member_Id], references: [User_ID], map: "Attendance_User_ID_fkey")
+
+  @@index([Member_Id], map: "Attendance_User_ID_fkey")
+}
+
+model chat {
+  Chat_ID Int      @id @default(autoincrement())
+  User_ID Int
+  Message String
+  Date    DateTime
+  Time    DateTime
+  admin   admin    @relation(fields: [User_ID], references: [User_ID], map: "Chat_User_ID_fkey")
+
+  @@index([User_ID], map: "Chat_User_ID_fkey")
+}
+
+model equipment {
+  Equipment_Id Int      @id @default(autoincrement())
+  EName        String
+  Qty          Int
+  Vendor       String
+  Description  String
+  Date         DateTime
+}
+
+model feedback {
+  Feedback_ID Int      @id @default(autoincrement())
+  Member_Id   Int
+  Message     String
+  Date        DateTime
+  admin       admin    @relation(fields: [Member_Id], references: [User_ID], map: "Feedback_User_ID_fkey")
+
+  @@index([Member_Id], map: "Feedback_User_ID_fkey")
+}
+
+model member {
+  Member_Id   Int           @id @default(autoincrement())
+  FName       String
+  DOB         DateTime
+  Gender      String
+  Email       String
+  Address     String
+  Contact     String
+  Package     String
+  Weight      Float
+  Height      Float
+  UName       String
+  Password    String
+  appointment appointment[]
+  trainerrate trainerrate?
+}
+
+model payment {
+  Payment_ID Int      @id @default(autoincrement())
+  Member_Id  Int
+  Package_ID Int
+  Amount     Float
+  Date       DateTime
+  admin      admin    @relation(fields: [Member_Id], references: [User_ID], map: "Payment_User_ID_fkey")
+
+  @@index([Member_Id], map: "Payment_User_ID_fkey")
+}
+
+model schedule {
+  Schedule_ID Int         @id @default(autoincrement())
+  Staff_ID    Int
+  Member_ID   Int
+  EName       String
+  Equipment   String
+  Quantity    Int
+  Date_Time   DateTime
+  staffmember staffmember @relation(fields: [Staff_ID], references: [Staff_ID], map: "Schedule_Staff_ID_fkey")
+  trainer     trainer[]
+
+  @@index([Staff_ID], map: "Schedule_Staff_ID_fkey")
+}
+
+model staffmember {
+  Staff_ID    Int           @id @default(autoincrement())
+  FName       String
+  DOB         DateTime
+  Address     String
+  Gender      String
+  Contact_No  String
+  Email       String
+  Job_Role    String
+  UName       String
+  Password    String
+  appointment appointment[]
+  schedule    schedule[]
+}
+
+model trainer {
+  Trainer_ID  Int      @id @default(autoincrement())
+  Schedule_ID Int
+  schedule    schedule @relation(fields: [Schedule_ID], references: [Schedule_ID], map: "Trainer_Schedule_ID_fkey")
+
+  @@index([Schedule_ID], map: "Trainer_Schedule_ID_fkey")
+}
+
+model trainerrate {
+  Rating_ID Int     @id @default(autoincrement())
+  Staff_ID  Int
+  Member_Id Int
+  Rating    Int
+  Comment   String?
+  member    member  @relation(fields: [Rating_ID], references: [Member_Id], map: "TrainerRate_Member_Id_fkey")
+
+  @@index([Staff_ID], map: "TrainerRate_Staff_ID_fkey")
+}
+
+model otp {
+  ID      Int    @id @default(autoincrement())
+  Contact String @db.VarChar(45)
+  Otp     Int
+}
+
+model messages {
+  id                                Int      @id @default(autoincrement())
+  sender_id                         Int?
+  receiver_id                       Int?
+  message                           String?  @db.Text
+  file_url                          String?  @db.VarChar(255)
+  voice_url                         String?  @db.VarChar(255)
+  timestamp                         DateTime @default(now()) @db.Timestamp(0)
+  users_messages_sender_idTousers   users?   @relation("messages_sender_idTousers", fields: [sender_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "messages_ibfk_1")
+  users_messages_receiver_idTousers users?   @relation("messages_receiver_idTousers", fields: [receiver_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "messages_ibfk_2")
+
+  @@index([receiver_id], map: "receiver_id")
+  @@index([sender_id], map: "sender_id")
+}
+
+model users {
+  id                                   Int        @id @default(autoincrement())
+  username                             String     @unique(map: "username") @db.VarChar(255)
+  password                             String     @db.VarChar(255)
+  messages_messages_sender_idTousers   messages[] @relation("messages_sender_idTousers")
+  messages_messages_receiver_idTousers messages[] @relation("messages_receiver_idTousers")
+}

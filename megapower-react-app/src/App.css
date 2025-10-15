@@ -1,0 +1,147 @@
+.App {
+  text-align: center;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background-image:url('./image/Login.jpg') ;
+  
+
+  
+
+}
+
+.auth-form-container, .login-form, .register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 600px) {
+  .auth-form-container {
+    padding: 5rem;
+    border: 1px solid white;
+    border-radius: 50px;
+    margin: 0.5rem;
+  }
+}
+
+label {
+  text-align: left;
+  padding: 0.25rem 0;
+  
+}
+
+input {
+  margin: 0.2rem ;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 0px;
+}
+
+button {
+  border: none;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #f80b22;
+  font-size: 15px;
+  
+}
+
+.link-btn {
+  background: none;
+  color: rgb(162, 167, 237);
+  text-decoration: underline;
+}
+
+.auth-form-container1, .staff-form {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 600px) {
+  .auth-form-container1 {
+    padding: 5rem;
+    border: 1px solid white;
+    border-radius: 50px;
+    margin: 0.5rem;
+  }
+}
+
+
+.auth-form-container,.auth-form-container1 {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.Member-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.Member-form label {
+  margin-bottom: 1px;
+  font-weight: bold;
+}
+
+.Member-form input,
+.Member-form .ant-radio-group,
+.Member-form .ant-select,
+.Member-form .ant-picker,
+.Member-form .ant-dropdown,
+.Member-form .ant-input-number,
+.Member-form .phone-input {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.Member-form .ant-btn {
+  margin-right: 10px;
+}
+
+
+
+.auth-form-container1 {
+  padding: 20px;
+}
+
+.Staff-form {
+  
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.Staff-form label {
+ 
+  margin-bottom: 1px;
+  font-weight: bold;
+}
+
+.Staff--form .ant-btn {
+  margin-right: 10px;
+  
+}
+
+
+.Staff-form input,
+.Staff-form .ant-dropdown,
+.Staff-form .ant-radio-group {
+  width:90%;
+  margin-bottom: 7px;
+}
+
+.highlight-radio {
+  color: #1890ff; /* Change this to your desired color */
+}
+
+.ant-radio-wrapper {
+  color: rgba(234, 210, 210, 0.855); /* Change all radio button labels to red */
+}
+
+
+
+
