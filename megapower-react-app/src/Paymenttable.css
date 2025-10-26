@@ -1,0 +1,613 @@
+/* ============================================
+   PAYMENT TABLE STYLES
+   Modern table design with enhanced UI/UX
+   ============================================ */
+
+/* Main Container */
+.payment-table-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  min-height: calc(100vh - 64px);
+}
+
+/* ============================================
+   HEADER SECTION
+   ============================================ */
+
+.table-header {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Back Button */
+.payment-table-container .back-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0 24px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.payment-table-container .back-button:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.payment-table-container .back-button:active {
+  transform: translateY(0);
+}
+
+/* Title */
+.table-title {
+  color: #1a1d3a;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Search Input */
+.search-input {
+  width: 380px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.search-input:hover {
+  border-color: #667eea;
+}
+
+.search-input:focus,
+.search-input.ant-input-affix-wrapper-focused {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.search-input .ant-input {
+  font-size: 14px;
+}
+
+.search-icon {
+  color: #667eea;
+  font-size: 16px;
+}
+
+/* Add Button */
+.add-button {
+  height: 40px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(67, 233, 123, 0.3);
+  transition: all 0.3s ease;
+}
+
+.add-button:hover {
+  background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.4);
+}
+
+.add-button:active {
+  transform: translateY(0);
+}
+
+.add-button .anticon {
+  font-size: 16px;
+}
+
+/* ============================================
+   TABLE WRAPPER
+   ============================================ */
+
+.table-wrapper {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================
+   TABLE STYLES
+   ============================================ */
+
+.payment-table .ant-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Table Header */
+.payment-table .ant-table-thead > tr > th {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 16px;
+  border: none;
+  text-align: center;
+}
+
+.payment-table .ant-table-thead > tr > th::before {
+  display: none;
+}
+
+/* Table Body */
+.payment-table .ant-table-tbody > tr {
+  transition: all 0.3s ease;
+}
+
+.payment-table .ant-table-tbody > tr:hover {
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.05) 0%, rgba(56, 249, 215, 0.05) 100%);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.payment-table .ant-table-tbody > tr > td {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}
+
+/* Alternating Row Colors */
+.payment-table .ant-table-tbody > tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.payment-table .ant-table-tbody > tr:nth-child(even):hover {
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.05) 0%, rgba(56, 249, 215, 0.05) 100%);
+}
+
+/* ============================================
+   CUSTOM COLUMN STYLES
+   ============================================ */
+
+/* Payment ID Tag */
+.payment-id-tag {
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: none;
+}
+
+/* Member ID Tag */
+.member-id-tag {
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: none;
+}
+
+/* Tags */
+.payment-table .ant-tag {
+  font-weight: 600;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Amount Display */
+.amount-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #43e97b;
+}
+
+.amount-icon {
+  font-size: 16px;
+  color: #43e97b;
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+
+.table-pagination {
+  margin-top: 24px;
+}
+
+.table-pagination .ant-pagination-item {
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.table-pagination .ant-pagination-item:hover {
+  border-color: #43e97b;
+}
+
+.table-pagination .ant-pagination-item-active {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  border-color: #43e97b;
+}
+
+.table-pagination .ant-pagination-item-active a {
+  color: #fff;
+}
+
+.table-pagination .ant-pagination-prev,
+.table-pagination .ant-pagination-next {
+  border-radius: 6px;
+}
+
+.table-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.table-pagination .ant-pagination-next:hover .ant-pagination-item-link {
+  color: #43e97b;
+  border-color: #43e97b;
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.payment-table .ant-spin {
+  color: #43e97b;
+}
+
+.payment-table .ant-spin-dot-item {
+  background-color: #43e97b;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.payment-table .ant-empty {
+  padding: 48px 0;
+}
+
+.payment-table .ant-empty-description {
+  color: #999;
+  font-size: 14px;
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+.payment-table .ant-table-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.payment-table .ant-table-body::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.payment-table .ant-table-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  border-radius: 4px;
+}
+
+.payment-table .ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1400px) {
+  .search-input {
+    width: 320px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .payment-table-container {
+    padding: 20px;
+  }
+
+  .table-header {
+    padding: 20px;
+  }
+
+  .table-title {
+    font-size: 24px;
+  }
+
+  .search-input {
+    width: 280px;
+  }
+}
+
+@media (max-width: 992px) {
+  .payment-table-container {
+    padding: 16px;
+  }
+
+  .table-header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-title {
+    font-size: 22px;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .add-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table-wrapper {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-table-container {
+    padding: 12px;
+  }
+
+  .table-header {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .payment-table-container .back-button {
+    width: 100%;
+    justify-content: center;
+    height: 36px;
+    padding: 0 16px;
+  }
+
+  .table-title {
+    font-size: 20px;
+  }
+
+  .add-button {
+    height: 36px;
+  }
+
+  .table-wrapper {
+    padding: 12px;
+  }
+
+  .payment-table .ant-table-thead > tr > th,
+  .payment-table .ant-table-tbody > tr > td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+  .payment-id-tag,
+  .member-id-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+
+  .payment-table .ant-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+
+  .amount-display {
+    font-size: 13px;
+  }
+
+  .amount-icon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .payment-table-container {
+    padding: 8px;
+  }
+
+  .table-header {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .payment-table-container .back-button {
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .table-title {
+    font-size: 18px;
+  }
+
+  .add-button {
+    height: 32px;
+    font-size: 13px;
+    padding: 0 16px;
+  }
+
+  .table-wrapper {
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .payment-table .ant-table-thead > tr > th,
+  .payment-table .ant-table-tbody > tr > td {
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+
+  .table-pagination {
+    margin-top: 16px;
+  }
+
+  .table-pagination .ant-pagination-item,
+  .table-pagination .ant-pagination-prev,
+  .table-pagination .ant-pagination-next {
+    min-width: 28px;
+    height: 28px;
+    line-height: 26px;
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payment-table-container {
+  animation: fadeIn 0.5s ease;
+}
+
+.table-header {
+  animation: fadeIn 0.6s ease;
+}
+
+.table-wrapper {
+  animation: fadeIn 0.7s ease;
+}
+
+/* Row Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.payment-table .ant-table-tbody > tr {
+  animation: slideIn 0.3s ease;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.payment-table-container .back-button:focus-visible,
+.add-button:focus-visible {
+  outline: 2px solid #43e97b;
+  outline-offset: 2px;
+}
+
+.search-input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(67, 233, 123, 0.2);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .payment-table-container .back-button,
+  .add-button {
+    border: 2px solid currentColor;
+  }
+
+  .payment-table .ant-table-thead > tr > th {
+    border: 1px solid #000;
+  }
+
+  .payment-table .ant-table-tbody > tr > td {
+    border: 1px solid #000;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .table-header .back-button,
+  .table-header .add-button {
+    display: none !important;
+  }
+
+  .payment-table-container {
+    background: #fff;
+    padding: 0;
+  }
+
+  .table-header,
+  .table-wrapper {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .payment-table .ant-table-thead > tr > th {
+    background: #f0f0f0 !important;
+    color: #000 !important;
+    border: 1px solid #ccc;
+  }
+
+  .payment-table .ant-table-tbody > tr > td {
+    border: 1px solid #ccc;
+  }
+
+  .table-pagination {
+    display: none !important;
+  }
+}

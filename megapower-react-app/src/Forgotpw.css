@@ -1,0 +1,607 @@
+/* ================================
+   Forgot Password Page - Modern UI/UX
+   ================================ */
+
+.forgotpw-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+}
+
+/* ================================
+   Container
+   ================================ */
+
+.forgotpw-container {
+    width: 100%;
+    max-width: 480px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ================================
+   Back Button
+   ================================ */
+
+.back-button {
+    color: white !important;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    padding: 8px 16px;
+    height: auto;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    transform: translateX(-4px);
+}
+
+.back-button .anticon {
+    font-size: 16px;
+}
+
+/* ================================
+   Card
+   ================================ */
+
+.forgotpw-card {
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: none;
+    overflow: hidden;
+}
+
+.forgotpw-card .ant-card-body {
+    padding: 3rem;
+}
+
+/* ================================
+   Card Header
+   ================================ */
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.header-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: white;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.card-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.card-header p {
+    margin: 0;
+    font-size: 1rem;
+    color: #666;
+}
+
+/* ================================
+   Form
+   ================================ */
+
+.forgotpw-form {
+    margin-top: 0;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.label-icon {
+    font-size: 20px;
+    color: #667eea;
+}
+
+/* ================================
+   Phone Input Styling
+   ================================ */
+
+.phone-input-container {
+    width: 100%;
+}
+
+.phone-input-container .react-tel-input {
+    margin-bottom: 0;
+}
+
+.phone-input-container .react-tel-input .form-control {
+    width: 100% !important;
+    height: 52px !important;
+    border-radius: 12px !important;
+    border: 2px solid #e8e8e8 !important;
+    font-size: 1rem !important;
+    padding-left: 58px !important;
+    transition: all 0.3s ease !important;
+    background: white !important;
+    color: #333 !important;
+}
+
+.phone-input-container .react-tel-input .form-control:hover {
+    border-color: #667eea !important;
+}
+
+.phone-input-container .react-tel-input .form-control:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+    outline: none !important;
+}
+
+.phone-input-container .react-tel-input .form-control:disabled {
+    background: #f5f5f5 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+}
+
+.phone-input-container .react-tel-input .flag-dropdown {
+    border: 2px solid #e8e8e8 !important;
+    border-right: none !important;
+    border-radius: 12px 0 0 12px !important;
+    background: white !important;
+    transition: all 0.3s ease !important;
+}
+
+.phone-input-container .react-tel-input .flag-dropdown:hover {
+    border-color: #667eea !important;
+}
+
+.phone-input-container .react-tel-input .flag-dropdown.open {
+    border-color: #667eea !important;
+    background: white !important;
+}
+
+.phone-input-container .react-tel-input .selected-flag {
+    padding: 0 0 0 12px !important;
+    width: 52px !important;
+    height: 48px !important;
+}
+
+.phone-input-container .react-tel-input .selected-flag:hover,
+.phone-input-container .react-tel-input .selected-flag:focus {
+    background: rgba(102, 126, 234, 0.05) !important;
+}
+
+.phone-input-container .react-tel-input .country-list {
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid #e8e8e8 !important;
+    margin-top: 4px !important;
+    max-height: 200px !important;
+}
+
+.phone-input-container .react-tel-input .country-list .country {
+    padding: 10px 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.phone-input-container .react-tel-input .country-list .country:hover {
+    background: rgba(102, 126, 234, 0.1) !important;
+}
+
+.phone-input-container .react-tel-input .country-list .country.highlight {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+}
+
+/* ================================
+   OTP Input
+   ================================ */
+
+.otp-input {
+    border-radius: 12px !important;
+    border: 2px solid #e8e8e8 !important;
+    font-size: 1.25rem !important;
+    text-align: center;
+    letter-spacing: 0.5rem;
+    font-weight: 600;
+    height: 52px !important;
+    transition: all 0.3s ease !important;
+}
+
+.otp-input:hover {
+    border-color: #667eea !important;
+}
+
+.otp-input:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
+
+.otp-input::placeholder {
+    letter-spacing: normal;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* ================================
+   Buttons
+   ================================ */
+
+.send-otp-button,
+.verify-otp-button {
+    height: 52px !important;
+    border-radius: 12px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    margin-top: 0.5rem;
+}
+
+.send-otp-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.send-otp-button:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4) !important;
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%) !important;
+}
+
+.send-otp-button:active:not(:disabled) {
+    transform: translateY(0) !important;
+}
+
+.send-otp-button:disabled {
+    background: linear-gradient(135deg, #a0a8e8 0%, #b097c5 100%) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+.verify-otp-button {
+    background: linear-gradient(135deg, #52c41a 0%, #3da830 100%) !important;
+}
+
+.verify-otp-button:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(82, 196, 26, 0.4) !important;
+    background: linear-gradient(135deg, #3da830 0%, #2f8624 100%) !important;
+}
+
+.verify-otp-button:active:not(:disabled) {
+    transform: translateY(0) !important;
+}
+
+.verify-otp-button:disabled {
+    background: linear-gradient(135deg, #a8dea0 0%, #96cf8f 100%) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* ================================
+   Resend Section
+   ================================ */
+
+.resend-section {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.resend-section span {
+    color: #666;
+    font-size: 0.938rem;
+    margin-right: 0.5rem;
+}
+
+.resend-button {
+    color: #667eea !important;
+    font-weight: 600 !important;
+    padding: 0 !important;
+    height: auto !important;
+    font-size: 0.938rem !important;
+}
+
+.resend-button:hover {
+    color: #764ba2 !important;
+    text-decoration: underline !important;
+}
+
+/* ================================
+   Form Item Spacing
+   ================================ */
+
+.forgotpw-form .ant-form-item {
+    margin-bottom: 1.5rem;
+}
+
+.forgotpw-form .ant-form-item:last-child {
+    margin-bottom: 0;
+}
+
+/* ================================
+   Animations
+   ================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================================
+   Loading States
+   ================================ */
+
+.ant-btn-loading-icon {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    .forgotpw-page {
+        padding: 1.5rem;
+    }
+
+    .forgotpw-container {
+        max-width: 100%;
+    }
+
+    .forgotpw-card .ant-card-body {
+        padding: 2rem;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 36px;
+    }
+
+    .card-header h2 {
+        font-size: 1.75rem;
+    }
+
+    .card-header p {
+        font-size: 0.938rem;
+    }
+
+    .back-button {
+        font-size: 0.938rem;
+    }
+}
+
+/* Mobile (576px and below) */
+@media (max-width: 576px) {
+    .forgotpw-page {
+        padding: 1rem;
+    }
+
+    .forgotpw-card .ant-card-body {
+        padding: 1.5rem;
+    }
+
+    .card-header {
+        margin-bottom: 2rem;
+    }
+
+    .header-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
+        margin-bottom: 1rem;
+    }
+
+    .card-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .card-header p {
+        font-size: 0.875rem;
+    }
+
+    .form-label {
+        font-size: 0.938rem;
+    }
+
+    .label-icon {
+        font-size: 18px;
+    }
+
+    .phone-input-container .react-tel-input .form-control {
+        height: 48px !important;
+        font-size: 0.938rem !important;
+    }
+
+    .phone-input-container .react-tel-input .selected-flag {
+        height: 44px !important;
+    }
+
+    .otp-input {
+        height: 48px !important;
+        font-size: 1.125rem !important;
+        letter-spacing: 0.4rem;
+    }
+
+    .send-otp-button,
+    .verify-otp-button {
+        height: 48px !important;
+        font-size: 0.938rem !important;
+    }
+
+    .back-button {
+        font-size: 0.875rem;
+        padding: 6px 12px;
+    }
+
+    .resend-section {
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+    }
+
+    .resend-section span,
+    .resend-button {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Small Mobile (400px and below) */
+@media (max-width: 400px) {
+    .forgotpw-page {
+        padding: 0.75rem;
+    }
+
+    .forgotpw-card {
+        border-radius: 16px;
+    }
+
+    .forgotpw-card .ant-card-body {
+        padding: 1.25rem;
+    }
+
+    .header-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 28px;
+        border-radius: 16px;
+    }
+
+    .card-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .card-header p {
+        font-size: 0.813rem;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+    }
+
+    .label-icon {
+        font-size: 16px;
+    }
+
+    .phone-input-container .react-tel-input .form-control {
+        height: 44px !important;
+        font-size: 0.875rem !important;
+        border-radius: 10px !important;
+    }
+
+    .phone-input-container .react-tel-input .flag-dropdown {
+        border-radius: 10px 0 0 10px !important;
+    }
+
+    .phone-input-container .react-tel-input .selected-flag {
+        height: 40px !important;
+        width: 48px !important;
+    }
+
+    .otp-input {
+        height: 44px !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.3rem;
+        border-radius: 10px !important;
+    }
+
+    .send-otp-button,
+    .verify-otp-button {
+        height: 44px !important;
+        font-size: 0.875rem !important;
+        border-radius: 10px !important;
+    }
+
+    .back-button {
+        font-size: 0.813rem;
+        border-radius: 6px;
+    }
+
+    .forgotpw-form .ant-form-item {
+        margin-bottom: 1.25rem;
+    }
+}
+
+/* ================================
+   Accessibility
+   ================================ */
+
+/* Focus visible for keyboard navigation */
+.back-button:focus-visible,
+.phone-input-container .react-tel-input .form-control:focus-visible,
+.otp-input:focus-visible,
+.send-otp-button:focus-visible,
+.verify-otp-button:focus-visible,
+.resend-button:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .phone-input-container .react-tel-input .form-control,
+    .otp-input {
+        border-width: 3px !important;
+    }
+
+    .send-otp-button,
+    .verify-otp-button,
+    .back-button {
+        border-width: 3px !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .forgotpw-container,
+    .back-button,
+    .send-otp-button,
+    .verify-otp-button {
+        animation: none;
+        transition: none;
+    }
+
+    .back-button:hover,
+    .send-otp-button:hover:not(:disabled),
+    .verify-otp-button:hover:not(:disabled) {
+        transform: none;
+    }
+}
+
+/* ================================
+   Dark Mode Support (Optional)
+   ================================ */
+
+@media (prefers-color-scheme: dark) {
+    /* Keep the existing design as it already has good contrast */
+}

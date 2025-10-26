@@ -4,12 +4,18 @@ import axios from "axios";
 import moment from "moment";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Radio, Space, Form, Select, DatePicker, message } from 'antd';
+import { Button, Radio, Form, Select, DatePicker, message, Card, Input } from 'antd';
+import { SaveOutlined, CloseOutlined, EditOutlined, UserOutlined, HomeOutlined, 
+         CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, IdcardOutlined } from '@ant-design/icons';
+import MainLayout from './components/Layout/MainLayout';
+import './Editstaff.css';
 
 export const EditStaff = () => {
     const navigate = useNavigate();
     const { id } = useParams();
 
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
     const [mobile, setMobile] = useState('');
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -26,6 +32,7 @@ export const EditStaff = () => {
     useEffect(() => {
         const fetchstaff = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get(`http://localhost:5000/api/v1/staffmember/${id}`);
                 const staffmember = response.data.data;
 
@@ -36,8 +43,11 @@ export const EditStaff = () => {
                 setMobile(staffmember.Contact_No);
                 setEmail(staffmember.Email);
                 setJobrole(staffmember.Job_Role);
+                setLoading(false);
             } catch (error) {
                 console.error(`Error fetching staffmember data: ${error.message}`);
+                message.error('Failed to load staff member data');
+                setLoading(false);
             }
         };
         fetchstaff();
@@ -78,16 +88,20 @@ export const EditStaff = () => {
         return '';
     };
 
-    const validateForm = () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        // Validation
         if (!name || !address || !email || !mobile || !date) {
             message.error("Please fill in all required fields.");
-            return false;
+            return;
         }
 
         const nameErrorMsg = validateName(name);
         if (nameErrorMsg) {
             setNameError(nameErrorMsg);
-            return false;
+            message.error(nameErrorMsg);
+            return;
         } else {
             setNameError('');
         }
@@ -95,7 +109,8 @@ export const EditStaff = () => {
         const addressErrorMsg = validateAddress(address);
         if (addressErrorMsg) {
             setAddressError(addressErrorMsg);
-            return false;
+            message.error(addressErrorMsg);
+            return;
         } else {
             setAddressError('');
         }
@@ -103,7 +118,8 @@ export const EditStaff = () => {
         const mobileErrorMsg = validateMobile(mobile);
         if (mobileErrorMsg) {
             setMobileError(mobileErrorMsg);
-            return false;
+            message.error(mobileErrorMsg);
+            return;
         } else {
             setMobileError('');
         }
@@ -111,55 +127,37 @@ export const EditStaff = () => {
         const emailErrorMsg = validateEmail(email);
         if (emailErrorMsg) {
             setEmailError(emailErrorMsg);
-            return false;
+            message.error(emailErrorMsg);
+            return;
         } else {
             setEmailError('');
         }
 
-        return true;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateForm()) return;
-
-        const formattedDate = date ? moment(date).format('YYYY-MM-DD') : null;
-
-        const body = {
-            FName: name,
-            DOB: formattedDate,
-            Address: address,
-            Gender: gender,
-            Contact_No: mobile,
-            Email: email,
-            Job_Role: jobrole,
-        };
-
-        console.log("Sending update request with body:", body);
-
         try {
+            setSubmitting(true);
+            const formattedDate = date ? moment(date).format('YYYY-MM-DD') : null;
+
+            const body = {
+                FName: name,
+                DOB: formattedDate,
+                Address: address,
+                Gender: gender,
+                Contact_No: mobile,
+                Email: email,
+                Job_Role: jobrole,
+            };
+
             const res = await axios.put(`http://localhost:5000/api/v1/staffmember/update/${id}`, body);
             console.log("Response from server:", res.data);
-            message.success("Staff member updated successfully.");
-            navigate('/staffTable');
+            message.success("Staff member updated successfully!");
+            setTimeout(() => {
+                navigate('/staffTable');
+            }, 1500);
         } catch (Err) {
             console.error("Error updating staff member:", Err.response?.data || Err.message);
             message.error("Failed to update staff: " + (Err.response?.data?.message || Err.message));
+            setSubmitting(false);
         }
-    };
-
-    const handleReset = () => {
-        setName('');
-        setAddress('');
-        setGender('Male');
-        setEmail('');
-        setMobile('');
-        setJobrole('Trainer');
-        setDate('');
-        setNameError('');
-        setAddressError('');
-        setMobileError('');
-        setEmailError('');
     };
 
     const onGenderChange = (e) => {
@@ -167,90 +165,165 @@ export const EditStaff = () => {
     };
 
     return (
-        <div className="auth-form-container1" style={{ padding: '50px', backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-            <h2>Edit Staff Member</h2>
-            <form className="Staff-form" onSubmit={handleSubmit} style={{ textAlign: 'left', margin: '0 auto', width: '300px' }}>
-                <label htmlFor="name">Full Name</label>
-                <input
-                    value={name}
-                    name="name"
-                    onChange={(e) => {
-                        setName(e.target.value);
-                        setNameError(validateName(e.target.value));
-                    }}
-                    id="name"
-                    placeholder="Full Name"
-                />
-                {nameError && <p style={{ color: 'red' }}>{nameError}</p>}
+        <MainLayout>
+            <div className="edit-staff-page">
+                {/* Header Section */}
+                <div className="edit-staff-header">
+                    <div className="header-content">
+                        <EditOutlined className="header-icon" />
+                        <div className="header-text">
+                            <h1>Edit Staff Member</h1>
+                            <p>Update staff member information and details</p>
+                        </div>
+                    </div>
+                </div>
 
-                <label htmlFor="address">Address</label>
-                <input
-                    value={address}
-                    name="address"
-                    onChange={(e) => {
-                        setAddress(e.target.value);
-                        setAddressError(validateAddress(e.target.value));
-                    }}
-                    id="address"
-                    placeholder="Address"
-                />
-                {addressError && <p style={{ color: 'red' }}>{addressError}</p>}
+                {/* Form Section */}
+                <div className="edit-staff-content">
+                    <Card className="edit-staff-card" loading={loading}>
+                        <Form onSubmit={handleSubmit} className="edit-staff-form">
+                            {/* Full Name */}
+                            <Form.Item validateStatus={nameError ? 'error' : ''} help={nameError}>
+                                <label className="form-label">
+                                    <UserOutlined className="label-icon" />
+                                    Full Name
+                                </label>
+                                <Input
+                                    value={name}
+                                    onChange={(e) => {
+                                        setName(e.target.value);
+                                        setNameError(validateName(e.target.value));
+                                    }}
+                                    placeholder="Enter full name (First Last)"
+                                    className="form-input"
+                                />
+                            </Form.Item>
 
-                <label htmlFor="birthday">Birthday</label>
-                <DatePicker
-                    value={date}
-                    onChange={(date) => setDate(date)}
-                    format="YYYY-MM-DD"
-                /><br />
+                            {/* Address */}
+                            <Form.Item validateStatus={addressError ? 'error' : ''} help={addressError}>
+                                <label className="form-label">
+                                    <HomeOutlined className="label-icon" />
+                                    Address
+                                </label>
+                                <Input
+                                    value={address}
+                                    onChange={(e) => {
+                                        setAddress(e.target.value);
+                                        setAddressError(validateAddress(e.target.value));
+                                    }}
+                                    placeholder="Enter address"
+                                    className="form-input"
+                                />
+                            </Form.Item>
 
-                <label htmlFor="gender">Gender</label>
-                <Radio.Group onChange={onGenderChange} value={gender}>
-                    <Radio value={"Male"}>Male</Radio>
-                    <Radio value={"Female"}>Female</Radio>
-                </Radio.Group><br />
+                            {/* Birthday */}
+                            <Form.Item>
+                                <label className="form-label">
+                                    <CalendarOutlined className="label-icon" />
+                                    Birthday
+                                </label>
+                                <DatePicker
+                                    value={date}
+                                    onChange={(date) => setDate(date)}
+                                    format="YYYY-MM-DD"
+                                    placeholder="Select date of birth"
+                                    className="form-datepicker"
+                                />
+                            </Form.Item>
 
-                <label htmlFor="email">Email</label>
-                <input
-                    value={email}
-                    name="email"
-                    onChange={(e) => {
-                        setEmail(e.target.value);
-                        setEmailError(validateEmail(e.target.value));
-                    }}
-                    id="email"
-                    placeholder="*@gmail.com"
-                />
-                {emailError && <p style={{ color: 'red' }}>{emailError}</p>}<br />
+                            {/* Gender */}
+                            <Form.Item>
+                                <label className="form-label">
+                                    <ManOutlined className="label-icon" />
+                                    Gender
+                                </label>
+                                <Radio.Group onChange={onGenderChange} value={gender} className="form-radio-group">
+                                    <Radio value="Male">Male</Radio>
+                                    <Radio value="Female">Female</Radio>
+                                </Radio.Group>
+                            </Form.Item>
 
-                <label htmlFor="mobile">Mobile</label>
-                <PhoneInput
-                    country={'lk'}
-                    value={mobile}
-                    onChange={(phone) => {
-                        setMobile(phone);
-                        setMobileError(validateMobile(phone));
-                    }}
-                />
-                {mobileError && <p style={{ color: 'red' }}>{mobileError}</p>}<br />
+                            {/* Email */}
+                            <Form.Item validateStatus={emailError ? 'error' : ''} help={emailError}>
+                                <label className="form-label">
+                                    <MailOutlined className="label-icon" />
+                                    Email
+                                </label>
+                                <Input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        setEmailError(validateEmail(e.target.value));
+                                    }}
+                                    placeholder="Enter email address"
+                                    className="form-input"
+                                />
+                            </Form.Item>
 
-                <label htmlFor="jobrole">Job Role</label>
-                <Select
-                    value={jobrole}
-                    onChange={(value) => setJobrole(value)}
-                    style={{ width: '100%' }}
-                    options={[
-                        { value: 'Trainer', label: 'Trainer' },
-                        { value: 'Cashier', label: 'Cashier' },
-                    ]}
-                /><br />
+                            {/* Mobile */}
+                            <Form.Item validateStatus={mobileError ? 'error' : ''} help={mobileError}>
+                                <label className="form-label">
+                                    <PhoneOutlined className="label-icon" />
+                                    Mobile Number
+                                </label>
+                                <PhoneInput
+                                    country={'lk'}
+                                    value={mobile}
+                                    onChange={(phone) => {
+                                        setMobile(phone);
+                                        setMobileError(validateMobile(phone));
+                                    }}
+                                    inputClass="phone-input-field"
+                                    containerClass="phone-input-container"
+                                    buttonClass="phone-input-button"
+                                />
+                            </Form.Item>
 
-                <Form.Item style={{ textAlign: "left", marginTop: "0px" }}>
-                    <Space size="large">
-                        <Button type="primary" htmlType="submit">Update</Button>
-                        <Button onClick={handleReset} type="default" htmlType="button" style={{ backgroundColor: "white", color: "black", border: "1px solid #d9d9d9" }}>Cancel</Button>
-                    </Space>
-                </Form.Item>
-            </form>
-        </div>
+                            {/* Job Role */}
+                            <Form.Item>
+                                <label className="form-label">
+                                    <IdcardOutlined className="label-icon" />
+                                    Job Role
+                                </label>
+                                <Select
+                                    value={jobrole}
+                                    onChange={(value) => setJobrole(value)}
+                                    placeholder="Select job role"
+                                    className="form-select"
+                                >
+                                    <Select.Option value="Trainer">Trainer</Select.Option>
+                                    <Select.Option value="Cashier">Cashier</Select.Option>
+                                </Select>
+                            </Form.Item>
+
+                            {/* Action Buttons */}
+                            <Form.Item className="form-actions">
+                                <div className="button-group">
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        loading={submitting}
+                                        icon={<SaveOutlined />}
+                                        className="submit-button"
+                                        onClick={handleSubmit}
+                                    >
+                                        {submitting ? 'Updating...' : 'Update Staff'}
+                                    </Button>
+                                    <Button
+                                        type="default"
+                                        icon={<CloseOutlined />}
+                                        className="cancel-button"
+                                        onClick={() => navigate('/staffTable')}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </Form.Item>
+                        </Form>
+                    </Card>
+                </div>
+            </div>
+        </MainLayout>
     );
 };

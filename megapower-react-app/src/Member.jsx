@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Radio, InputNumber, Select, Space, DatePicker, message } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Button, Radio, InputNumber, Select, DatePicker, message, Card, Input, Form } from 'antd';
+import { ArrowLeftOutlined, UserOutlined, HomeOutlined, CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, GiftOutlined, ColumnHeightOutlined, DashboardOutlined, LockOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import './Member.css';
 
 export const Member = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export const Member = () => {
   const [addressError, setAddressError] = useState('');
   const [mobileError, setMobileError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
 
 
@@ -171,6 +173,8 @@ export const Member = () => {
 
     if (!validateForm()) return;
 
+    setSubmitting(true);
+
     const body = {
       fName: name,
       dob: date,
@@ -188,10 +192,15 @@ export const Member = () => {
       const res = await axios.post('http://localhost:5000/api/v1/member/create', body);
       console.log(res?.data?.data);
       message.success("Member registered successfully.");
-      navigate('/');
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
     } catch (Err) {
       console.log(Err.message);
       message.error("Failed to register member.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -223,126 +232,213 @@ export const Member = () => {
   };
 
   return (
-    <div className="auth-form-container" style={{ maxWidth: '500px', margin: 'auto', textAlign: 'left', backgroundColor: "rgba(0, 0, 0, 0.5)", padding: '40px' }}>
+    <div className="member-page">
+      <div className="member-container">
+        <Button
+          type="text"
+          icon={<ArrowLeftOutlined />}
+          onClick={handleGoBack}
+          className="back-button"
+        >
+          Back to Login
+        </Button>
 
-        <div style={{ marginBottom: '60px' }}> 
-              <Button 
-                type="text" 
-                icon={<ArrowLeftOutlined />} 
-                onClick={handleGoBack} 
-                style={{ 
-                  color: 'white', 
-                  fontWeight: 'bold', 
-                  fontSize: '18px', 
+        <Card className="member-card">
+          <div className="card-header">
+            <div className="header-icon">
+              <UserAddOutlined />
+            </div>
+            <h2>Member Registration</h2>
+            <p>Create your new member account</p>
+          </div>
+
+          <Form layout="vertical" onFinish={handleSubmit} className="member-form">
+            <Form.Item>
+              <label className="form-label">
+                <UserOutlined className="label-icon" />
+                Full Name
+              </label>
+              <Input
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setNameError(validateName(e.target.value));
                 }}
-              >
-                Back
-              </Button>
+                placeholder="Enter full name (First Last)"
+                size="large"
+              />
+              {nameError && <span className="error-message">{nameError}</span>}
+            </Form.Item>
+
+            <Form.Item>
+              <label className="form-label">
+                <HomeOutlined className="label-icon" />
+                Address
+              </label>
+              <Input
+                value={address}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                  setAddressError(validateAddress(e.target.value));
+                }}
+                placeholder="Enter your address"
+                size="large"
+              />
+              {addressError && <span className="error-message">{addressError}</span>}
+            </Form.Item>
+
+            <Form.Item>
+              <label className="form-label">
+                <CalendarOutlined className="label-icon" />
+                Birthday
+              </label>
+              <DatePicker
+                value={date}
+                onChange={date => setDate(date)}
+                style={{ width: '100%' }}
+                size="large"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <label className="form-label">
+                <ManOutlined className="label-icon" />
+                Gender
+              </label>
+              <Radio.Group onChange={onGenderChange} value={gender} className="gender-radio-group">
+                <Radio value={"Male"}>Male</Radio>
+                <Radio value={"Female"}>Female</Radio>
+              </Radio.Group>
+            </Form.Item>
+
+            <Form.Item>
+              <label className="form-label">
+                <MailOutlined className="label-icon" />
+                Email
+              </label>
+              <Input
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError(validateEmail(e.target.value));
+                }}
+                placeholder="example@gmail.com"
+                size="large"
+                type="email"
+              />
+              {emailError && <span className="error-message">{emailError}</span>}
+            </Form.Item>
+
+            <Form.Item>
+              <label className="form-label">
+                <PhoneOutlined className="label-icon" />
+                Mobile Number
+              </label>
+              <PhoneInput
+                country={'lk'}
+                value={mobile}
+                onChange={(phone) => {
+                  setMobile(phone);
+                  setMobileError(validateMobile(phone));
+                }}
+                containerClass="phone-input-container"
+                inputClass="phone-input-field"
+                buttonClass="phone-input-button"
+              />
+              {mobileError && <span className="error-message">{mobileError}</span>}
+            </Form.Item>
+
+            <Form.Item>
+              <label className="form-label">
+                <GiftOutlined className="label-icon" />
+                Package
+              </label>
+              <Select
+                value={packages}
+                onChange={(value) => setPackages(value)}
+                size="large"
+                options={[
+                  { value: 'Gold ', label: 'Gold (Charge 3 months fee)' },
+                  { value: 'Platinum', label: 'Platinum (Charge 6 months fee get 10% discount)' },
+                  { value: 'Diamond', label: 'Diamond (Charge 12 months fee get 10% discount + Membership free)' },
+                ]}
+              />
+            </Form.Item>
+
+            <div className="two-column-grid">
+              <Form.Item>
+                <label className="form-label">
+                  <ColumnHeightOutlined className="label-icon" />
+                  Height (feet)
+                </label>
+                <InputNumber
+                  value={height}
+                  onChange={value => setHeight(value)}
+                  min={0}
+                  max={10}
+                  step={0.01}
+                  size="large"
+                  style={{ width: '100%' }}
+                  placeholder="0.00"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <label className="form-label">
+                  <DashboardOutlined className="label-icon" />
+                  Weight (kg)
+                </label>
+                <InputNumber
+                  value={weight}
+                  onChange={value => setWeight(value)}
+                  min={1}
+                  max={200}
+                  size="large"
+                  style={{ width: '100%' }}
+                  placeholder="0"
+                />
+              </Form.Item>
             </div>
 
-            <h2 style={{ textAlign: 'center', marginBottom: '60px' }}>Member Registration</h2>
-      <form className="Member-form" onSubmit={handleSubmit}>
-        <label htmlFor="name">Full Name</label>
-        <input
-          value={name}
-          name="name"
-          onChange={(e) => {
-            setName(e.target.value);
-            setNameError(validateName(e.target.value));
-          }}
-          id="name"
-          placeholder="Full Name"
-        />
-        {nameError && <p style={{ color: 'red' }}>{nameError}</p>}
+            <Form.Item>
+              <label className="form-label">
+                <LockOutlined className="label-icon" />
+                Password
+              </label>
+              <Input.Password
+                value={pass}
+                onChange={(e) => {
+                  setPass(e.target.value);
+                  setPasswordError(validatePassword(e.target.value));
+                }}
+                placeholder="Enter password"
+                size="large"
+              />
+              {passwordError && <span className="error-message">{passwordError}</span>}
+            </Form.Item>
 
-        <label htmlFor="address">Address</label>
-        <input
-          value={address}
-          name="address"
-          onChange={(e) => {
-            setAddress(e.target.value);
-            setAddressError(validateAddress(e.target.value));
-          }}
-          id="address"
-          placeholder="Address"
-        />
-        {addressError && <p style={{ color: 'red' }}>{addressError}</p>} 
-
-        <label htmlFor="birthday">Birthday</label>
-        <Space direction="vertical">
-          <DatePicker value={date} onChange={date => setDate(date)} />
-        </Space>
-
-        <label htmlFor="gender">Gender</label>
-        <Radio.Group onChange={onGenderChange} value={gender}>
-          <Radio value={"Male"}>Male</Radio>
-          <Radio value={"Female"}>Female</Radio>
-        </Radio.Group>
-
-        <label htmlFor="email">Email</label>
-        <input 
-          value={email}
-          name="email"
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setEmailError(validateEmail(e.target.value));
-          }}
-          id="email"
-          placeholder="example1@gmail.com"
-        />
-        {emailError && <p style={{ color: 'red' }}>{emailError}</p>} 
-
-
-
-        <label htmlFor="mobile">Mobile</label>
-        <PhoneInput
-          country={'lk'}
-          value={mobile}
-          onChange={(phone) => {
-            setMobile(phone);
-            setMobileError(validateMobile(phone));
-          }}
-        />
-        {mobileError && <p style={{ color: 'red' }}>{mobileError}</p>} 
-
-
-        <label htmlFor="package">Package</label>
-        <Select
-          value={packages}
-          style={{ width: '100%' }}
-          onChange={(value) => setPackages(value)}
-          options={[
-            { value: 'Gold ', label: 'Gold (Charge 3 months fee  )' },
-            { value: 'Platinum', label: 'Platinum (Charge 6 months fee get 10% discount ' },
-            { value: 'Diamond', label: 'Diamond (Charge 12 months fee get 10% discount + Membership free ' },
-          ]}
-        />
-
-        <label htmlFor="height">Height (feet)</label>
-        <InputNumber value={height} onChange={value => setHeight(value)} min={0} max={10} step="0.01" />
-
-        <label htmlFor="weight">Weight (Kg)</label>
-        <InputNumber value={weight} onChange={value => setWeight(value)} min={1} max={200} />
-
-        <label htmlFor="password">Password</label>
-        <input
-          value={pass}
-          onChange={(e) => {
-            setPass(e.target.value);
-            setPasswordError(validatePassword(e.target.value));
-          }}
-          type="password"
-          placeholder="********"
-          id="password"
-          name="password"
-        />
-        {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>} 
-
-        <Space>
-          <Button type="primary" htmlType="submit">Submit</Button>
-          <Button htmlType="button" onClick={handleReset}>Cancel</Button>
-        </Space>
-      </form>
+            <Form.Item className="form-actions">
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                loading={submitting}
+                disabled={submitting}
+                className="submit-button"
+              >
+                {submitting ? 'Registering...' : 'Register'}
+              </Button>
+              <Button
+                onClick={handleReset}
+                size="large"
+                className="cancel-button"
+              >
+                Cancel
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+      </div>
     </div>
   );
 };

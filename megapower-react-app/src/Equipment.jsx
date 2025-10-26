@@ -1,20 +1,25 @@
 import React, { useState } from "react";
-import { Button, Space, DatePicker, InputNumber, Form, message, Select, Input } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Button, DatePicker, Form, message, Select, Input, Card } from 'antd';
+import { SaveOutlined, CloseOutlined, PlusOutlined, TagsOutlined, NumberOutlined, 
+         ShoppingOutlined, FileTextOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import MainLayout from './components/Layout/MainLayout';
+import './Equipment.css';
 
 const { TextArea } = Input;
 
 export const Equipment = () => {
   const navigate = useNavigate();
 
+  const [submitting, setSubmitting] = useState(false);
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState(''); 
-  const [qty, setQty] = useState(0); 
+  const [qty, setQty] = useState(''); 
   const [date, setDate] = useState(null); 
   const [vendor, setVendor] = useState('');
   const [description, setDescription] = useState('');
+  const [charCount, setCharCount] = useState(0);
 
   const vendors = ["Big Bosa Gym Fitness Equipment", "Eser Marketing International", "GS Sports", "Mansa Fitness Equipment"]; 
   const equipmentNames = ["Barbell", "Bench", "Cable Machine", "Dumbell", "Exsercise Bike", "Lat Pulldown Machine", "Leg Press Machines", "Rowing Machine", "Stair Climber", "Treadmill"];  
@@ -26,168 +31,193 @@ export const Equipment = () => {
     return '';
   };
 
-  const validateForm = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validation
     if (!name || !qty || !date || !vendor || !description) {
       message.error("Please fill in all required fields.");
-      return false;
+      return;
     }
 
     const nameErrorMsg = validateName(name);
     if (nameErrorMsg) {
       setNameError(nameErrorMsg);
-      return false;
+      message.error(nameErrorMsg);
+      return;
     } else {
       setNameError('');
     }
-    return true;
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    const formattedDate = date ? date.toISOString() : '';
-    const body = {
-      eName: name,
-      qty: qty,
-      vendor: vendor,
-      description: description,
-      date: formattedDate,
-    };
+    if (qty < 1 || qty > 100) {
+      message.error('Quantity must be between 1 and 100');
+      return;
+    }
 
     try {
+      setSubmitting(true);
+      const formattedDate = date ? date.toISOString() : '';
+      const body = {
+        eName: name,
+        qty: qty,
+        vendor: vendor,
+        description: description,
+        date: formattedDate,
+      };
+
       const res = await axios.post('http://localhost:5000/api/v1/equipment/create', body);
       console.log(res?.data?.data);
-      message.success("Equipment registered successfully.");
-      navigate('/Equipmenttable');
+      message.success("Equipment registered successfully!");
+      setTimeout(() => {
+        navigate('/Equipmenttable');
+      }, 1500);
     } catch (Err) {
       console.log(Err.message);
       message.error("Failed to register Equipment.");
+      setSubmitting(false);
     }
   };
 
-  const handleReset = () => {
-    setName('');
-    setQty(0);
-    setVendor('');
-    setDescription('');
-    setDate(null);
-    setNameError(''); 
-  };
-
-  const handleChangeQty = (value) => {
-    setQty(value);
-    console.log('changed', value);
-  };
-
-  const handleVendorChange = (value) => {
-    setVendor(value);
-  };
-
-  const handleNameChange = (value) => {
-    setName(value);
-  };
-
-  const handleGoBack = () => {
-    navigate('/Equipmenttable');
-  };
-
   return (
-    <div className="auth-form-container" style={{ padding: "50px", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "15px", boxShadow: "10 10px 12px rgba(0, 0, 0, 0.3)", maxWidth: "500px", margin: "auto", height: "600px" }}>
-      <div style={{ marginBottom: '20px' }}> 
-        <Button 
-          type="text" 
-          icon={<ArrowLeftOutlined />} 
-          onClick={handleGoBack} 
-          style={{ 
-            color: 'white', 
-            fontWeight: 'bold', 
-            fontSize: '16px', 
-          }}
-        >
-          Back
-        </Button>
+    <MainLayout>
+      <div className="equipment-page">
+        {/* Header Section */}
+        <div className="equipment-header">
+          <div className="header-content">
+            <PlusOutlined className="header-icon" />
+            <div className="header-text">
+              <h1>Add New Equipment</h1>
+              <p>Register new gym equipment and inventory</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Section */}
+        <div className="equipment-content">
+          <Card className="equipment-card">
+            <Form onSubmit={handleSubmit} className="equipment-form">
+              {/* Equipment Name */}
+              <Form.Item validateStatus={nameError ? 'error' : ''} help={nameError}>
+                <label className="form-label">
+                  <TagsOutlined className="label-icon" />
+                  Equipment Name
+                </label>
+                <Select
+                  value={name}
+                  onChange={(value) => setName(value)}
+                  placeholder="Select equipment name"
+                  className="form-select"
+                >
+                  {equipmentNames.map((e, index) => (
+                    <Select.Option key={index} value={e}>
+                      {e}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              {/* Quantity */}
+              <Form.Item>
+                <label className="form-label">
+                  <NumberOutlined className="label-icon" />
+                  Quantity
+                </label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={qty}
+                  onChange={(e) => setQty(e.target.value)}
+                  placeholder="Enter quantity (1-100)"
+                  className="form-input"
+                />
+              </Form.Item>
+
+              {/* Vendor */}
+              <Form.Item>
+                <label className="form-label">
+                  <ShoppingOutlined className="label-icon" />
+                  Vendor
+                </label>
+                <Select
+                  value={vendor}
+                  onChange={(value) => setVendor(value)}
+                  placeholder="Select vendor"
+                  className="form-select"
+                >
+                  {vendors.map((v, index) => (
+                    <Select.Option key={index} value={v}>
+                      {v}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              {/* Description */}
+              <Form.Item>
+                <label className="form-label">
+                  <FileTextOutlined className="label-icon" />
+                  Description
+                </label>
+                <div className="textarea-wrapper">
+                  <TextArea
+                    value={description}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                      setCharCount(e.target.value.length);
+                    }}
+                    placeholder="Enter equipment description"
+                    className="form-textarea"
+                    maxLength={500}
+                    rows={4}
+                  />
+                  <div className="char-counter">
+                    {charCount}/500 characters
+                  </div>
+                </div>
+              </Form.Item>
+
+              {/* Purchase Date */}
+              <Form.Item>
+                <label className="form-label">
+                  <CalendarOutlined className="label-icon" />
+                  Purchase Date
+                </label>
+                <DatePicker
+                  onChange={(date) => setDate(date)}
+                  placeholder="Select purchase date"
+                  className="form-datepicker"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+
+              {/* Action Buttons */}
+              <Form.Item className="form-actions">
+                <div className="button-group">
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={submitting}
+                    icon={<SaveOutlined />}
+                    className="submit-button"
+                    onClick={handleSubmit}
+                  >
+                    {submitting ? 'Submitting...' : 'Add Equipment'}
+                  </Button>
+                  <Button
+                    type="default"
+                    icon={<CloseOutlined />}
+                    className="cancel-button"
+                    onClick={() => navigate('/Equipmenttable')}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </Form.Item>
+            </Form>
+          </Card>
+        </div>
       </div>
-      <div style={{ textAlign: 'left', width: '100%' }}>
-        <h2 style={{ textAlign: "center", marginBottom: "50px",marginTop: "0px", borderRadius: "50px", maxWidth: "100%", color: "white" }}>
-          Equipment</h2>
-        <form className="Equipment-form" onSubmit={handleSubmit}>
-
-          <label htmlFor="name" style={{ color: "white", fontWeight: "bold", marginBottom: "4px", display: "block" }}>Equipment Name</label>
-          <Select
-            value={name}
-            onChange={handleNameChange}
-            placeholder="Select an equipment name"
-            style={{ width: '100%', marginBottom: "15px" }}
-          >
-            {equipmentNames.map((e, index) => (
-              <Select.Option key={index} value={e}>
-                {e}
-              </Select.Option>
-            ))}
-          </Select>
-          {nameError && <p style={{ color: 'red', marginBottom: "20px" }}>{nameError}</p>}
-
-          <label htmlFor="Quantity" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Quantity</label>
-          <InputNumber
-            min={1}
-            max={100}
-            value={qty}
-            onChange={handleChangeQty}
-            style={{ width: '100%', marginBottom: "15px" }}
-          /><br />
-
-          <label htmlFor="vendor" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Vendor</label>
-          <Select
-            value={vendor}
-            onChange={handleVendorChange}
-            placeholder="Select a vendor"
-            style={{ width: '100%', marginBottom: "15px" }}
-          >
-            {vendors.map((v, index) => (
-              <Select.Option key={index} value={v}>
-                {v}
-              </Select.Option>
-            ))}
-          </Select>
-
-          <label htmlFor="Description" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Description</label>
-          <TextArea
-            value={description}
-            name="Description"
-            onChange={(e) => setDescription(e.target.value)}
-            id="Description"
-            placeholder="Description"
-            style={{ width: '100%', marginBottom: "15px" }}
-          /><br />
-
-          <label htmlFor="Date" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Date</label>
-          <Space direction="vertical" style={{ width: '100%', marginBottom: "40px" }}>
-            <DatePicker onChange={(date) => setDate(date)} style={{ width: '100%' }} />
-          </Space><br />
-
-          <Form.Item style={{ textAlign: "left", marginTop: "0px" }}>
-            <Space size="large">
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-              <Button
-                onClick={handleReset} 
-                type="default"
-                htmlType="button"
-                style={{
-                  backgroundColor: "white",
-                  color: "black",
-                  border: "1px solid #d9d9d9",
-                }}
-              >
-                Cancel
-              </Button>
-            </Space>
-          </Form.Item>
-
-        </form>
-      </div>
-    </div>
+    </MainLayout>
   );
 };

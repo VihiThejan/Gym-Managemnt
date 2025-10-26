@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Button, DatePicker, Space, Select, message } from "antd";
+import { Button, DatePicker, Select, message, Card, Input, Form } from "antd";
+import { 
+  DollarOutlined, 
+  UserOutlined, 
+  GiftOutlined, 
+  CalendarOutlined,
+  CreditCardOutlined 
+} from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import MainLayout from './components/Layout/MainLayout';
+import './Payment.css';
 
 export const Payment = () => {
   const navigate = useNavigate();
@@ -10,6 +19,37 @@ export const Payment = () => {
   const [packageId, setPackageId] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+
+  // Fetch member list
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
+  const fetchMembers = async () => {
+    try {
+      setLoadingMembers(true);
+      const response = await axios.get("http://localhost:5000/api/v1/member/list");
+      const memberData = response?.data?.data || [];
+      
+      // Format members for Select dropdown
+      const formattedMembers = memberData.map(member => ({
+        value: member.Member_Id,
+        label: `${member.FName} (ID: ${member.Member_Id})`,
+        email: member.Email,
+        contact: member.Contact
+      }));
+      
+      setMembers(formattedMembers);
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      message.error("Failed to load members list");
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
 
   // Ensure PayHere is available
   useEffect(() => {
@@ -71,11 +111,12 @@ export const Payment = () => {
     return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const formattedDate = date ? date.toISOString() : ""; // Fixed the undefined error
+    setSubmitting(true);
+
+    const formattedDate = date ? date.toISOString() : "";
 
     const body = {
       memberId: id,
@@ -93,22 +134,19 @@ export const Payment = () => {
       );
       console.log(res?.data?.data);
       message.success("Payment registered successfully.");
-      handlePayHerePayment(); // Call PayHere payment after successful registration
+      handlePayHerePayment();
     } catch (Err) {
       console.log(Err.message);
       message.error("Failed to register Payment.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleDateChange = (date, dateString) => {
-    console.log("Selected date:", dateString);
-    setDate(date);
-  };
-
   const packageOptions = [
-    { value: "1", label: "Gold (id 1)" },
-    { value: "2", label: "Silver (id 2)" },
-    { value: "3", label: "Platinum (id 3)" },
+    { value: "1", label: "Basic - Rs. 5,000/month" },
+    { value: "2", label: "Standard - Rs. 8,000/month" },
+    { value: "3", label: "Premium - Rs. 12,000/month" },
   ];
 
   const handleReset = () => {
@@ -119,133 +157,122 @@ export const Payment = () => {
   };
 
   return (
-    <div
-      className="auth-form-container"
-      style={{
-        width: "300px",
-        margin: "auto",
-        padding: "25px",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        borderRadius: "30px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-        textAlign: "left",
-      }}
-    >
-      <h2 style={{ color: "white", textAlign: "center", marginBottom: "25px" }}>
-        Payment
-      </h2>
-      <form className="Payment-form" onSubmit={handleSubmit}>
-        <label
-          htmlFor="MemberId"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          Member Id
-        </label>
-        <input
-          value={id}
-          name="MemberId"
-          onChange={(e) => setId(e.target.value)}
-          id="MemberId"
-          placeholder="Member Id"
-          style={{
-            width: "100%",
-            marginBottom: "20px",
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-            fontSize: "14px",
-            boxSizing: "border-box",
-          }}
-        />
-
-        <label
-          htmlFor="PackageId"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          Package
-        </label>
-        <Select
-          id="PackageId"
-          placeholder="Select a package"
-          value={packageId}
-          onChange={(value) => setPackageId(value)}
-          options={packageOptions}
-          style={{
-            width: "100%",
-            marginBottom: "20px",
-          }}
-        />
-
-        <label
-          htmlFor="Amount"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          Amount
-        </label>
-        <input
-          value={amount}
-          name="Amount"
-          onChange={(e) => setAmount(e.target.value)}
-          id="Amount"
-          placeholder="Amount"
-          style={{
-            width: "100%",
-            marginBottom: "20px",
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-            fontSize: "14px",
-            boxSizing: "border-box",
-          }}
-        />
-
-        <label
-          htmlFor="Date"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          Date
-        </label>
-        <Space
-          direction="vertical"
-          style={{ width: "100%", marginBottom: "20px" }}
-        >
-          <DatePicker
-            onChange={handleDateChange}
-            style={{ width: "100%", borderRadius: "5px" }}
-          />
-        </Space>
-
-        <div style={{ textAlign: "left", marginTop: "20px" }}>
-          <Space size="large">
-            <Button type="primary" htmlType="submit">
-              Submit & Pay
-            </Button>
-            <Button onClick={handleReset} type="default">
-              Cancel
-            </Button>
-          </Space>
+    <MainLayout>
+      <div className="payment-page">
+        <div className="payment-header">
+          <div className="header-content">
+            <div className="header-icon">
+              <CreditCardOutlined />
+            </div>
+            <div className="header-text">
+              <h1>Process Payment</h1>
+              <p>Complete your membership payment</p>
+            </div>
+          </div>
         </div>
-      </form>
-    </div>
+
+        <div className="payment-content">
+          <Card className="payment-card">
+            <Form onFinish={handleSubmit} layout="vertical">
+              <Form.Item>
+                <label className="form-label">
+                  <UserOutlined className="label-icon" />
+                  Select Member
+                </label>
+                <Select
+                  placeholder="Select a member"
+                  value={id}
+                  onChange={(value) => setId(value)}
+                  options={members}
+                  size="large"
+                  showSearch
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  loading={loadingMembers}
+                  className="member-select"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <label className="form-label">
+                  <GiftOutlined className="label-icon" />
+                  Membership Package
+                </label>
+                <Select
+                  placeholder="Select membership package"
+                  value={packageId}
+                  onChange={(value) => setPackageId(value)}
+                  options={packageOptions}
+                  size="large"
+                  className="package-select"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <label className="form-label">
+                  <DollarOutlined className="label-icon" />
+                  Amount (LKR)
+                </label>
+                <Input
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  size="large"
+                  prefix="Rs."
+                  type="number"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <label className="form-label">
+                  <CalendarOutlined className="label-icon" />
+                  Payment Date
+                </label>
+                <DatePicker
+                  onChange={(date) => setDate(date)}
+                  style={{ width: '100%' }}
+                  size="large"
+                  placeholder="Select payment date"
+                />
+              </Form.Item>
+
+              <Form.Item className="form-actions">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  loading={submitting}
+                  disabled={submitting}
+                  icon={<CreditCardOutlined />}
+                  className="submit-button"
+                >
+                  {submitting ? 'Processing...' : 'Submit & Pay'}
+                </Button>
+                <Button
+                  onClick={handleReset}
+                  size="large"
+                  className="cancel-button"
+                >
+                  Cancel
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+
+          <div className="payment-info">
+            <Card className="info-card">
+              <h3>Payment Information</h3>
+              <ul>
+                <li>💳 Secure payment gateway powered by PayHere</li>
+                <li>✅ Your payment details are encrypted and secure</li>
+                <li>📧 Receipt will be sent to your registered email</li>
+                <li>🔄 Membership activates immediately after payment</li>
+              </ul>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </MainLayout>
   );
 };

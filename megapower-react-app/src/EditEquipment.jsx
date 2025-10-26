@@ -15,11 +15,12 @@ export const EditEquipment = () => {
     const { id } = useParams();
 
     const [name, setName] = useState('');
-    const [nameError, setNameError] = useState('');
     const [qty, setQty] = useState(0);
     const [date, setDate] = useState(null);
     const [vendor, setVendor] = useState('');
     const [description, setDescription] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
     const vendors = ["Big Bosa Gym Fitness Equipment", "Eser Marketing International", "GS Sports", "Mansa Fitness Equipment"];
     const equipmentNames = ["Barbell", "Bench", "Cable Machine", "Dumbell", "Exercise Bike", "Lat Pulldown Machine", "Leg Press Machines", "Rowing Machine", "Stair Climber", "Treadmill"];
@@ -27,6 +28,7 @@ export const EditEquipment = () => {
     useEffect(() => {
         const fetchEquipment = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get(`http://localhost:5000/api/v1/equipment/${id}`);
                 const equipment = response.data.data;
 
@@ -35,122 +37,213 @@ export const EditEquipment = () => {
                 setVendor(equipment.Vendor);
                 setDescription(equipment.Description);
                 setDate(equipment.Date ? moment(equipment.Date) : null);
+                setLoading(false);
             } catch (error) {
                 console.error(`Error fetching equipment data: ${error.message}`);
+                message.error('Failed to load equipment data');
+                setLoading(false);
             }
         };
         fetchEquipment();
     }, [id]);
 
-    const validateName = (name) => {
-        if (!name) {
-            return 'Equipment Name is required.';
-        }
-        return '';
-    };
-
-    const validateForm = () => {
-        if (!name || !qty || !date || !vendor || !description) {
-            message.error("Please fill in all required fields.");
-            return false;
-        }
-        const nameErrorMsg = validateName(name);
-        if (nameErrorMsg) {
-            setNameError(nameErrorMsg);
-            return false;
-        } else {
-            setNameError('');
-        }
-        return true;
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) return;
-    
-        const formattedDate = date ? date.toISOString() : null;
-    
-        const body = {
-            EName: name,
-            Qty: qty, 
-            Vendor: vendor, 
-            Description: description, 
-            Date: formattedDate, 
-        };
-    
-        console.log("Sending update request with body:", body); 
-    
+        
+        if (!name || !qty || !date || !vendor || !description) {
+            message.error("Please fill in all required fields.");
+            return;
+        }
+        
         try {
-            const res = await axios.put(`http://localhost:5000/api/v1/equipment/update/${id}`, body);
-            console.log("Response from server:", res.data); 
-            message.success("Equipment updated successfully.");
-            navigate('/Equipmenttable');
+            setSubmitting(true);
+
+            const formattedDate = date ? date.toISOString() : null;
+        
+            const body = {
+                EName: name,
+                Qty: qty, 
+                Vendor: vendor, 
+                Description: description, 
+                Date: formattedDate, 
+            };
+        
+            await axios.put(`http://localhost:5000/api/v1/equipment/update/${id}`, body);
+            message.success("Equipment updated successfully!");
+            
+            setTimeout(() => {
+                navigate('/Equipmenttable');
+            }, 1500);
         } catch (Err) {
             console.error("Error updating equipment:", Err.response?.data || Err.message); 
             message.error("Failed to update Equipment: " + (Err.response?.data?.message || Err.message));
+            setSubmitting(false);
         }
     };
 
-    const handleReset = () => {
-        setName('');
-        setQty(0);
-        setVendor('');
-        setDescription('');
-        setDate(null);
-        setNameError('');
-    };
-
-    const handleChangeQty = (value) => {
-        setQty(value);
-    };
-
-    const handleVendorChange = (value) => {
-        setVendor(value);
-    };
-
-    const handleNameChange = (value) => {
-        setName(value);
-    };
+    if (loading) {
+        return (
+            <MainLayout>
+                <div className="edit-equipment-page">
+                    <div className="edit-equipment-container">
+                        <Card className="edit-equipment-card" loading={true}>
+                            <div style={{ padding: '40px' }}>Loading equipment data...</div>
+                        </Card>
+                    </div>
+                </div>
+            </MainLayout>
+        );
+    }
 
     return (
-        <div className="auth-form-container" style={{ padding: "50px", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "15px", boxShadow: "10px 10px 12px rgba(0, 0, 0, 0.3)", maxWidth: "500px", margin: "auto", height: "600px" }}>
-            <div style={{ textAlign: 'left', width: '100%' }}>
-                <h2 style={{ textAlign: "center", marginBottom: "50px", marginTop: "0px", borderRadius: "50px", maxWidth: "100%", color: "white" }}> Edit Equipment</h2>
-                <form className="Equipment-form" onSubmit={handleSubmit}>
-                    <label htmlFor="name" style={{ color: "white", fontWeight: "bold", marginBottom: "4px", display: "block" }}>Equipment Name</label>
-                    <Select value={name} onChange={handleNameChange} placeholder="Select an equipment name" style={{ width: '100%', marginBottom: "15px" }}>
-                        {equipmentNames.map((e, index) => (
-                            <Select.Option key={index} value={e}>{e}</Select.Option>
-                        ))}
-                    </Select>
-                    {nameError && <p style={{ color: 'red', marginBottom: "20px" }}>{nameError}</p>}
+        <MainLayout>
+            <div className="edit-equipment-page">
+                <div className="edit-equipment-header">
+                    <EditOutlined className="header-icon" />
+                    <div>
+                        <h1 className="header-title">Edit Equipment</h1>
+                        <p className="header-subtitle">Update gym equipment details and inventory information</p>
+                    </div>
+                </div>
 
-                    <label htmlFor="Quantity" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Quantity</label>
-                    <InputNumber min={1} max={100} value={qty} onChange={handleChangeQty} style={{ width: '100%', marginBottom: "15px" }} /><br />
+                <div className="edit-equipment-container">
+                    <Card className="edit-equipment-card">
+                        <Form layout="vertical" onFinish={handleSubmit}>
+                            <Form.Item
+                                label={
+                                    <span className="form-label">
+                                        <TagsOutlined className="label-icon" />
+                                        Equipment Name
+                                    </span>
+                                }
+                                required
+                            >
+                                <Select 
+                                    value={name} 
+                                    onChange={(value) => setName(value)} 
+                                    placeholder="Select equipment name"
+                                    size="large"
+                                    className="form-select"
+                                    required
+                                >
+                                    {equipmentNames.map((e, index) => (
+                                        <Select.Option key={index} value={e}>{e}</Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
 
-                    <label htmlFor="vendor" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Vendor</label>
-                    <Select value={vendor} onChange={handleVendorChange} placeholder="Select a vendor" style={{ width: '100%', marginBottom: "15px" }}>
-                        {vendors.map((v, index) => (
-                            <Select.Option key={index} value={v}>{v}</Select.Option>
-                        ))}
-                    </Select>
+                            <Form.Item
+                                label={
+                                    <span className="form-label">
+                                        <NumberOutlined className="label-icon" />
+                                        Quantity
+                                    </span>
+                                }
+                                required
+                            >
+                                <Input
+                                    type="number"
+                                    min={1}
+                                    max={100}
+                                    value={qty}
+                                    onChange={(e) => setQty(Number(e.target.value))}
+                                    placeholder="Enter quantity"
+                                    size="large"
+                                    className="form-input"
+                                    required
+                                />
+                            </Form.Item>
 
-                    <label htmlFor="Description" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Description</label>
-                    <TextArea value={description} name="Description" onChange={(e) => setDescription(e.target.value)} id="Description" placeholder="Description" style={{ width: '100%', marginBottom: "15px" }} /><br />
+                            <Form.Item
+                                label={
+                                    <span className="form-label">
+                                        <ShoppingOutlined className="label-icon" />
+                                        Vendor
+                                    </span>
+                                }
+                                required
+                            >
+                                <Select 
+                                    value={vendor} 
+                                    onChange={(value) => setVendor(value)} 
+                                    placeholder="Select vendor"
+                                    size="large"
+                                    className="form-select"
+                                    required
+                                >
+                                    {vendors.map((v, index) => (
+                                        <Select.Option key={index} value={v}>{v}</Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
 
-                    <label htmlFor="Date" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Date</label>
-                    <Space direction="vertical" style={{ width: '100%', marginBottom: "40px" }}>
-                        <DatePicker onChange={(date) => setDate(date)} style={{ width: '100%' }} value={date} />
-                    </Space><br />
+                            <Form.Item
+                                label={
+                                    <span className="form-label">
+                                        <FileTextOutlined className="label-icon" />
+                                        Description
+                                    </span>
+                                }
+                                required
+                            >
+                                <TextArea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="Enter equipment description"
+                                    rows={4}
+                                    maxLength={500}
+                                    showCount
+                                    className="form-textarea"
+                                    required
+                                />
+                            </Form.Item>
 
-                    <Form.Item style={{ textAlign: "left", marginTop: "0px" }}>
-                        <Space size="large">
-                            <Button type="primary" htmlType="submit"> Update </Button>
-                            <Button onClick={handleReset} type="default" htmlType="button" style={{ backgroundColor: "white", color: "black", border: "1px solid #d9d9d9" }}> Cancel </Button>
-                        </Space>
-                    </Form.Item>
-                </form>
+                            <Form.Item
+                                label={
+                                    <span className="form-label">
+                                        <CalendarOutlined className="label-icon" />
+                                        Purchase Date
+                                    </span>
+                                }
+                                required
+                            >
+                                <DatePicker
+                                    value={date}
+                                    onChange={(date) => setDate(date)}
+                                    style={{ width: "100%" }}
+                                    size="large"
+                                    className="form-input"
+                                    format="YYYY-MM-DD"
+                                    required
+                                />
+                            </Form.Item>
+
+                            <div className="form-actions">
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    icon={<SaveOutlined />}
+                                    size="large"
+                                    className="submit-button"
+                                    loading={submitting}
+                                >
+                                    {submitting ? 'Updating...' : 'Update Equipment'}
+                                </Button>
+                                <Button
+                                    type="default"
+                                    icon={<CloseOutlined />}
+                                    size="large"
+                                    className="cancel-button"
+                                    onClick={() => navigate('/Equipmenttable')}
+                                    disabled={submitting}
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        </Form>
+                    </Card>
+                </div>
             </div>
-        </div>
+        </MainLayout>
     );
 };

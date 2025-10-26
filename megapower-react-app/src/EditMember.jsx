@@ -4,7 +4,12 @@ import axios from "axios";
 import moment from "moment";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Radio, InputNumber, Select, Space, DatePicker, message, Form } from 'antd';
+import { Button, Radio, Select, DatePicker, message, Form, Input, Card } from 'antd';
+import { SaveOutlined, CloseOutlined, EditOutlined, UserOutlined, HomeOutlined, 
+         CalendarOutlined, MailOutlined, PhoneOutlined, GiftOutlined, 
+         ColumnHeightOutlined, DashboardOutlined, LockOutlined, ManOutlined } from '@ant-design/icons';
+import MainLayout from './components/Layout/MainLayout';
+import './EditMember.css';
 
 export const EditMember = () => {
   const navigate = useNavigate();
@@ -20,16 +25,14 @@ export const EditMember = () => {
   const [weight, setWeight] = useState('');
   const [packages, setPackages] = useState('Gold');
   const [date, setDate] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [addressError, setAddressError] = useState('');
-  const [mobileError, setMobileError] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   
   useEffect(() => {
     const fetchMember = async () => {
        try {
+          setLoading(true);
           const response = await axios.get(`http://localhost:5000/api/v1/member/${id}`);
           const member = response.data.data;
 
@@ -44,22 +47,24 @@ export const EditMember = () => {
           setHeight(Number(member.Height));
           setMobile(member.UName);
           setPass(member.Password);
-          
+          setLoading(false);
        } catch (error) {
           console.error(`Error fetching member data: ${error.message}`);
+          message.error('Failed to load member data');
+          setLoading(false);
        }
     };
     fetchMember();
  }, [id]);
 
+  const validateMobile = (mobile) => {
+    const cleanedMobile = mobile.replace(/\D/g, '');
+    return cleanedMobile.length >= 11;
+  };
 
-  
-  const validateName = (name) => {
-    const nameRegex = /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/;
-    if (!nameRegex.test(name)) {
-      return 'Full Name must contain first and last name, and each name should start with an uppercase letter.';
-    }
-    return '';
+  const validateEmail = (email) => {
+    const emailRegex = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+    return emailRegex.test(email);
   };
 
   const validatePassword = (password) => {
@@ -68,276 +73,341 @@ export const EditMember = () => {
     const hasLowercase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-    if (password.length < minLength) {
-      return `Password must be at least ${minLength} characters long.`;
-    }
-    if (!hasUppercase) {
-      return 'Password must contain at least one uppercase letter.';
-    }
-    if (!hasLowercase) {
-      return 'Password must contain at least one lowercase letter.';
-    }
-    if (!hasNumber) {
-      return 'Password must contain at least one number.';
-    }
-    if (!hasSpecialChar) {
-      return 'Password must contain at least one special character.';
-    }
-
-    return '';
-  };
-
-  const validateAddress = (address) => {
-    if (address.length < 10) {
-      return 'Address must be at least 10 characters long.';
-    }
-    const addressRegex = /[a-zA-Z]/.test(address) && /\d/.test(address);
-    if (!addressRegex) {
-      return 'Address must contain both letters and numbers.';
-    }
-    return '';
-  };
-
-  const validateMobile = (mobile) => {
-    const cleanedMobile = mobile.replace(/\D/g, '');
-    if (cleanedMobile.length < 11) {
-      return 'Invalid mobile number. It should be at least 10 digits long, including the country code.';
-    }
-    return '';
-  };
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (!emailRegex.test(email)) {
-      return 'Invalid email format.';
-    }
-    return '';
-  };
-
-  const validateForm = () => {
-    if (!name || !address || !email || !mobile || !pass || !date || !height || !weight) {
-      message.error("Please fill in all required fields.");
-      return false;
-    }
-
-    const nameErrorMsg = validateName(name);
-    if (nameErrorMsg) {
-      setNameError(nameErrorMsg);
-      return false;
-    } else {
-      setNameError('');
-    }
-
-    const addressErrorMsg = validateAddress(address);
-    if (addressErrorMsg) {
-      setAddressError(addressErrorMsg);
-      return false;
-    } else {
-      setAddressError('');
-    }
-
-    const mobileErrorMsg = validateMobile(mobile);
-    if (mobileErrorMsg) {
-      setMobileError(mobileErrorMsg);
-      return false;
-    } else {
-      setMobileError('');
-    }
-
-    const emailErrorMsg = validateEmail(email);
-    if (emailErrorMsg) {
-      setEmailError(emailErrorMsg);
-      return false;
-    } else {
-      setEmailError('');
-    }
-
-    const passwordErrorMsg = validatePassword(pass);
-    if (passwordErrorMsg) {
-      setPasswordError(passwordErrorMsg);
-      return false;
-    } else {
-      setPasswordError('');
-    }
-
-
-    if (height <= 0 || height > 10) {
-      message.error("Height should be between 0 and 10 feet.");
-      return false;
-    }
-
-    if (weight <= 0 || weight > 200) {
-      message.error("Weight should be between 1 and 200 kg.");
-      return false;
-    }
-
-    return true;
+    return password.length >= minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    const formattedDate = date ? date.toISOString() : null;
-
-    const body = {
-      FName: name,
-      DOB: formattedDate,
-      Gender: gender,
-      Email: email,
-      Address: address,
-      Contact: mobile,
-      Package: packages,
-      Weight: weight,
-      Height: height,
-      UName: mobile,
-      Password: pass,
-     
-    };
-
-    console.log("Sending update request with body:", body); 
-
-    try {
-        const res = await axios.put(`http://localhost:5000/api/v1/member/update/${id}`, body);
-        console.log("Response from server:", res.data);
-        message.success("Member updated successfully.");
-        navigate('/MemberTable');
-    } catch (Err) {
-        console.error("Error updating member:", Err.response?.data || Err.message);
-        message.error("Failed to update Member: " + (Err.response?.data?.message || Err.message));
+    
+    if (!name || !address || !email || !mobile || !pass || !date || !height || !weight) {
+      message.error("Please fill in all required fields.");
+      return;
     }
-};
 
-  const handleReset = () => {
-    setMobile('');
-    setPass('');
-    setName('');
-    setAddress('');
-    setGender('Male');
-    setEmail('');
-    setHeight('');
-    setWeight('');
-    setPackages('Gold');
-    setDate('');
-    setNameError('');
-    setPasswordError('');
-    setAddressError('');
-    setMobileError('');
-    setEmailError('');
+    if (!validateMobile(mobile)) {
+      message.error("Invalid mobile number. It should be at least 10 digits long, including the country code.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      message.error("Invalid email format.");
+      return;
+    }
+
+    if (!validatePassword(pass)) {
+      message.error("Password must be at least 6 characters with uppercase, lowercase, number, and special character.");
+      return;
+    }
+
+    if (height <= 0 || height > 10) {
+      message.error("Height should be between 0 and 10 feet.");
+      return;
+    }
+
+    if (weight <= 0 || weight > 200) {
+      message.error("Weight should be between 1 and 200 kg.");
+      return;
+    }
+    
+    try {
+      setSubmitting(true);
+
+      const formattedDate = date ? date.toISOString() : null;
+
+      const body = {
+        FName: name,
+        DOB: formattedDate,
+        Gender: gender,
+        Email: email,
+        Address: address,
+        Contact: mobile,
+        Package: packages,
+        Weight: weight,
+        Height: height,
+        UName: mobile,
+        Password: pass,
+      };
+
+      await axios.put(`http://localhost:5000/api/v1/member/update/${id}`, body);
+      message.success("Member updated successfully!");
+      
+      setTimeout(() => {
+        navigate('/MemberTable');
+      }, 1500);
+    } catch (Err) {
+      console.error("Error updating member:", Err.response?.data || Err.message);
+      message.error("Failed to update Member: " + (Err.response?.data?.message || Err.message));
+      setSubmitting(false);
+    }
   };
 
-  const onGenderChange = (e) => {
-    setGender(e.target.value);
-  };
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="edit-member-page">
+          <div className="edit-member-container">
+            <Card className="edit-member-card" loading={true}>
+              <div style={{ padding: '40px' }}>Loading member data...</div>
+            </Card>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
-    <div className="auth-form-container" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-      <h2>Edit Member</h2>
-      <form className="Member-form" onSubmit={handleSubmit}>
-        <label htmlFor="name">Full Name</label>
-        <input
-          value={name}
-          name="name"
-          onChange={(e) => {
-            setName(e.target.value);
-            setNameError(validateName(e.target.value));
-          }}
-          id="name"
-          placeholder="Full Name"
-        />
-        {nameError && <p style={{ color: 'red' }}>{nameError}</p>}
+    <MainLayout>
+      <div className="edit-member-page">
+        <div className="edit-member-header">
+          <EditOutlined className="header-icon" />
+          <div>
+            <h1 className="header-title">Edit Member</h1>
+            <p className="header-subtitle">Update member information and subscription details</p>
+          </div>
+        </div>
 
-        <label htmlFor="address">Address</label>
-        <input
-          value={address}
-          name="address"
-          onChange={(e) => {
-            setAddress(e.target.value);
-            setAddressError(validateAddress(e.target.value));
-          }}
-          id="address"
-          placeholder="Address"
-        />
-        {addressError && <p style={{ color: 'red' }}>{addressError}</p>}
-
-        <label htmlFor="birthday">Birthday</label>
-        <Space direction="vertical">
-          <DatePicker value={date} onChange={(date) => setDate(date)} />
-        </Space>
-
-        <label htmlFor="gender">Gender</label>
-        <Radio.Group onChange={onGenderChange} value={gender}>
-          <Radio value={"Male"}>Male</Radio>
-          <Radio value={"Female"}>Female</Radio>
-        </Radio.Group>
-
-        <label htmlFor="email">Email</label>
-        <input
-          value={email}
-          name="email"
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setEmailError(validateEmail(e.target.value));
-          }}
-          id="email"
-          placeholder="*****@gmail.com"
-        />
-        {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
-
-        <label htmlFor="mobile">Mobile</label>
-        <PhoneInput
-          country={'lk'}
-          value={mobile}
-          onChange={(phone) => {
-            setMobile(phone);
-            setMobileError(validateMobile(phone));
-          }}
-        />
-        {mobileError && <p style={{ color: 'red' }}>{mobileError}</p>}
-
-        <label htmlFor="package">Package</label>
-        <Select
-          value={packages}
-          style={{ width: '100%' }}
-          onChange={(value) => setPackages(value)}
-          options={[
-            { value: 'Gold', label: 'Gold (Charge 3 months fee)' },
-            { value: 'Platinum', label: 'Platinum (Charge 6 months fee, get 10% discount)' },
-            { value: 'Diamond', label: 'Diamond (Charge 12 months fee, get 10% discount + Membership free)' },
-          ]}
-        />
-
-        <label htmlFor="height">Height (feet)</label>
-        <InputNumber value={height} onChange={(value) => setHeight(value)} min={0} max={10} step="0.01" />
-
-        <label htmlFor="weight">Weight (Kg)</label>
-        <InputNumber value={weight} onChange={(value) => setWeight(value)} min={1} max={200} />
-
-
-        <label htmlFor="password">Password</label>
-        <input
-          value={pass}
-          onChange={(e) => {
-            setPass(e.target.value);
-            setPasswordError(validatePassword(e.target.value));
-          }}
-          type="password"
-          placeholder="********"
-          id="password"
-          name="password"
-        />
-        {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>} 
-
-
-
-             <Form.Item style={{ textAlign: "left", marginTop: "0px" }}>
-                  <Space size="large">
-                      <Button type="primary" htmlType="submit"> Update </Button>
-                      <Button onClick={handleReset} type="default" htmlType="button" style={{ backgroundColor: "white", color: "black", border: "1px solid #d9d9d9" }}> Cancel </Button>
-                  </Space>
+        <div className="edit-member-container">
+          <Card className="edit-member-card">
+            <Form layout="vertical" onFinish={handleSubmit}>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <UserOutlined className="label-icon" />
+                    Full Name
+                  </span>
+                }
+                required
+              >
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter full name"
+                  size="large"
+                  className="form-input"
+                  required
+                />
               </Form.Item>
-      </form>
-    </div>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <HomeOutlined className="label-icon" />
+                    Address
+                  </span>
+                }
+                required
+              >
+                <Input
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter address"
+                  size="large"
+                  className="form-input"
+                  required
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <CalendarOutlined className="label-icon" />
+                    Date of Birth
+                  </span>
+                }
+                required
+              >
+                <DatePicker
+                  value={date}
+                  onChange={(date) => setDate(date)}
+                  style={{ width: "100%" }}
+                  size="large"
+                  className="form-input"
+                  format="YYYY-MM-DD"
+                  required
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <ManOutlined className="label-icon" />
+                    Gender
+                  </span>
+                }
+                required
+              >
+                <Radio.Group 
+                  onChange={(e) => setGender(e.target.value)} 
+                  value={gender}
+                  className="gender-radio-group"
+                  size="large"
+                >
+                  <Radio value="Male">Male</Radio>
+                  <Radio value="Female">Female</Radio>
+                </Radio.Group>
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <MailOutlined className="label-icon" />
+                    Email
+                  </span>
+                }
+                required
+              >
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="example@gmail.com"
+                  size="large"
+                  className="form-input"
+                  required
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <PhoneOutlined className="label-icon" />
+                    Mobile Number
+                  </span>
+                }
+                required
+                validateStatus={mobile && !validateMobile(mobile) ? 'error' : ''}
+                help={mobile && !validateMobile(mobile) ? 'Mobile number must be at least 10 digits' : ''}
+              >
+                <PhoneInput
+                  country={'lk'}
+                  value={mobile}
+                  onChange={(phone) => setMobile(phone)}
+                  inputClass="phone-input-field"
+                  containerClass="phone-input-container"
+                  buttonClass="phone-input-button"
+                  required
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <GiftOutlined className="label-icon" />
+                    Membership Package
+                  </span>
+                }
+                required
+              >
+                <Select
+                  value={packages}
+                  onChange={(value) => setPackages(value)}
+                  size="large"
+                  className="form-select"
+                  required
+                  options={[
+                    { value: 'Gold', label: 'Gold (3 months fee)' },
+                    { value: 'Platinum', label: 'Platinum (6 months, 10% off)' },
+                    { value: 'Diamond', label: 'Diamond (12 months, 10% off + free membership)' },
+                  ]}
+                />
+              </Form.Item>
+
+              <div className="form-row">
+                <Form.Item
+                  label={
+                    <span className="form-label">
+                      <ColumnHeightOutlined className="label-icon" />
+                      Height (feet)
+                    </span>
+                  }
+                  required
+                  className="form-row-item"
+                >
+                  <Input
+                    type="number"
+                    value={height}
+                    onChange={(e) => setHeight(e.target.value)}
+                    placeholder="0.00"
+                    min={0}
+                    max={10}
+                    step="0.01"
+                    size="large"
+                    className="form-input"
+                    required
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <span className="form-label">
+                      <DashboardOutlined className="label-icon" />
+                      Weight (kg)
+                    </span>
+                  }
+                  required
+                  className="form-row-item"
+                >
+                  <Input
+                    type="number"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    placeholder="0"
+                    min={1}
+                    max={200}
+                    size="large"
+                    className="form-input"
+                    required
+                  />
+                </Form.Item>
+              </div>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <LockOutlined className="label-icon" />
+                    Password
+                  </span>
+                }
+                required
+                validateStatus={pass && !validatePassword(pass) ? 'error' : ''}
+                help={pass && !validatePassword(pass) ? 'Password must be 6+ chars with uppercase, lowercase, number & special char' : ''}
+              >
+                <Input.Password
+                  value={pass}
+                  onChange={(e) => setPass(e.target.value)}
+                  placeholder="Enter password"
+                  size="large"
+                  className="form-input"
+                  required
+                />
+              </Form.Item>
+
+              <div className="form-actions">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<SaveOutlined />}
+                  size="large"
+                  className="submit-button"
+                  loading={submitting}
+                >
+                  {submitting ? 'Updating...' : 'Update Member'}
+                </Button>
+                <Button
+                  type="default"
+                  icon={<CloseOutlined />}
+                  size="large"
+                  className="cancel-button"
+                  onClick={() => navigate('/MemberTable')}
+                  disabled={submitting}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </Form>
+          </Card>
+        </div>
+      </div>
+    </MainLayout>
   );
 };

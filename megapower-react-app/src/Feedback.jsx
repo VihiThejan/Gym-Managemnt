@@ -1,21 +1,38 @@
-import React, { useState } from "react";
-import { Button, Form, DatePicker, Space, message as antdMessage } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from "react";
+import { Button, Form, DatePicker, message as antdMessage, Card, Input } from 'antd';
+import { PlusOutlined, UserOutlined, MessageOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import MainLayout from './components/Layout/MainLayout';
+import './Feedback.css';
 
 export const Feedback = () => {
 
     const navigate = useNavigate();
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleGoBack = () => {
-      navigate('/Feedbacktable');
-    };
-   
-   const [id, setId] = useState('');
+    const [id, setId] = useState('');
+    const [feedbackMessage, setFeedbackMessage] = useState('');
+    const [date, setDate] = useState('');
 
-   const [feedbackMessage, setFeedbackMessage] = useState('');
-   const [date, setDate] = useState('');
+   // Auto-fill Member ID from localStorage
+   useEffect(() => {
+    const loginData = localStorage.getItem('login');
+    if (loginData) {
+      try {
+        const userData = JSON.parse(loginData);
+        // Try to get Member_Id from various possible field names
+        const memberId = userData.Member_Id || userData.member_id || userData.id || userData.userId;
+        if (memberId) {
+          setId(memberId);
+        } else {
+          console.log('Member ID not found in user data:', userData);
+        }
+      } catch (error) {
+        console.error('Error parsing login data:', error);
+      }
+    }
+   }, []);
 
    const validateForm = () => {
     if (!id || !feedbackMessage || !date) {
@@ -25,9 +42,10 @@ export const Feedback = () => {
     return true;
    }
 
-   const handleSubmit = async (e) => {
-    e.preventDefault();
+   const handleSubmit = async () => {
     if (!validateForm()) return;
+
+    setSubmitting(true);
 
     const body = {
       memberId: id,
@@ -39,10 +57,15 @@ export const Feedback = () => {
       const res = await axios.post('http://localhost:5000/api/v1/feedback/create', body);
       console.log(res?.data?.data);
       antdMessage.success("Feedback created successfully.");
-      navigate('/Feedbacktable');
+      
+      setTimeout(() => {
+        navigate('/Feedbacktable');
+      }, 1500);
     } catch (Err) {
       console.log(Err.message);
       antdMessage.error("Failed to create feedback.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -53,57 +76,88 @@ export const Feedback = () => {
     };
 
     return (
-        <div className="auth-form-container" style={{ padding: "55px", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "15px", boxShadow: "10px 10px 12px rgba(0, 0, 0, 0.3)", maxWidth: "500px", margin: "auto", height: "400px" }}>
-            <div style={{ textAlign: 'left', width: '100%' }}>
-                <div style={{ marginBottom: '20px' }}>
-                  <Button 
-                    type="text" 
-                    icon={<ArrowLeftOutlined />} 
-                    onClick={handleGoBack} 
-                    style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}
-                  >
-                    Back
-                  </Button>
+        <MainLayout>
+            <div className="feedback-page">
+                <div className="feedback-header">
+                    <div className="header-content">
+                        <div className="header-icon">
+                            <PlusOutlined />
+                        </div>
+                        <div className="header-text">
+                            <h1>Add Feedback</h1>
+                            <p>Submit new member feedback</p>
+                        </div>
+                    </div>
                 </div>
-                <h2 style={{ textAlign: "center", marginBottom: "50px", marginTop: "0px", borderRadius: "50px", maxWidth: "100%", color: "white" }}>
-                    Feedback
-                </h2>
-                <form className="Equipment-form" onSubmit={handleSubmit}>
 
-                    <label htmlFor="Member Id" style={{ color: "white", fontWeight: "bold", marginBottom: "8px", display: "block" }}>Member ID </label>
-                    <input value={id} name="Id" onChange={(e) => setId(e.target.value)} id="Id" placeholder="Member Id" style={{ width: '100%', marginBottom: "15px", borderRadius: "5px" }} /><br/>
+                <div className="feedback-content">
+                    <Card className="feedback-card">
+                        <Form onFinish={handleSubmit} layout="vertical">
+                            <Form.Item>
+                                <label className="form-label">
+                                    <UserOutlined className="label-icon" />
+                                    Member ID
+                                </label>
+                                <Input
+                                    value={id}
+                                    onChange={(e) => setId(e.target.value)}
+                                    placeholder="Enter member ID"
+                                    size="large"
+                                    disabled
+                                    className="member-id-input"
+                                />
+                            </Form.Item>
 
-                  
+                            <Form.Item>
+                                <label className="form-label">
+                                    <MessageOutlined className="label-icon" />
+                                    Message
+                                </label>
+                                <Input.TextArea
+                                    value={feedbackMessage}
+                                    onChange={(e) => setFeedbackMessage(e.target.value)}
+                                    placeholder="Enter feedback message"
+                                    rows={4}
+                                    maxLength={500}
+                                    showCount
+                                />
+                            </Form.Item>
 
-                    <label htmlFor="Message" style={{ color: "white", fontWeight: "bold", marginBottom: "8px", display: "block" }}>Message </label>
-                    <input value={feedbackMessage} name="Message" onChange={(e) => setFeedbackMessage(e.target.value)} id="Message" placeholder="Message" style={{ width: '100%', marginBottom: "15px", borderRadius: "5px" }} /><br/>
+                            <Form.Item>
+                                <label className="form-label">
+                                    <CalendarOutlined className="label-icon" />
+                                    Date
+                                </label>
+                                <DatePicker
+                                    onChange={(date) => setDate(date)}
+                                    style={{ width: '100%' }}
+                                    size="large"
+                                />
+                            </Form.Item>
 
-                   <label htmlFor="Date" style={{ color: "white", fontWeight: "bold", marginBottom: "5px", display: "block" }}>Date</label>
-                             <Space direction="vertical" style={{ width: '100%', marginBottom: "40px" }}>
-                               <DatePicker onChange={(date) => setDate(date)} style={{ width: '100%' }} />
-                             </Space><br />
-                   
-                    <Form.Item style={{ textAlign: "left", marginTop: "0px" }}>
-                        <Space size="large">
-                            <Button type="primary" htmlType="submit">
-                                Submit
-                            </Button>
-                            <Button
-                                onClick={handleReset}
-                                type="default"
-                                htmlType="button"
-                                style={{
-                                    backgroundColor: "white",
-                                    color: "black",
-                                    border: "1px solid #d9d9d9",
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                        </Space>
-                    </Form.Item>
-                </form>
+                            <Form.Item className="form-actions">
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    size="large"
+                                    loading={submitting}
+                                    disabled={submitting}
+                                    className="submit-button"
+                                >
+                                    {submitting ? 'Submitting...' : 'Submit'}
+                                </Button>
+                                <Button
+                                    onClick={handleReset}
+                                    size="large"
+                                    className="cancel-button"
+                                >
+                                    Cancel
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    </Card>
+                </div>
             </div>
-        </div>
+        </MainLayout>
     )
 }

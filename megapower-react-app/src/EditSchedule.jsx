@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, DatePicker, Select, Space, InputNumber, Input, Form, message } from 'antd';
+import { Button, DatePicker, Select, Input, Form, message, Card } from 'antd';
+import { SaveOutlined, CloseOutlined, EditOutlined, UserOutlined, TeamOutlined,
+         CalendarOutlined, ThunderboltOutlined, ToolOutlined, NumberOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
-
-
-
-const { Option } = Select;
+import MainLayout from './components/Layout/MainLayout';
+import './EditSchedule.css';
 
 export const EditSchedule = () => {
 
@@ -19,11 +19,14 @@ export const EditSchedule = () => {
   const [equipment, setEquipment] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [date, setDate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
 
   useEffect(() => {
     const fetchSchedule = async () => {
        try {
+          setLoading(true);
           const response = await axios.get(`http://localhost:5000/api/v1/schedule/${id}`);
           const schedule = response.data.data;
           
@@ -33,10 +36,11 @@ export const EditSchedule = () => {
           setEquipment(schedule.Equipment);
           setQuantity(Number(schedule.Quantity));
           setDate(schedule.Date_Time ? moment(schedule.Date_Time) : null);
-
-
+          setLoading(false);
        } catch (error) {
           console.error(`Error fetching schedule data: ${error.message}`);
+          message.error('Failed to load schedule data');
+          setLoading(false);
        }
     };
     fetchSchedule();
@@ -44,147 +48,207 @@ export const EditSchedule = () => {
 
 
 
- const validateForm = () => {
-    if (!staffId || !memberId || !exercise || !equipment || !quantity || !date) {
-      message.error("All fields are required.");
-      return false;
-    }
-  
-    if (isNaN(staffId) || isNaN(memberId)) {
-      message.error("Staff ID and Member ID must be valid numbers.");
-      return false;
-    }
-  
-    return true;
-  };
-  
-
-
-
  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    
+    // Validation
+    if (!staffId || !memberId || !exercise || !equipment || !quantity || !date) {
+       message.error('Please fill in all fields');
+       return;
+    }
 
-    const formattedDate = date ? date.toISOString() : null;
-
-    const body = {
-
-       Staff_ID: staffId,
-       Member_ID: memberId,
-       EName: exercise,
-       Equipment: equipment,
-       Quantity: quantity,
-       Date_Time: formattedDate,
-    };
-
-    console.log("Sending update request with body:", body);
+    if (quantity < 1 || quantity > 100) {
+       message.error('Quantity must be between 1 and 100');
+       return;
+    }
 
     try {
-       const res = await axios.put(`http://localhost:5000/api/v1/schedule/update/${id}`, body);
-       console.log("Response from server:", res.data);
-       message.success("Schedule updated successfully.");
-       navigate('/Scheduletable');
-    } catch (Err) {
-       console.error("Error updating schedule:", Err.response?.data || Err.message);
-       message.error("Failed to update Schedule: " + (Err.response?.data?.message || Err.message));
+       setSubmitting(true);
+       const updatedSchedule = {
+          Staff_ID: staffId,
+          Member_ID: memberId,
+          EName: exercise,
+          Equipment: equipment,
+          Quantity: quantity,
+          Date_Time: date.toISOString(),
+       };
+
+       const response = await axios.put(
+          `http://localhost:5000/api/v1/schedule/update/${id}`,
+          updatedSchedule
+       );
+
+       if (response.status === 200) {
+          message.success('Schedule updated successfully!');
+          setTimeout(() => {
+             navigate('/scheduletable');
+          }, 1500);
+       }
+    } catch (error) {
+       console.error('Error updating schedule:', error);
+       message.error('Failed to update schedule. Please try again.');
+       setSubmitting(false);
     }
  };
 
-  const handleReset = () => {
-    setStaffId('');
-    setMemberId('');
-    setExercise('');
-    setEquipment('');
-    setQuantity(1);
-    setDate(null);
-  };
-
   return (
-    <div className="auth-form-container" style={{ padding: "40px", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "35px", boxShadow: "10 10px 12px rgba(0, 0, 0, 0.3)", maxWidth: "700px", margin: "10px", height: "650px" }}>
-      <div style={{ textAlign: 'left', width: '100%' }}>
-        <h2 style={{ textAlign: "center", marginBottom: "40px", marginTop: "0px", color: "white" }}>
-          Edit Schedule
-        </h2>
-        <form className="Schedule-form" onSubmit={handleSubmit}>
+    <MainLayout>
+      <div className="edit-schedule-page">
+        {/* Header Section */}
+        <div className="edit-schedule-header">
+          <div className="header-content">
+            <EditOutlined className="header-icon" />
+            <div className="header-text">
+              <h1>Edit Training Schedule</h1>
+              <p>Update training session details and assignment</p>
+            </div>
+          </div>
+        </div>
 
-          <label htmlFor="staffId" style={{ color: "white", fontWeight: "bold", display: "block", marginBottom: "4px" }}>Staff ID</label>
-          <Input
-            value={staffId}
-            onChange={(e) => setStaffId(e.target.value)}
-            placeholder="Enter Staff ID"
-            style={{ width: "100%", marginBottom: "15px", borderRadius: "5px", padding: "5px" }}
-          />
+        {/* Form Section */}
+        <div className="edit-schedule-content">
+          <Card className="edit-schedule-card" loading={loading}>
+            <Form onSubmit={handleSubmit} className="edit-schedule-form">
+              {/* Staff ID */}
+              <Form.Item>
+                <label className="form-label">
+                  <UserOutlined className="label-icon" />
+                  Staff ID
+                </label>
+                <Input
+                  type="number"
+                  value={staffId}
+                  onChange={(e) => setStaffId(e.target.value)}
+                  placeholder="Enter staff ID"
+                  className="form-input"
+                />
+              </Form.Item>
 
-          <label htmlFor="memberId" style={{ color: "white", fontWeight: "bold", display: "block", marginBottom: "4px" }}>Member ID</label>
-          <Input
-            value={memberId}
-            onChange={(e) => setMemberId(e.target.value)}
-            placeholder="Enter Member ID"
-            style={{ width: "100%", marginBottom: "15px", borderRadius: "5px", padding: "5px" }}
-          />
+              {/* Member ID */}
+              <Form.Item>
+                <label className="form-label">
+                  <TeamOutlined className="label-icon" />
+                  Member ID
+                </label>
+                <Input
+                  type="number"
+                  value={memberId}
+                  onChange={(e) => setMemberId(e.target.value)}
+                  placeholder="Enter member ID"
+                  className="form-input"
+                />
+              </Form.Item>
 
-          <label htmlFor="exercise" style={{ color: "white", fontWeight: "bold", display: "block", marginBottom: "4px" }}>Exercise</label>
-          <Select
-            placeholder="Select Exercise"
-            value={exercise}
-            onChange={(value) => setExercise(value)}
-            style={{ width: "100%", marginBottom: "15px", borderRadius: "5px" }}
-          >
-            <Option value="Bench Press">Bench Press</Option>
-            <Option value="Band Pull-Aparts">Band Pull-Aparts</Option>
-            <Option value="Cycling">Cycling</Option>
-            <Option value="Dumbbell Flyes">Dumbbell Flyes</Option>
-            <Option value="Leg Press">Leg Press</Option>
-            <Option value="Pull-Ups">Pull-Ups</Option>
-            <Option value="Rowing">Rowing</Option>
-            <Option value="Stair Climbing">Stair Climbing</Option>
-            <Option value="Shoulder Press">Shoulder Press</Option>
-            <Option value="Triceps Pushdowns">Triceps Pushdowns</Option>
-          </Select>
+              {/* Exercise */}
+              <Form.Item>
+                <label className="form-label">
+                  <ThunderboltOutlined className="label-icon" />
+                  Exercise
+                </label>
+                <Select
+                  value={exercise}
+                  onChange={(value) => setExercise(value)}
+                  placeholder="Select exercise"
+                  className="form-select"
+                >
+                  <Select.Option value="Bench Press">Bench Press</Select.Option>
+                  <Select.Option value="Band Pull-Aparts">Band Pull-Aparts</Select.Option>
+                  <Select.Option value="Cycling">Cycling</Select.Option>
+                  <Select.Option value="Dumbbell Flyes">Dumbbell Flyes</Select.Option>
+                  <Select.Option value="Leg Press">Leg Press</Select.Option>
+                  <Select.Option value="Pull-Ups">Pull-Ups</Select.Option>
+                  <Select.Option value="Rowing">Rowing</Select.Option>
+                  <Select.Option value="Stair Climbing">Stair Climbing</Select.Option>
+                  <Select.Option value="Shoulder Press">Shoulder Press</Select.Option>
+                  <Select.Option value="Triceps Pushdowns">Triceps Pushdowns</Select.Option>
+                </Select>
+              </Form.Item>
 
-          <label htmlFor="equipment" style={{ color: "white", fontWeight: "bold", display: "block", marginBottom: "4px" }}>Equipment</label>
-          <Select
-            placeholder="Select Equipment"
-            value={equipment}
-            onChange={(value) => setEquipment(value)}
-            style={{ width: "100%", marginBottom: "15px", borderRadius: "5px" }}
-          >
-            <Option value="Barbell">Barbell</Option>
-            <Option value="Bench">Bench</Option>
-            <Option value="Cable Machine">Cable Machine</Option>
-            <Option value="Dumbbells">Dumbbells</Option>
-            <Option value="Exercise Bike">Exercise Bike</Option>
-            <Option value="Lat Pulldown Machine">Lat Pulldown Machine</Option>
-            <Option value="Leg Press Machine">Leg Press Machine</Option>
-            <Option value="Rowing Machine">Rowing Machine</Option>
-            <Option value="Stair Climber">Stair Climber</Option>
-            <Option value="Treadmill">Treadmill</Option>
-          </Select>
+              {/* Equipment */}
+              <Form.Item>
+                <label className="form-label">
+                  <ToolOutlined className="label-icon" />
+                  Equipment
+                </label>
+                <Select
+                  value={equipment}
+                  onChange={(value) => setEquipment(value)}
+                  placeholder="Select equipment"
+                  className="form-select"
+                >
+                  <Select.Option value="Barbell">Barbell</Select.Option>
+                  <Select.Option value="Bench">Bench</Select.Option>
+                  <Select.Option value="Cable Machine">Cable Machine</Select.Option>
+                  <Select.Option value="Dumbbells">Dumbbells</Select.Option>
+                  <Select.Option value="Exercise Bike">Exercise Bike</Select.Option>
+                  <Select.Option value="Lat Pulldown Machine">Lat Pulldown Machine</Select.Option>
+                  <Select.Option value="Leg Press Machine">Leg Press Machine</Select.Option>
+                  <Select.Option value="Rowing Machine">Rowing Machine</Select.Option>
+                  <Select.Option value="Stair Climber">Stair Climber</Select.Option>
+                  <Select.Option value="Treadmill">Treadmill</Select.Option>
+                </Select>
+              </Form.Item>
 
-          <label htmlFor="quantity" style={{ color: "white", fontWeight: "bold", display: "block", marginBottom: "4px" }}>Quantity</label>
-          <InputNumber
-            min={1}
-            max={100}
-            value={quantity}
-            onChange={(value) => setQuantity(value)}
-            style={{ width: "100%", marginBottom: "15px", borderRadius: "5px" }}
-          />
+              {/* Quantity */}
+              <Form.Item>
+                <label className="form-label">
+                  <NumberOutlined className="label-icon" />
+                  Quantity
+                </label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="Enter quantity (1-100)"
+                  className="form-input"
+                />
+              </Form.Item>
 
-          <label htmlFor="date" style={{ color: "white", fontWeight: "bold", display: "block", marginBottom: "4px" }}>Date</label>
-          <DatePicker
-            onChange={(date) => setDate(date?.toDate())} 
-            style={{ width: "100%", marginBottom: "40px", borderRadius: "5px", padding: "8px" }}
-          />
+              {/* Date */}
+              <Form.Item>
+                <label className="form-label">
+                  <CalendarOutlined className="label-icon" />
+                  Date & Time
+                </label>
+                <DatePicker
+                  showTime
+                  value={date}
+                  onChange={(date) => setDate(date)}
+                  placeholder="Select date and time"
+                  className="form-datepicker"
+                  format="YYYY-MM-DD HH:mm"
+                />
+              </Form.Item>
 
-                <Form.Item style={{ textAlign: "left", marginTop: "0px" }}>
-                  <Space size="large">
-                       <Button type="primary" htmlType="submit"> Update </Button>
-                       <Button onClick={handleReset} type="default" htmlType="button" style={{ backgroundColor: "white", color: "black", border: "1px solid #d9d9d9" }}> Cancel </Button>
-                   </Space>
-                </Form.Item>
-
-        </form>
+              {/* Action Buttons */}
+              <Form.Item className="form-actions">
+                <div className="button-group">
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={submitting}
+                    icon={<SaveOutlined />}
+                    className="submit-button"
+                    onClick={handleSubmit}
+                  >
+                    {submitting ? 'Updating...' : 'Update Schedule'}
+                  </Button>
+                  <Button
+                    type="default"
+                    icon={<CloseOutlined />}
+                    className="cancel-button"
+                    onClick={() => navigate('/scheduletable')}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </Form.Item>
+            </Form>
+          </Card>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };

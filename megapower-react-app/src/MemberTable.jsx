@@ -1,28 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Input } from "antd";
+import { Button, Table, Input, Modal, message, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { LeftOutlined } from "@ant-design/icons";
+import { 
+  LeftOutlined, 
+  SearchOutlined, 
+  EditOutlined, 
+  DeleteOutlined, 
+  UserAddOutlined,
+  UserOutlined,
+  ExclamationCircleOutlined
+} from "@ant-design/icons";
 import moment from "moment";
+import MainLayout from "./components/Layout/MainLayout";
+import "./MemberTable.css";
 
 export const MemberTable = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]); 
   const [filteredData, setFilteredData] = useState([]); 
-  const [searchText, setSearchText] = useState(""); 
+  const [searchText, setSearchText] = useState("");
+  const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/v1/member/list").then((response) => {
-      setData(response?.data?.data);
-      setFilteredData(response?.data?.data);
-    });
+    fetchMembers();
   }, []);
 
-  
+  const fetchMembers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:5000/api/v1/member/list");
+      setData(response?.data?.data);
+      setFilteredData(response?.data?.data);
+    } catch (error) {
+      message.error("Failed to fetch members");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSearch = (value) => {
     setSearchText(value);
     if (value) {
-      setFilteredData(data.filter((item) => String(item.Member_Id).includes(value)));
+      const filtered = data.filter((item) => 
+        String(item.Member_Id).toLowerCase().includes(value.toLowerCase()) ||
+        String(item.FName).toLowerCase().includes(value.toLowerCase()) ||
+        String(item.Email).toLowerCase().includes(value.toLowerCase()) ||
+        String(item.Contact).toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredData(filtered);
     } else {
       setFilteredData(data);
     }
@@ -32,11 +58,26 @@ export const MemberTable = () => {
     navigate(`/Member/${memberid}`);
   };
 
-  const handleDelete = async (memberid) => {
-    await axios.delete(`http://localhost:5000/api/v1/member/delete/${memberid}`);
-    axios.get("http://localhost:5000/api/v1/member/list").then((response) => {
-      setData(response?.data?.data);
-      setFilteredData(response?.data?.data);
+  const handleDelete = async (memberid, memberName) => {
+    Modal.confirm({
+      title: 'Delete Member',
+      icon: <ExclamationCircleOutlined />,
+      content: `Are you sure you want to delete ${memberName}? This action cannot be undone.`,
+      okText: 'Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          setLoading(true);
+          await axios.delete(`http://localhost:5000/api/v1/member/delete/${memberid}`);
+          message.success('Member deleted successfully');
+          fetchMembers();
+        } catch (error) {
+          message.error('Failed to delete member');
+        } finally {
+          setLoading(false);
+        }
+      },
     });
   };
 
@@ -46,38 +87,52 @@ export const MemberTable = () => {
       dataIndex: "Member_Id",
       key: "memberid",
       fixed: "left",
-      width: 150,
+      width: 120,
+      render: (id) => <Tag color="blue" className="member-id-tag">{id}</Tag>,
     },
     {
-      title: "First Name",
+      title: "Full Name",
       dataIndex: "FName",
       key: "fname",
-      width: 250,
+      width: 200,
+      render: (name) => (
+        <div className="member-name">
+          <UserOutlined className="name-icon" />
+          <span>{name}</span>
+        </div>
+      ),
     },
     {
-      title: "DOB",
+      title: "Date of Birth",
       dataIndex: "DOB",
       key: "dob",
-      width: 150,
-      render: (date) => moment(date).format("YYYY.MM.DD"),
+      width: 130,
+      render: (date) => moment(date).format("YYYY-MM-DD"),
     },
     {
       title: "Gender",
       dataIndex: "Gender",
       key: "gender",
       width: 100,
+      render: (gender) => (
+        <Tag color={gender === "Male" ? "blue" : "pink"}>
+          {gender}
+        </Tag>
+      ),
     },
     {
       title: "Email",
       dataIndex: "Email",
       key: "email",
-      width: 200,
+      width: 220,
+      ellipsis: true,
     },
     {
       title: "Address",
       dataIndex: "Address",
       key: "address",
       width: 250,
+      ellipsis: true,
     },
     {
       title: "Contact",
@@ -89,86 +144,112 @@ export const MemberTable = () => {
       title: "Package",
       dataIndex: "Package",
       key: "package",
-      width: 100,
+      width: 130,
+      render: (pkg) => {
+        const colorMap = {
+          "Basic": "default",
+          "Standard": "blue",
+          "Premium": "gold"
+        };
+        return <Tag color={colorMap[pkg] || "default"}>{pkg}</Tag>;
+      },
     },
     {
-      title: "Weight",
+      title: "Weight (kg)",
       dataIndex: "Weight",
       key: "weight",
       width: 100,
+      align: "center",
     },
     {
-      title: "Height",
+      title: "Height (ft)",
       dataIndex: "Height",
       key: "height",
       width: 100,
-    },
-    {
-      title: "Username",
-      dataIndex: "UName",
-      key: "uname",
-      width: 150,
-    },
-    {
-      title: "Password",
-      dataIndex: "Password",
-      key: "password",
-      width: 150,
+      align: "center",
     },
     {
       title: "Action",
       key: "action",
-      width: 180,
+      width: 150,
       fixed: "right",
       render: (_, record) => (
-        <>
-          <Button type="link" onClick={() => handleEdit(record.Member_Id)}>
+        <div className="action-buttons">
+          <Button 
+            type="link" 
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record.Member_Id)}
+            className="edit-button"
+          >
             Edit
           </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.Member_Id)}>
+          <Button 
+            type="link" 
+            danger 
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.Member_Id, record.FName)}
+            className="delete-button"
+          >
             Delete
           </Button>
-        </>
+        </div>
       ),
     },
   ];
 
   return (
-    <div style={{ width: "90%", margin: "auto" }}>
-      
-      <Table
-        title={() => (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            
-            <Button
-              type="text"
-              onClick={() => navigate("/Member")}
-              style={{ display: "flex", alignItems: "center", fontWeight: "bold", color: "black" }}
-            >
-              <LeftOutlined style={{ color: "black" }} />
-              <span style={{ marginLeft: "8px" }}>Back</span>
-            </Button>
+    <MainLayout>
+      <div className="member-table-container">
+        <div className="table-header">
+          <Button
+            icon={<LeftOutlined />}
+            onClick={() => navigate("/Admin")}
+            className="back-button"
+          >
+            Back
+          </Button>
 
-            
-            <h2 style={{ margin: 0, textAlign: "center", flex: 1 }}>Members Information</h2>
+          <h1 className="table-title">Members Management</h1>
 
-            
-            <Input.Search
-              placeholder="Search by Member ID..."
+          <div className="header-actions">
+            <Input
+              placeholder="Search by ID, name, email or contact..."
               value={searchText}
               onChange={(e) => handleSearch(e.target.value)}
+              prefix={<SearchOutlined className="search-icon" />}
               allowClear
-              style={{ width: 250 }}
+              className="search-input"
             />
+            <Button
+              type="primary"
+              icon={<UserAddOutlined />}
+              onClick={() => navigate("/Member")}
+              className="add-button"
+            >
+              Add New Member
+            </Button>
           </div>
-        )}
-        columns={columns}
-        dataSource={filteredData}
-        scroll={{ x: 1500, y: 400 }}
-        style={{ overflowX: "auto" }}
-        bordered
-      />
-    </div>
+        </div>
+
+        <div className="table-wrapper">
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            loading={loading}
+            rowKey="Member_Id"
+            scroll={{ x: 1800, y: 500 }}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showTotal: (total) => `Total ${total} members`,
+              className: "table-pagination"
+            }}
+            bordered
+            className="member-table"
+          />
+        </div>
+      </div>
+    </MainLayout>
   );
 };
 

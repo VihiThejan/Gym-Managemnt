@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Input } from "antd";
+import { Button, Table, Input, message, Modal, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { LeftOutlined } from "@ant-design/icons";
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, 
+         TableOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
+import MainLayout from './components/Layout/MainLayout';
+import './Equipmenttable.css';
+
+const { confirm } = Modal;
 
 const Equipmenttable = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]); 
   const [filteredData, setFilteredData] = useState([]); 
   const [searchText, setSearchText] = useState(""); 
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get("http://localhost:5000/api/v1/equipment/list");
         setData(response?.data?.data);
         setFilteredData(response?.data?.data);
+        setLoading(false);
       } catch (error) {
         console.error(`Error fetching data: ${error.message}`);
+        message.error('Failed to load equipment data');
+        setLoading(false);
       }
     };
     fetchData();
@@ -39,16 +49,27 @@ const Equipmenttable = () => {
   };
 
   const handleDelete = async (equipmentid) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/v1/equipment/delete/${equipmentid}`);
-      console.log(`Deleted record with Equipment ID: ${equipmentid}`);
+    confirm({
+      title: 'Are you sure you want to delete this equipment?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'This action cannot be undone.',
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await axios.delete(`http://localhost:5000/api/v1/equipment/delete/${equipmentid}`);
+          message.success('Equipment deleted successfully!');
 
-      const response = await axios.get("http://localhost:5000/api/v1/equipment/list");
-      setData(response?.data?.data);
-      setFilteredData(response?.data?.data);
-    } catch (error) {
-      console.error(`Error deleting record: ${error.message}`);
-    }
+          const response = await axios.get("http://localhost:5000/api/v1/equipment/list");
+          setData(response?.data?.data);
+          setFilteredData(response?.data?.data);
+        } catch (error) {
+          console.error(`Error deleting record: ${error.message}`);
+          message.error('Failed to delete equipment');
+        }
+      },
+    });
   };
 
   const columns = [
@@ -57,89 +78,129 @@ const Equipmenttable = () => {
       dataIndex: "Equipment_Id",
       key: "equipmentid",
       fixed: "left",
-      width: 80,
+      width: 120,
+      render: (id) => <Tag color="blue">#{id}</Tag>,
     },
     {
-      title: "EName",
+      title: "Equipment Name",
       dataIndex: "EName",
       key: "ename",
-      width: 120,
+      width: 150,
+      render: (name) => <strong>{name}</strong>,
     },
     {
-      title: "Qty",
+      title: "Quantity",
       dataIndex: "Qty",
       key: "qty",
-      width: 80,
+      width: 100,
+      render: (qty) => <Tag color={qty < 10 ? 'red' : 'green'}>{qty}</Tag>,
     },
     {
       title: "Vendor",
       dataIndex: "Vendor",
       key: "vendor",
-      width: 150,
+      width: 200,
     },
     {
       title: "Description",
       dataIndex: "Description",
       key: "description",
-      width: 200,
+      width: 250,
+      ellipsis: true,
     },
     {
-      title: "Date",
+      title: "Purchase Date",
       dataIndex: "Date",
       key: "date",
-      width: 120,
-      render: (date) => moment(date).format("YYYY.MM.DD"),
+      width: 130,
+      render: (date) => moment(date).format("MMM DD, YYYY"),
       sorter: (a, b) => moment(a.Date).unix() - moment(b.Date).unix(),
     },
     {
-      title: "Action",
+      title: "Actions",
       key: "action",
       fixed: "right",
-      width: 120,
+      width: 150,
       render: (_, record) => (
-        <>
-          <Button type="link" onClick={() => handleEdit(record.Equipment_Id)}>Edit</Button>
-          <Button type="link" danger onClick={() => handleDelete(record.Equipment_Id)}>Delete</Button>
-        </>
+        <div className="action-buttons">
+          <Button 
+            type="primary" 
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record.Equipment_Id)}
+            className="edit-btn"
+          >
+            Edit
+          </Button>
+          <Button 
+            type="primary" 
+            danger 
+            size="small"
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.Equipment_Id)}
+            className="delete-btn"
+          >
+            Delete
+          </Button>
+        </div>
       ),
     },
   ];
 
   return (
-    <div style={{ width: "95%", margin: "auto" }}>
-      
-      <Table
-        title={() => (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          
-            <Button
-              type="text"
-              onClick={() => navigate("/Equipment")}
-              style={{ display: "flex", alignItems: "center", fontWeight: "bold", color: "black" }}
-            >
-              <LeftOutlined style={{ color: "black" }} />
-              <span style={{ marginLeft: "8px" }}>Back</span>
-            </Button>
+    <MainLayout>
+      <div className="equipment-table-page">
+        {/* Header Section */}
+        <div className="table-header">
+          <div className="header-content">
+            <TableOutlined className="header-icon" />
+            <div className="header-text">
+              <h1>Equipment Management</h1>
+              <p>View and manage gym equipment inventory</p>
+            </div>
+          </div>
+        </div>
 
-            
-            <h2 style={{ margin: 0, textAlign: "center", flex: 1 }}>Equipment Information</h2>
-
-            
-            <Input.Search
-              placeholder="Search by EName..."
+        {/* Table Section */}
+        <div className="table-content">
+          <div className="table-controls">
+            <Input
+              placeholder="Search by equipment name..."
+              prefix={<SearchOutlined />}
               value={searchText}
               onChange={(e) => handleSearch(e.target.value)}
               allowClear
-              style={{ width: 250 }}
+              className="search-input"
+            />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate("/Equipment")}
+              className="add-button"
+            >
+              Add Equipment
+            </Button>
+          </div>
+
+          <div className="table-wrapper">
+            <Table
+              columns={columns}
+              dataSource={filteredData}
+              rowKey="Equipment_Id"
+              loading={loading}
+              scroll={{ x: 1200, y: 500 }}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} items`,
+                pageSizeOptions: ['10', '20', '50', '100'],
+              }}
+              className="equipment-table"
             />
           </div>
-        )}
-        columns={columns}
-        dataSource={filteredData}
-        scroll={{ x: 1500, y: 400 }}
-        style={{ overflowX: "auto" }}
-      />
-    </div>
+        </div>
+      </div>
+    </MainLayout>
   );
 };
 

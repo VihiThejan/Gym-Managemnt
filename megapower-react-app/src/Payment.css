@@ -1,0 +1,645 @@
+/* ================================
+   Payment Page - Modern UI/UX
+   ================================ */
+
+.payment-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+}
+
+/* ================================
+   Header Section
+   ================================ */
+
+.payment-header {
+    margin-bottom: 2rem;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+.header-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.header-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    box-shadow: 0 4px 16px rgba(67, 233, 123, 0.4);
+    flex-shrink: 0;
+}
+
+.header-text h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+}
+
+.header-text p {
+    margin: 0.5rem 0 0 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+}
+
+/* ================================
+   Content Section
+   ================================ */
+
+.payment-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.payment-card {
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+}
+
+.payment-card .ant-card-body {
+    padding: 2.5rem;
+}
+
+/* ================================
+   Form Elements
+   ================================ */
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.label-icon {
+    font-size: 20px;
+    color: #667eea;
+}
+
+/* Member Select Dropdown */
+.member-select {
+    border-radius: 12px;
+}
+
+.member-select .ant-select-selector {
+    border-radius: 12px !important;
+    border: 2px solid #e8e8e8 !important;
+    height: 52px !important;
+    padding: 8px 16px !important;
+    transition: all 0.3s ease;
+}
+
+.member-select .ant-select-selector:hover {
+    border-color: #667eea !important;
+}
+
+.member-select.ant-select-focused .ant-select-selector {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
+
+.member-select .ant-select-selection-item {
+    line-height: 36px !important;
+    font-size: 1rem;
+    color: #667eea;
+    font-weight: 600;
+}
+
+.member-select .ant-select-selection-placeholder {
+    line-height: 36px !important;
+    font-size: 1rem;
+}
+
+.member-select .ant-select-arrow {
+    color: #667eea;
+}
+
+/* Input Fields */
+.payment-card .ant-input,
+.payment-card .ant-input-number,
+.payment-card .ant-picker {
+    border-radius: 12px;
+    border: 2px solid #e8e8e8;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    height: 52px;
+}
+
+.payment-card .ant-input:hover,
+.payment-card .ant-input-number:hover,
+.payment-card .ant-picker:hover {
+    border-color: #667eea;
+}
+
+.payment-card .ant-input:focus,
+.payment-card .ant-input-number:focus,
+.payment-card .ant-picker:focus,
+.payment-card .ant-input-focused,
+.payment-card .ant-input-number-focused,
+.payment-card .ant-picker-focused {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+/* Amount Input with Prefix */
+.payment-card .ant-input-affix-wrapper {
+    border-radius: 12px;
+    border: 2px solid #e8e8e8;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.payment-card .ant-input-affix-wrapper:hover {
+    border-color: #667eea;
+}
+
+.payment-card .ant-input-affix-wrapper-focused {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.payment-card .ant-input-prefix {
+    font-weight: 700;
+    color: #43e97b;
+    font-size: 1.1rem;
+    margin-right: 8px;
+}
+
+/* Select Dropdown */
+.package-select {
+    border-radius: 12px;
+}
+
+.package-select .ant-select-selector {
+    border-radius: 12px !important;
+    border: 2px solid #e8e8e8 !important;
+    height: 52px !important;
+    padding: 8px 16px !important;
+    transition: all 0.3s ease;
+}
+
+.package-select .ant-select-selector:hover {
+    border-color: #667eea !important;
+}
+
+.package-select.ant-select-focused .ant-select-selector {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
+
+.package-select .ant-select-selection-item {
+    line-height: 36px !important;
+    font-size: 1rem;
+}
+
+.package-select .ant-select-arrow {
+    color: #667eea;
+}
+
+/* Select Dropdown Menu */
+.ant-select-dropdown {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+}
+
+.ant-select-dropdown .ant-select-item {
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    color: #667eea;
+    font-weight: 600;
+}
+
+.ant-select-dropdown .ant-select-item-option-active {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+/* DatePicker */
+.payment-card .ant-picker {
+    width: 100%;
+}
+
+.payment-card .ant-picker-input input {
+    font-size: 1rem;
+}
+
+.payment-card .ant-picker-suffix {
+    color: #667eea;
+    font-size: 18px;
+}
+
+/* DatePicker Dropdown */
+.ant-picker-dropdown {
+    z-index: 1050;
+}
+
+.ant-picker-dropdown .ant-picker-panel-container {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.ant-picker-dropdown .ant-picker-header {
+    color: #667eea;
+}
+
+.ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+    border-color: #667eea;
+}
+
+.ant-picker-dropdown .ant-picker-today-btn {
+    color: #667eea;
+}
+
+/* ================================
+   Form Actions
+   ================================ */
+
+.form-actions {
+    margin-top: 2rem;
+    margin-bottom: 0;
+}
+
+.form-actions .ant-form-item-control-input-content {
+    display: flex;
+    gap: 1rem;
+}
+
+.submit-button {
+    flex: 1;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 16px rgba(67, 233, 123, 0.3);
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(67, 233, 123, 0.4);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+.submit-button:disabled {
+    background: #d0d0d0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.cancel-button {
+    flex: 1;
+    height: 52px;
+    border-radius: 12px;
+    background: #fff;
+    border: 2px solid #e8e8e8;
+    color: #666;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+/* ================================
+   Payment Information Card
+   ================================ */
+
+.payment-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-card {
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+.info-card .ant-card-body {
+    padding: 2rem;
+}
+
+.info-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1d3a;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-card h3::before {
+    content: "ℹ️";
+    font-size: 1.8rem;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-card ul li {
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #666;
+    border: 2px solid #f0f0f0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-card ul li:hover {
+    border-color: #667eea;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.info-card ul li:last-child {
+    margin-bottom: 0;
+}
+
+/* ================================
+   Animations
+   ================================ */
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+@media (max-width: 1200px) {
+    .payment-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-page {
+        padding: 1rem;
+    }
+
+    .header-content {
+        padding: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 28px;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+    }
+
+    .header-text p {
+        font-size: 0.9rem;
+    }
+
+    .payment-card .ant-card-body {
+        padding: 1.5rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+    }
+
+    .payment-card .ant-input,
+    .payment-card .ant-input-number,
+    .payment-card .ant-picker,
+    .package-select .ant-select-selector {
+        height: 48px !important;
+    }
+
+    .form-actions .ant-form-item-control-input-content {
+        flex-direction: column;
+    }
+
+    .submit-button,
+    .cancel-button {
+        width: 100%;
+        height: 48px;
+    }
+
+    .info-card .ant-card-body {
+        padding: 1.5rem;
+    }
+
+    .info-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .info-card ul li {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .payment-page {
+        padding: 0.5rem;
+    }
+
+    .header-content {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .header-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+
+    .header-text h1 {
+        font-size: 1.25rem;
+    }
+
+    .header-text p {
+        font-size: 0.85rem;
+    }
+
+    .payment-card {
+        border-radius: 12px;
+    }
+
+    .payment-card .ant-card-body {
+        padding: 1rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+    }
+
+    .label-icon {
+        font-size: 16px;
+    }
+
+    .payment-card .ant-input,
+    .payment-card .ant-input-number,
+    .payment-card .ant-picker,
+    .package-select .ant-select-selector {
+        height: 44px !important;
+        font-size: 0.95rem;
+    }
+
+    .submit-button,
+    .cancel-button {
+        height: 44px;
+        font-size: 0.95rem;
+    }
+
+    .info-card {
+        border-radius: 12px;
+    }
+
+    .info-card .ant-card-body {
+        padding: 1rem;
+    }
+
+    .info-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .info-card ul li {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+}
+
+/* ================================
+   Accessibility
+   ================================ */
+
+.payment-card .ant-input:focus-visible,
+.payment-card .ant-input-number:focus-visible,
+.payment-card .ant-picker:focus-visible,
+.submit-button:focus-visible,
+.cancel-button:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .submit-button,
+    .cancel-button {
+        border: 2px solid currentColor;
+    }
+
+    .info-card ul li {
+        border: 2px solid #000;
+    }
+}
+
+/* ================================
+   Print Styles
+   ================================ */
+
+@media print {
+    .payment-page {
+        background: white;
+    }
+
+    .header-content {
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+    }
+
+    .submit-button,
+    .cancel-button {
+        display: none;
+    }
+
+    .payment-card,
+    .info-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+}

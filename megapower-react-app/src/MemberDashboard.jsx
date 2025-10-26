@@ -19,6 +19,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './MemberDashboard.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Text } = Typography;
@@ -155,15 +156,16 @@ export const MemberDashboard = () => {
   );
 
   return (
-    <Layout hasSider>
+    <Layout hasSider className="member-dashboard-layout">
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={(collapsed) => setCollapsed(collapsed)}
         width={250}
         style={{ ...siderStyle, backgroundColor: '#001529' }}
+        className="dashboard-sider"
       >
-        <div style={logoStyle}>
+        <div style={logoStyle} className="dashboard-logo">
           <img 
             src="" 
             alt="" 
@@ -176,6 +178,7 @@ export const MemberDashboard = () => {
           mode="inline"
           defaultSelectedKeys={['1']}
           onClick={handleMenuClick}
+          className="dashboard-menu"
         >
           {items.map(({ label, icon, key }) => (
             <Menu.Item key={key} style={menuItemStyle} icon={icon}>
@@ -184,52 +187,42 @@ export const MemberDashboard = () => {
           ))}
         </Menu>
       </Sider>
-      <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }}>
-        <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="dashboard-content-layout">
+        <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} className="dashboard-header">
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <Button 
               type="text" 
               icon={<ArrowLeftOutlined />} 
               onClick={handleGoBack} 
-              style={{ 
-                marginRight: '8px', 
-                color: 'black', 
-                fontWeight: 'bold', 
-                fontSize: '16px', 
-              }}
+              className="back-button-header"
             >
               Back
             </Button>
           </div>
 
           
-          <div style={{ 
-            position: 'absolute', 
-            left: '50%', 
-            transform: 'translateX(-50%)', 
-            fontSize: '16px', 
-            color: '#a9a9a9' 
-          }}>
+          <div className="welcome-text">
             Welcome to Mega Power
           </div>
 
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="header-actions">
             <Search 
               placeholder="Search here..." 
               onSearch={handleSearch} 
               style={{ width: 200 }} 
+              className="header-search"
             />
             <Badge count={5} size="small">
-              <BellOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
+              <BellOutlined style={{ fontSize: '20px', cursor: 'pointer' }} className="notification-bell" />
             </Badge>
             <Dropdown overlay={profileMenu} trigger={['click']}>
-              <Avatar style={{ cursor: 'pointer' }} icon={<UserOutlined />} />
+              <Avatar style={{ cursor: 'pointer' }} icon={<UserOutlined />} className="profile-avatar" />
             </Dropdown>
           </div>
         </Header>
-        <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
+        <Content style={{ margin: '24px 16px 0', overflow: 'initial' }} className="dashboard-main-content">
           <div
             style={{
               padding: 24,
@@ -237,13 +230,14 @@ export const MemberDashboard = () => {
               borderRadius: borderRadiusLG,
               minHeight: 360,
             }}
+            className="dashboard-content-wrapper"
           >
-            <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 'bold' }}>Member Dashboard</h2>
+            <h2 className="dashboard-title">Member Dashboard</h2>
             
             {/* Statistics Cards */}
-            <Row gutter={[16, 16]}>
+            <Row gutter={[16, 16]} className="stats-row">
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-purple">
                   <Statistic
                     title={<span style={{ color: 'white' }}>Total Attendance</span>}
                     value={stats.totalAttendance}
@@ -254,7 +248,7 @@ export const MemberDashboard = () => {
                 </Card>
               </Col>
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-pink">
                   <Statistic
                     title={<span style={{ color: 'white' }}>Appointments</span>}
                     value={stats.upcomingAppointments}
@@ -264,7 +258,7 @@ export const MemberDashboard = () => {
                 </Card>
               </Col>
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-blue">
                   <Statistic
                     title={<span style={{ color: 'white' }}>Completed Workouts</span>}
                     value={stats.completedWorkouts}
@@ -274,7 +268,7 @@ export const MemberDashboard = () => {
                 </Card>
               </Col>
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-green">
                   <div style={{ color: 'white' }}>
                     <div style={{ fontSize: 14, marginBottom: 8 }}>Monthly Goal</div>
                     <Progress 
@@ -295,22 +289,22 @@ export const MemberDashboard = () => {
                 <Card 
                   title="Quick Actions" 
                   bordered={false}
-                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                  className="action-card"
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <Button type="primary" icon={<ScheduleOutlined />} onClick={() => navigate('/Appoinmenttable')} block>
+                  <div className="action-buttons-container">
+                    <Button type="primary" icon={<ScheduleOutlined />} onClick={() => navigate('/Appoinmenttable')} block className="action-button">
                       View My Appointments
                     </Button>
-                    <Button type="primary" icon={<CalendarOutlined />} onClick={() => navigate('/Scheduletable')} block>
+                    <Button type="primary" icon={<CalendarOutlined />} onClick={() => navigate('/Scheduletable')} block className="action-button">
                       View Training Schedule
                     </Button>
-                    <Button type="primary" icon={<CommentOutlined />} onClick={() => navigate('/Feedback')} block>
+                    <Button type="primary" icon={<CommentOutlined />} onClick={() => navigate('/Feedback')} block className="action-button">
                       Give Feedback
                     </Button>
-                    <Button type="primary" icon={<StarOutlined />} onClick={() => navigate('/Trainerrate')} block>
+                    <Button type="primary" icon={<StarOutlined />} onClick={() => navigate('/Trainerrate')} block className="action-button">
                       Rate Trainer
                     </Button>
-                    <Button type="primary" icon={<MessageOutlined />} onClick={() => navigate('/chat')} block>
+                    <Button type="primary" icon={<MessageOutlined />} onClick={() => navigate('/chat')} block className="action-button">
                       Chat with Trainer
                     </Button>
                   </div>
@@ -320,19 +314,19 @@ export const MemberDashboard = () => {
                 <Card 
                   title="Your Progress" 
                   bordered={false}
-                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                  className="progress-card"
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                  <div className="progress-items-container">
+                    <div className="progress-item">
                       <Typography.Text>🔥 {stats.totalAttendance} days attended this month</Typography.Text>
                     </div>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                    <div className="progress-item">
                       <Typography.Text>💪 {stats.completedWorkouts} workouts completed</Typography.Text>
                     </div>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                    <div className="progress-item">
                       <Typography.Text>📅 {stats.upcomingAppointments} upcoming appointments</Typography.Text>
                     </div>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                    <div className="progress-item">
                       <Typography.Text>🎯 {Math.round(stats.goalProgress)}% monthly goal achieved</Typography.Text>
                     </div>
                   </div>
@@ -346,7 +340,7 @@ export const MemberDashboard = () => {
                 <Card 
                   title={<span><FireOutlined /> Keep Going!</span>}
                   bordered={false}
-                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)', background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' }}
+                  className="motivation-card"
                 >
                   <Typography.Paragraph style={{ fontSize: 16, marginBottom: 8 }}>
                     <strong>Great job on your fitness journey! 💪</strong>
@@ -369,7 +363,7 @@ export const MemberDashboard = () => {
             </Row>
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
+        <Footer style={{ textAlign: 'center' }} className="dashboard-footer">
           Gym Mega Power ©{new Date().getFullYear()} Created by K. Janith Chanuka
         </Footer>
       </Layout>
