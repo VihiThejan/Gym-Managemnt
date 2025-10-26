@@ -1,0 +1,651 @@
+/* ================================
+   Schedule Page - Modern UI/UX
+   ================================ */
+
+.schedule-page {
+    min-height: calc(100vh - 64px);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem;
+}
+
+.schedule-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ================================
+   Card Styles
+   ================================ */
+
+.schedule-card,
+.info-card {
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: none;
+    background: white;
+    height: fit-content;
+}
+
+.schedule-card .ant-card-body,
+.info-card .ant-card-body {
+    padding: 2.5rem;
+}
+
+/* ================================
+   Header Section
+   ================================ */
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.header-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: white;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    animation: pulse 2s infinite;
+}
+
+.card-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1d3a;
+    margin: 0 0 0.5rem 0;
+}
+
+.card-header p {
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+}
+
+/* ================================
+   Form Elements
+   ================================ */
+
+.schedule-form {
+    margin-top: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.label-icon {
+    font-size: 18px;
+    color: #667eea;
+}
+
+/* Input Fields */
+.schedule-form .ant-input,
+.schedule-form .ant-select-selector,
+.schedule-form .ant-input-number,
+.schedule-form .ant-picker {
+    border-radius: 12px;
+    border: 2px solid #e8e8e8;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    height: 48px;
+}
+
+.schedule-form .ant-input-number-input {
+    height: 44px;
+}
+
+.schedule-form .ant-select-selector {
+    padding: 0 16px !important;
+}
+
+.schedule-form .ant-input:hover,
+.schedule-form .ant-select:hover .ant-select-selector,
+.schedule-form .ant-input-number:hover,
+.schedule-form .ant-picker:hover {
+    border-color: #667eea;
+}
+
+.schedule-form .ant-input:focus,
+.schedule-form .ant-select-focused .ant-select-selector,
+.schedule-form .ant-input-number-focused,
+.schedule-form .ant-picker-focused {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+/* Prefix Icons */
+.schedule-form .ant-input-prefix {
+    color: #667eea;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+/* Select Dropdown */
+.schedule-form .ant-select-selection-placeholder {
+    color: #999;
+}
+
+.schedule-form .ant-select-arrow {
+    color: #667eea;
+}
+
+/* DatePicker */
+.schedule-form .ant-picker-suffix {
+    color: #667eea;
+    font-size: 18px;
+}
+
+/* Validation */
+.schedule-form .ant-form-item-has-error .ant-input,
+.schedule-form .ant-form-item-has-error .ant-select-selector,
+.schedule-form .ant-form-item-has-error .ant-input-number,
+.schedule-form .ant-form-item-has-error .ant-picker {
+    border-color: #ff4d4f;
+}
+
+.schedule-form .ant-form-item-has-error .ant-input:focus,
+.schedule-form .ant-form-item-has-error .ant-select-focused .ant-select-selector,
+.schedule-form .ant-form-item-has-error .ant-input-number-focused,
+.schedule-form .ant-form-item-has-error .ant-picker-focused {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
+}
+
+.schedule-form .ant-form-item-explain-error {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* ================================
+   Form Actions
+   ================================ */
+
+.form-actions {
+    margin-top: 2rem;
+    margin-bottom: 0;
+}
+
+.form-actions .ant-form-item-control-input-content {
+    display: flex;
+    gap: 1rem;
+}
+
+.submit-button {
+    flex: 2;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+.submit-button .anticon {
+    font-size: 20px;
+}
+
+.cancel-button {
+    flex: 1;
+    height: 52px;
+    border-radius: 12px;
+    background: #fff;
+    border: 2px solid #e8e8e8;
+    color: #666;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+/* ================================
+   Information Card
+   ================================ */
+
+.info-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1d3a;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.info-card h3 .anticon {
+    font-size: 28px;
+    color: #667eea;
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+}
+
+.info-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.info-item h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1d3a;
+    margin: 0 0 0.5rem 0;
+}
+
+.info-item p {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ================================
+   Animations
+   ================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5);
+    }
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+@media (max-width: 1200px) {
+    .schedule-container {
+        grid-template-columns: 1fr;
+    }
+
+    .info-card {
+        order: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .schedule-page {
+        padding: 1rem;
+    }
+
+    .schedule-card .ant-card-body,
+    .info-card .ant-card-body {
+        padding: 2rem;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 36px;
+    }
+
+    .card-header h2 {
+        font-size: 1.75rem;
+    }
+
+    .card-header p {
+        font-size: 0.95rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+    }
+
+    .label-icon {
+        font-size: 16px;
+    }
+
+    .schedule-form .ant-input,
+    .schedule-form .ant-select-selector,
+    .schedule-form .ant-input-number,
+    .schedule-form .ant-picker {
+        height: 44px;
+        font-size: 0.95rem;
+    }
+
+    .schedule-form .ant-input-number-input {
+        height: 40px;
+    }
+
+    .form-actions .ant-form-item-control-input-content {
+        flex-direction: column;
+    }
+
+    .submit-button,
+    .cancel-button {
+        width: 100%;
+        height: 48px;
+        font-size: 1rem;
+    }
+
+    .info-card h3 {
+        font-size: 1.35rem;
+    }
+
+    .info-item {
+        padding: 1rem;
+    }
+
+    .info-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        font-size: 22px;
+    }
+
+    .info-item h4 {
+        font-size: 1rem;
+    }
+
+    .info-item p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .schedule-page {
+        padding: 0.5rem;
+    }
+
+    .schedule-card,
+    .info-card {
+        border-radius: 16px;
+    }
+
+    .schedule-card .ant-card-body,
+    .info-card .ant-card-body {
+        padding: 1.5rem;
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 32px;
+        border-radius: 16px;
+    }
+
+    .card-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .card-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .card-header p {
+        font-size: 0.9rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+    }
+
+    .label-icon {
+        font-size: 15px;
+    }
+
+    .schedule-form .ant-input,
+    .schedule-form .ant-select-selector,
+    .schedule-form .ant-input-number,
+    .schedule-form .ant-picker {
+        height: 42px;
+        font-size: 0.9rem;
+        border-radius: 10px;
+    }
+
+    .schedule-form .ant-input-number-input {
+        height: 38px;
+    }
+
+    .schedule-form .ant-input-prefix,
+    .schedule-form .ant-picker-suffix {
+        font-size: 16px;
+    }
+
+    .form-actions {
+        margin-top: 1.5rem;
+    }
+
+    .submit-button,
+    .cancel-button {
+        height: 44px;
+        font-size: 0.95rem;
+        border-radius: 10px;
+    }
+
+    .submit-button .anticon {
+        font-size: 18px;
+    }
+
+    .info-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .info-card h3 .anticon {
+        font-size: 24px;
+    }
+
+    .info-content {
+        gap: 1.25rem;
+    }
+
+    .info-item {
+        padding: 0.875rem;
+        border-radius: 10px;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 20px;
+        border-radius: 10px;
+    }
+
+    .info-item h4 {
+        font-size: 0.95rem;
+    }
+
+    .info-item p {
+        font-size: 0.85rem;
+    }
+}
+
+/* ================================
+   Select Dropdown Styles
+   ================================ */
+
+.ant-select-dropdown {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.ant-select-item {
+    border-radius: 8px;
+    margin: 4px 8px;
+}
+
+.ant-select-item-option-selected {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    font-weight: 600;
+}
+
+.ant-select-item-option-active {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+/* ================================
+   DatePicker Dropdown
+   ================================ */
+
+.ant-picker-dropdown {
+    border-radius: 12px;
+}
+
+.ant-picker-panel-container {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+    border-color: #667eea;
+}
+
+/* ================================
+   Accessibility
+   ================================ */
+
+.schedule-form .ant-input:focus-visible,
+.schedule-form .ant-select-selector:focus-visible,
+.schedule-form .ant-input-number:focus-visible,
+.schedule-form .ant-picker:focus-visible,
+.submit-button:focus-visible,
+.cancel-button:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .submit-button,
+    .cancel-button {
+        border: 2px solid currentColor;
+    }
+
+    .info-item {
+        border: 2px solid #000;
+    }
+}
+
+/* ================================
+   Print Styles
+   ================================ */
+
+@media print {
+    .schedule-page {
+        background: white;
+        padding: 0;
+    }
+
+    .schedule-container {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-card,
+    .info-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+    .submit-button,
+    .cancel-button {
+        display: none;
+    }
+
+    .info-card {
+        page-break-before: always;
+    }
+}

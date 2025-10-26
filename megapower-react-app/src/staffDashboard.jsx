@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, theme, Typography, Input, Badge, Avatar, Dropdown, Button, Card, Row, Col, Statistic } from 'antd';
-import { MenuUnfoldOutlined, UserOutlined, DollarOutlined, NotificationOutlined, CalendarOutlined, BellOutlined, PhoneOutlined, MessageOutlined, ArrowLeftOutlined, TeamOutlined, CheckCircleOutlined, ClockCircleOutlined 
+import { 
+  MenuUnfoldOutlined, 
+  UserOutlined, 
+  DollarOutlined, 
+  NotificationOutlined, 
+  CalendarOutlined, 
+  BellOutlined, 
+  PhoneOutlined, 
+  MessageOutlined, 
+  TeamOutlined, 
+  CheckCircleOutlined, 
+  ClockCircleOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+  DashboardOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './staffDashboard.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Text } = Typography;
@@ -38,9 +53,9 @@ const menuItemStyle = {
 };
 
 const items = [
-  { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '1', path: '/dashboard' },
-  { label: 'Staff', icon: <UserOutlined />, key: '2', path: '/staffTable' },
-  { label: 'Payment', icon: <DollarOutlined />, key: '5', path: '/payment' },
+  { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/staffDashboard' },
+  { label: 'Staff', icon: <TeamOutlined />, key: '2', path: '/staffTable' },
+  { label: 'Payment', icon: <DollarOutlined />, key: '5', path: '/Paymenttable' },
   { label: 'Announcement', icon: <NotificationOutlined />, key: '6', path: '/Announcementtable' },
   { label: 'Attendance', icon: <CalendarOutlined />, key: '7', path: '/Attendancetable' },
   { label: 'Appointment', icon: <PhoneOutlined />, key: '8', path: '/Appoinmenttable' },
@@ -118,35 +133,32 @@ export const StaffDashboard = () => {
 
   const profileMenu = (
     <Menu>
-      <Menu.Item key="1">Profile</Menu.Item>
-      <Menu.Item key="2">Settings</Menu.Item>
+      <Menu.Item key="1" icon={<UserOutlined />}>Profile</Menu.Item>
+      <Menu.Item key="2" icon={<SettingOutlined />}>Settings</Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="3" onClick={handleLogout}>Logout</Menu.Item>
+      <Menu.Item key="3" icon={<LogoutOutlined />} onClick={handleLogout}>Logout</Menu.Item>
     </Menu>
   );
 
   return (
-    <Layout hasSider>
+    <Layout hasSider className="staff-dashboard-layout">
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={(collapsed) => setCollapsed(collapsed)}
         width={250}
-        style={{ ...siderStyle, backgroundColor: '#001529' }}
+        style={siderStyle}
+        className="dashboard-sider"
       >
-        <div style={logoStyle}>
-          <img 
-            src="" 
-            alt="" 
-            style={{ marginRight: '8px', borderRadius: '50%' }} 
-          />
-          {!collapsed && <Text style={{ color: '#FFF9B0', fontSize: '20px' }}>Mega Power</Text>}
+        <div style={logoStyle} className="logo-container">
+          {!collapsed && <Text className="logo-text">Mega Power Gym</Text>}
         </div>
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
           onClick={handleMenuClick}
+          className="dashboard-menu"
         >
           {items.map(({ label, icon, key }) => (
             <Menu.Item key={key} style={menuItemStyle} icon={icon}>
@@ -155,125 +167,126 @@ export const StaffDashboard = () => {
           ))}
         </Menu>
       </Sider>
-      <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }}>
-        <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Button 
-              type="text" 
-              icon={<ArrowLeftOutlined />} 
-              onClick={handleGoBack} 
-              style={{ 
-                marginRight: '8px', 
-                color: 'black', 
-                fontWeight: 'bold', 
-                fontSize: '15px', 
-              }}
-            >
-              Back
-            </Button>
+      <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
+        <Header className="dashboard-header" style={{ padding: '0 24px', background: colorBgContainer }}>
+          <div className="header-left">
+            <Typography.Title level={4} className="welcome-text">
+              Staff Dashboard
+            </Typography.Title>
           </div>
 
-          
-          <div style={{ 
-            position: 'absolute', 
-            left: '50%', 
-            transform: 'translateX(-50%)', 
-            fontSize: '16px', 
-            color: '#a9a9a9' 
-          }}>
-            Welcome to Mega Power
-          </div>
-
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="header-right">
             <Search 
-              placeholder="Search here..." 
+              placeholder="Search..." 
               onSearch={handleSearch} 
-              style={{ width: 200 }} 
+              className="header-search"
             />
-            <Badge count={5} size="small">
-              <BellOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
+            <Badge count={5} className="notification-badge">
+              <BellOutlined className="notification-icon" />
             </Badge>
             <Dropdown overlay={profileMenu} trigger={['click']}>
-              <Avatar style={{ cursor: 'pointer' }} icon={<UserOutlined />} />
+              <Avatar className="user-avatar" icon={<UserOutlined />} />
             </Dropdown>
           </div>
         </Header>
-        <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
-          <div
-            style={{
-              padding: 24,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-              minHeight: 360,
-            }}
-          >
-            <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 'bold' }}>Staff Dashboard</h2>
+        <Content className="dashboard-content">
+          <div className="content-wrapper">
+            <div className="page-title-section">
+              <Typography.Title level={2} className="page-title">
+                Welcome Back! 👋
+              </Typography.Title>
+              <Typography.Text className="page-subtitle">
+                Here's what's happening with your gym today
+              </Typography.Text>
+            </div>
             
             {/* Statistics Cards */}
-            <Row gutter={[16, 16]}>
+            <Row gutter={[24, 24]} className="stats-row">
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-purple">
                   <Statistic
-                    title={<span style={{ color: 'white' }}>Today's Attendance</span>}
+                    title={<span className="stat-title">Today's Attendance</span>}
                     value={stats.todayAttendance}
-                    prefix={<CheckCircleOutlined style={{ color: 'white' }} />}
-                    valueStyle={{ color: 'white', fontWeight: 'bold' }}
+                    prefix={<CheckCircleOutlined className="stat-icon" />}
+                    valueStyle={{ color: 'white', fontWeight: 'bold', fontSize: '2rem' }}
                   />
                 </Card>
               </Col>
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-pink">
                   <Statistic
-                    title={<span style={{ color: 'white' }}>Appointments</span>}
+                    title={<span className="stat-title">Appointments</span>}
                     value={stats.totalAppointments}
-                    prefix={<PhoneOutlined style={{ color: 'white' }} />}
-                    valueStyle={{ color: 'white', fontWeight: 'bold' }}
+                    prefix={<PhoneOutlined className="stat-icon" />}
+                    valueStyle={{ color: 'white', fontWeight: 'bold', fontSize: '2rem' }}
                   />
                 </Card>
               </Col>
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-blue">
                   <Statistic
-                    title={<span style={{ color: 'white' }}>Pending Tasks</span>}
+                    title={<span className="stat-title">Pending Tasks</span>}
                     value={stats.pendingTasks}
-                    prefix={<ClockCircleOutlined style={{ color: 'white' }} />}
-                    valueStyle={{ color: 'white', fontWeight: 'bold' }}
+                    prefix={<ClockCircleOutlined className="stat-icon" />}
+                    valueStyle={{ color: 'white', fontWeight: 'bold', fontSize: '2rem' }}
                   />
                 </Card>
               </Col>
               <Col xs={24} sm={12} lg={6}>
-                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
+                <Card loading={loading} bordered={false} className="stat-card stat-card-green">
                   <Statistic
-                    title={<span style={{ color: 'white' }}>Completed Sessions</span>}
+                    title={<span className="stat-title">Completed Sessions</span>}
                     value={stats.completedSessions}
-                    prefix={<TeamOutlined style={{ color: 'white' }} />}
-                    valueStyle={{ color: 'white', fontWeight: 'bold' }}
+                    prefix={<TeamOutlined className="stat-icon" />}
+                    valueStyle={{ color: 'white', fontWeight: 'bold', fontSize: '2rem' }}
                   />
                 </Card>
               </Col>
             </Row>
 
-            {/* Quick Actions */}
-            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+            {/* Quick Actions & Summary */}
+            <Row gutter={[24, 24]} className="action-row">
               <Col xs={24} md={12}>
                 <Card 
-                  title="Quick Actions" 
+                  title={<span className="card-title"><CalendarOutlined /> Quick Actions</span>}
                   bordered={false}
-                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                  className="action-card"
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <Button type="primary" icon={<CalendarOutlined />} onClick={() => navigate('/Attendance')} block>
+                  <div className="action-buttons">
+                    <Button 
+                      type="primary" 
+                      icon={<CalendarOutlined />} 
+                      onClick={() => navigate('/Attendance')} 
+                      className="action-button action-button-purple"
+                      size="large"
+                    >
                       Mark Attendance
                     </Button>
-                    <Button type="primary" icon={<PhoneOutlined />} onClick={() => navigate('/Appoinment')} block>
+                    <Button 
+                      type="primary" 
+                      icon={<PhoneOutlined />} 
+                      onClick={() => navigate('/Appoinment')} 
+                      className="action-button action-button-pink"
+                      size="large"
+                    >
                       Schedule Appointment
                     </Button>
-                    <Button type="primary" icon={<NotificationOutlined />} onClick={() => navigate('/Announcement')} block>
+                    <Button 
+                      type="primary" 
+                      icon={<NotificationOutlined />} 
+                      onClick={() => navigate('/Announcement')} 
+                      className="action-button action-button-blue"
+                      size="large"
+                    >
                       View Announcements
                     </Button>
-                    <Button type="primary" icon={<MessageOutlined />} onClick={() => navigate('/chat')} block>
+                    <Button 
+                      type="primary" 
+                      icon={<MessageOutlined />} 
+                      onClick={() => navigate('/chat')} 
+                      className="action-button action-button-green"
+                      size="large"
+                    >
                       Open Chat
                     </Button>
                   </div>
@@ -281,22 +294,34 @@ export const StaffDashboard = () => {
               </Col>
               <Col xs={24} md={12}>
                 <Card 
-                  title="Today's Summary" 
+                  title={<span className="card-title"><CheckCircleOutlined /> Today's Summary</span>}
                   bordered={false}
-                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                  className="summary-card"
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
-                      <Typography.Text>✅ {stats.todayAttendance} members attended today</Typography.Text>
+                  <div className="summary-items">
+                    <div className="summary-item summary-item-purple">
+                      <CheckCircleOutlined className="summary-icon" />
+                      <Typography.Text className="summary-text">
+                        <strong>{stats.todayAttendance}</strong> members attended today
+                      </Typography.Text>
                     </div>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
-                      <Typography.Text>📞 {stats.totalAppointments} total appointments</Typography.Text>
+                    <div className="summary-item summary-item-pink">
+                      <PhoneOutlined className="summary-icon" />
+                      <Typography.Text className="summary-text">
+                        <strong>{stats.totalAppointments}</strong> total appointments
+                      </Typography.Text>
                     </div>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
-                      <Typography.Text>⏳ {stats.pendingTasks} pending tasks</Typography.Text>
+                    <div className="summary-item summary-item-blue">
+                      <ClockCircleOutlined className="summary-icon" />
+                      <Typography.Text className="summary-text">
+                        <strong>{stats.pendingTasks}</strong> pending tasks
+                      </Typography.Text>
                     </div>
-                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
-                      <Typography.Text>💪 {stats.completedSessions} training sessions completed</Typography.Text>
+                    <div className="summary-item summary-item-green">
+                      <TeamOutlined className="summary-icon" />
+                      <Typography.Text className="summary-text">
+                        <strong>{stats.completedSessions}</strong> training sessions
+                      </Typography.Text>
                     </div>
                   </div>
                 </Card>
@@ -304,28 +329,39 @@ export const StaffDashboard = () => {
             </Row>
 
             {/* Important Notes */}
-            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+            <Row gutter={[24, 24]} className="notes-row">
               <Col span={24}>
                 <Card 
-                  title="Important Notes" 
+                  title={<span className="card-title"><NotificationOutlined /> Important Notes</span>}
                   bordered={false}
-                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                  className="notes-card"
                 >
-                  <Typography.Paragraph>
-                    🎯 Remember to check and update member attendance regularly
-                  </Typography.Paragraph>
-                  <Typography.Paragraph>
-                    📋 Review upcoming appointments and prepare training schedules
-                  </Typography.Paragraph>
-                  <Typography.Paragraph>
-                    💬 Respond to member messages and queries in the chat section
-                  </Typography.Paragraph>
+                  <div className="notes-content">
+                    <div className="note-item">
+                      <span className="note-emoji">🎯</span>
+                      <Typography.Text className="note-text">
+                        Remember to check and update member attendance regularly
+                      </Typography.Text>
+                    </div>
+                    <div className="note-item">
+                      <span className="note-emoji">📋</span>
+                      <Typography.Text className="note-text">
+                        Review upcoming appointments and prepare training schedules
+                      </Typography.Text>
+                    </div>
+                    <div className="note-item">
+                      <span className="note-emoji">💬</span>
+                      <Typography.Text className="note-text">
+                        Respond to member messages and queries in the chat section
+                      </Typography.Text>
+                    </div>
+                  </div>
                 </Card>
               </Col>
             </Row>
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
+        <Footer className="dashboard-footer">
           Gym Mega Power ©{new Date().getFullYear()} Created by K. Janith Chanuka
         </Footer>
       </Layout>

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-
-import 'react-phone-input-2/lib/style.css';
-import { Button, Flex,message } from 'antd';
+import { Button, message, Card, Input, Form } from 'antd';
+import { LockOutlined, SafetyOutlined, ArrowLeftOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import './Resetpw.css';
 
 
 export const Reset = () => {
@@ -11,8 +11,10 @@ export const Reset = () => {
     const navigate = useNavigate();
 
     const [pass, setPass] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [confirmError, setConfirmError] = useState('');
+    const [resetting, setResetting] = useState(false);
 
 
     const validatePassword = (password) => {
@@ -42,12 +44,10 @@ export const Reset = () => {
       };
 
       const validateForm = () => {
-        if ( !pass   ) {
+        if (!pass || !confirmPassword) {
           message.error("Please fill in all required fields.");
           return false;
         }
-    
-        
     
         const passwordErrorMsg = validatePassword(pass);
         if (passwordErrorMsg) {
@@ -57,71 +57,153 @@ export const Reset = () => {
           setPasswordError('');
         }
     
-       
+        if (pass !== confirmPassword) {
+          setConfirmError('Passwords do not match.');
+          return false;
+        } else {
+          setConfirmError('');
+        }
     
         return true;
       };
 
 
-    const handleSubmit = async(e) => {
-        e.preventDefault();
+    const handleSubmit = async() => {
         if (!validateForm()) return;
+        
+        setResetting(true);
         const contact = await localStorage.getItem('contact');
         const body = {
             password: pass,
             confirmPassword: confirmPassword,
             contact: contact
         }
-        axios.post("http://localhost:5000/api/v1/auth/reset", body).then(res => {
-            //TODO Navigate to Login Page
-            navigate("/"); 
-        })
+        
+        try {
+            await axios.post("http://localhost:5000/api/v1/auth/reset", body);
+            message.success('Password reset successfully!');
+            setTimeout(() => {
+                navigate("/");
+            }, 1500);
+        } catch (error) {
+            message.error('Failed to reset password. Please try again.');
+        } finally {
+            setResetting(false);
+        }
     }
 
     const handleReset = () => {
-        
         setPass('');
         setConfirmPassword('');
-       
-      };
+        setPasswordError('');
+        setConfirmError('');
+    };
 
     return (
-        <div className="auth-form-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '50px',backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-            <h2 style={{ textAlign: 'left' }}>Reset  Password</h2>
-            <form className="reset-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <label htmlFor="password"> New Password</label>
-                     <input
-                       value={pass}
-                       onChange={(e) => {
-                         setPass(e.target.value);
-                         setPasswordError(validatePassword(e.target.value));
-                       }}
-                           type="password"
-                           placeholder="***********"
-                           id="password"
-                           name="password"
-                    />
-                       {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>} <br/>
-                
-                       <label htmlFor="password"> Confirm Password</label>
-                     <input
-                       value={confirmPassword}
-                       onChange={(e) => {
-                         setConfirmPassword(e.target.value);
-                         setPasswordError(validatePassword(e.target.value));
-                       }}
-                           type="password"
-                           placeholder="***********"
-                           id="password"
-                           name="password"
-                    />
-                       {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>} <br/>
-                
-                <Flex gap="small" wrap style={{ justifyContent: 'flex-start', alignItems: 'center', padding: '20px 0' }}>
-                <Button type="primary" htmlType="submit" onClick={handleSubmit}>Submit</Button>
-                    <Button htmlType="button" onClick={handleReset}>Cancel</Button> 
-                </Flex>
-            </form>
+        <div className="reset-page">
+            <div className="reset-container">
+                <Card className="reset-card">
+                    <div className="card-header">
+                        <div className="header-icon">
+                            <SafetyOutlined />
+                        </div>
+                        <h2>Reset Password</h2>
+                        <p>Create your new password</p>
+                    </div>
+
+                    <Form onFinish={handleSubmit} layout="vertical" className="reset-form">
+                        <Form.Item>
+                            <label className="form-label">
+                                <LockOutlined className="label-icon" />
+                                New Password
+                            </label>
+                            <Input.Password
+                                value={pass}
+                                onChange={(e) => {
+                                    setPass(e.target.value);
+                                    setPasswordError(validatePassword(e.target.value));
+                                }}
+                                placeholder="Enter new password"
+                                size="large"
+                                className={passwordError ? 'error-input' : ''}
+                            />
+                            {passwordError && (
+                                <div className="error-message">
+                                    {passwordError}
+                                </div>
+                            )}
+                        </Form.Item>
+
+                        <Form.Item>
+                            <label className="form-label">
+                                <CheckCircleOutlined className="label-icon" />
+                                Confirm Password
+                            </label>
+                            <Input.Password
+                                value={confirmPassword}
+                                onChange={(e) => {
+                                    setConfirmPassword(e.target.value);
+                                    if (pass && e.target.value && pass !== e.target.value) {
+                                        setConfirmError('Passwords do not match.');
+                                    } else {
+                                        setConfirmError('');
+                                    }
+                                }}
+                                placeholder="Confirm new password"
+                                size="large"
+                                className={confirmError ? 'error-input' : ''}
+                            />
+                            {confirmError && (
+                                <div className="error-message">
+                                    {confirmError}
+                                </div>
+                            )}
+                        </Form.Item>
+
+                        <div className="password-requirements">
+                            <h4>Password Requirements:</h4>
+                            <ul>
+                                <li className={pass.length >= 6 ? 'valid' : ''}>At least 6 characters</li>
+                                <li className={/[A-Z]/.test(pass) ? 'valid' : ''}>One uppercase letter</li>
+                                <li className={/[a-z]/.test(pass) ? 'valid' : ''}>One lowercase letter</li>
+                                <li className={/[0-9]/.test(pass) ? 'valid' : ''}>One number</li>
+                                <li className={/[!@#$%^&*(),.?":{}|<>]/.test(pass) ? 'valid' : ''}>One special character</li>
+                            </ul>
+                        </div>
+
+                        <Form.Item className="form-actions">
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                size="large"
+                                loading={resetting}
+                                disabled={resetting}
+                                className="submit-button"
+                            >
+                                {resetting ? 'Resetting...' : 'Reset Password'}
+                            </Button>
+                            <Button
+                                onClick={handleReset}
+                                size="large"
+                                className="cancel-button"
+                            >
+                                Clear
+                            </Button>
+                        </Form.Item>
+
+                        <div className="back-to-login">
+                            <Button
+                                type="link"
+                                icon={<ArrowLeftOutlined />}
+                                onClick={() => navigate('/')}
+                                className="back-link"
+                            >
+                                Back to Login
+                            </Button>
+                        </div>
+                    </Form>
+                </Card>
+            </div>
         </div>
     )
 }

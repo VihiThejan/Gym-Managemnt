@@ -1,0 +1,654 @@
+/* ================================
+   Schedule Table Page - Modern UI/UX
+   ================================ */
+
+.scheduletable-page {
+    min-height: calc(100vh - 64px);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem;
+}
+
+/* ================================
+   Page Header
+   ================================ */
+
+.page-header {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: fadeInDown 0.6s ease-out;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.title-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.header-title h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1d3a;
+    margin: 0;
+}
+
+.header-title p {
+    font-size: 1rem;
+    color: #666;
+    margin: 0.25rem 0 0 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-input {
+    width: 300px;
+    height: 48px;
+    border-radius: 12px;
+    border: 2px solid #e8e8e8;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:hover {
+    border-color: #667eea;
+}
+
+.search-input.ant-input-affix-wrapper-focused {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.search-input .ant-input-prefix {
+    color: #667eea;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+.add-button {
+    height: 48px;
+    padding: 0 2rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.add-button:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+}
+
+.add-button .anticon {
+    font-size: 18px;
+}
+
+/* ================================
+   Table Container
+   ================================ */
+
+.table-container {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ================================
+   Table Styles
+   ================================ */
+
+.schedule-table {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.schedule-table .ant-table {
+    border-radius: 12px;
+}
+
+.schedule-table .ant-table-thead > tr > th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 1rem;
+    border: none;
+}
+
+.schedule-table .ant-table-thead > tr > th::before {
+    display: none;
+}
+
+.schedule-table .ant-table-tbody > tr > td {
+    padding: 1rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.schedule-table .ant-table-tbody > tr:hover > td {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.schedule-table .ant-table-tbody > tr:last-child > td {
+    border-bottom: none;
+}
+
+/* ================================
+   Table Cell Content
+   ================================ */
+
+/* Tags */
+.schedule-table .ant-tag {
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+}
+
+.schedule-table .ant-tag .anticon {
+    margin-right: 6px;
+}
+
+/* Exercise Name */
+.exercise-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #1a1d3a;
+}
+
+.exercise-name .anticon {
+    color: #667eea;
+    font-size: 16px;
+}
+
+/* Equipment Name */
+.equipment-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #555;
+}
+
+.equipment-name .anticon {
+    color: #764ba2;
+    font-size: 16px;
+}
+
+/* Quantity Tag */
+.quantity-tag {
+    font-size: 1rem;
+    padding: 6px 14px;
+}
+
+/* Date Text */
+.date-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+.date-text .anticon {
+    color: #667eea;
+}
+
+/* ================================
+   Action Buttons
+   ================================ */
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-btn,
+.delete-btn {
+    font-weight: 600;
+    padding: 4px 8px;
+    transition: all 0.3s ease;
+}
+
+.edit-btn {
+    color: #667eea;
+}
+
+.edit-btn:hover {
+    color: #764ba2;
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+.delete-btn:hover {
+    background: rgba(255, 77, 79, 0.1);
+    transform: translateY(-2px);
+}
+
+.edit-btn .anticon,
+.delete-btn .anticon {
+    font-size: 16px;
+}
+
+/* ================================
+   Pagination
+   ================================ */
+
+.custom-pagination {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.custom-pagination .ant-pagination-item {
+    border-radius: 8px;
+    border: 2px solid #e8e8e8;
+    transition: all 0.3s ease;
+}
+
+.custom-pagination .ant-pagination-item:hover {
+    border-color: #667eea;
+}
+
+.custom-pagination .ant-pagination-item-active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+}
+
+.custom-pagination .ant-pagination-item-active a {
+    color: white;
+}
+
+.custom-pagination .ant-pagination-prev button,
+.custom-pagination .ant-pagination-next button {
+    border-radius: 8px;
+    border: 2px solid #e8e8e8;
+    transition: all 0.3s ease;
+}
+
+.custom-pagination .ant-pagination-prev:hover button,
+.custom-pagination .ant-pagination-next:hover button {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.custom-pagination .ant-select-selector {
+    border-radius: 8px;
+    border: 2px solid #e8e8e8;
+}
+
+/* ================================
+   Modal Styles
+   ================================ */
+
+.ant-modal-confirm-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1d3a;
+}
+
+.ant-modal-confirm-content {
+    font-size: 1rem;
+    color: #666;
+}
+
+.ant-modal-confirm-btns .ant-btn-primary {
+    background: #ff4d4f;
+    border-color: #ff4d4f;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.ant-modal-confirm-btns .ant-btn-default {
+    border-radius: 8px;
+    border: 2px solid #e8e8e8;
+    font-weight: 600;
+}
+
+/* ================================
+   Loading State
+   ================================ */
+
+.schedule-table .ant-spin-nested-loading {
+    min-height: 400px;
+}
+
+.schedule-table .ant-spin-dot-item {
+    background-color: #667eea;
+}
+
+/* ================================
+   Empty State
+   ================================ */
+
+.schedule-table .ant-empty-description {
+    color: #999;
+    font-size: 1rem;
+}
+
+/* ================================
+   Animations
+   ================================ */
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+@media (max-width: 1200px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .search-input {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .scheduletable-page {
+        padding: 1rem;
+    }
+
+    .page-header {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    .header-title {
+        gap: 1rem;
+    }
+
+    .title-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 28px;
+        border-radius: 12px;
+    }
+
+    .header-title h2 {
+        font-size: 1.5rem;
+    }
+
+    .header-title p {
+        font-size: 0.9rem;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+        height: 44px;
+    }
+
+    .add-button {
+        width: 100%;
+        height: 44px;
+    }
+
+    .table-container {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    .schedule-table .ant-table-thead > tr > th {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .schedule-table .ant-table-tbody > tr > td {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .custom-pagination {
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .scheduletable-page {
+        padding: 0.5rem;
+    }
+
+    .page-header {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .header-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .title-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+        border-radius: 10px;
+    }
+
+    .header-title h2 {
+        font-size: 1.25rem;
+    }
+
+    .header-title p {
+        font-size: 0.85rem;
+    }
+
+    .search-input {
+        height: 42px;
+        border-radius: 10px;
+    }
+
+    .search-input .ant-input-prefix {
+        font-size: 16px;
+    }
+
+    .add-button {
+        height: 42px;
+        font-size: 0.95rem;
+        border-radius: 10px;
+    }
+
+    .add-button .anticon {
+        font-size: 16px;
+    }
+
+    .table-container {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .schedule-table .ant-table-thead > tr > th {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .schedule-table .ant-table-tbody > tr > td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .schedule-table .ant-tag {
+        padding: 3px 8px;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+
+    .exercise-name,
+    .equipment-name,
+    .date-text {
+        font-size: 0.8rem;
+    }
+
+    .exercise-name .anticon,
+    .equipment-name .anticon,
+    .date-text .anticon {
+        font-size: 14px;
+    }
+
+    .quantity-tag {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }
+
+    .edit-btn,
+    .delete-btn {
+        font-size: 0.8rem;
+        padding: 2px 6px;
+    }
+
+    .edit-btn .anticon,
+    .delete-btn .anticon {
+        font-size: 14px;
+    }
+
+    .custom-pagination {
+        margin-top: 1rem;
+    }
+
+    .custom-pagination .ant-pagination-item,
+    .custom-pagination .ant-pagination-prev button,
+    .custom-pagination .ant-pagination-next button {
+        border-radius: 6px;
+    }
+}
+
+/* ================================
+   Accessibility
+   ================================ */
+
+.search-input:focus-visible,
+.add-button:focus-visible,
+.edit-btn:focus-visible,
+.delete-btn:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .add-button,
+    .edit-btn,
+    .delete-btn {
+        border: 2px solid currentColor;
+    }
+
+    .schedule-table .ant-table-thead > tr > th {
+        border: 2px solid #000;
+    }
+}
+
+/* ================================
+   Print Styles
+   ================================ */
+
+@media print {
+    .scheduletable-page {
+        background: white;
+        padding: 0;
+    }
+
+    .page-header {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+    .header-actions,
+    .action-buttons,
+    .custom-pagination {
+        display: none;
+    }
+
+    .table-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+    .schedule-table .ant-table-thead > tr > th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
