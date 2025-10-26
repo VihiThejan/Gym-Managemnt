@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, DatePicker, Select, Space, InputNumber, Input, Form, message } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +15,10 @@ export const Schedule = () => {
   const [date, setDate] = useState(null);
 
   const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate('/Scheduletable');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +65,16 @@ export const Schedule = () => {
   return (
     <div className="auth-form-container" style={{ padding: "40px", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "35px", boxShadow: "10 10px 12px rgba(0, 0, 0, 0.3)", maxWidth: "700px", margin: "10px", height: "650px" }}>
       <div style={{ textAlign: 'left', width: '100%' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <Button 
+            type="text" 
+            icon={<ArrowLeftOutlined />} 
+            onClick={handleGoBack} 
+            style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}
+          >
+            Back
+          </Button>
+        </div>
         <h2 style={{ textAlign: "center", marginBottom: "40px", marginTop: "0px", color: "white" }}>
           Schedule
         </h2>

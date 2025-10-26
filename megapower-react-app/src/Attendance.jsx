@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Space, Form, DatePicker, TimePicker, message } from "antd";
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +12,10 @@ export const Attendance = () => {
   const [formErrors, setFormErrors] = useState({});
 
   const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate('/Attendancetable');
+  };
 
   const validateForm = () => {
     const errors = {};
@@ -71,6 +76,16 @@ export const Attendance = () => {
         margin: "auto",
       }}
     >
+      <div style={{ marginBottom: '20px' }}>
+        <Button 
+          type="text" 
+          icon={<ArrowLeftOutlined />} 
+          onClick={handleGoBack} 
+          style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}
+        >
+          Back
+        </Button>
+      </div>
       <h2 style={{ color: "white", textAlign: "center", marginBottom: "30px" }}>
         Attendance
       </h2>

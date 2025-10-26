@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Space, Form, Rate, Input, message } from "antd";
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
@@ -12,6 +13,10 @@ export const Trainerrate = () => {
   const [comment, setComment] = useState("");
 
   const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate('/Trainerratetable');
+  };
 
   const validateForm = () => {
     if (!id || !staffId || !rating || !comment) {
@@ -62,6 +67,16 @@ export const Trainerrate = () => {
         margin: "auto",
       }}
     >
+      <div style={{ marginBottom: '20px' }}>
+        <Button 
+          type="text" 
+          icon={<ArrowLeftOutlined />} 
+          onClick={handleGoBack} 
+          style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}
+        >
+          Back
+        </Button>
+      </div>
       <h2 style={{ color: "white", textAlign: "center", marginBottom: "40px" }}>
         Ratings
       </h2>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Space, DatePicker, InputNumber, Form, message, Select, Input } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
@@ -87,8 +88,26 @@ export const Equipment = () => {
     setName(value);
   };
 
+  const handleGoBack = () => {
+    navigate('/Equipmenttable');
+  };
+
   return (
     <div className="auth-form-container" style={{ padding: "50px", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "15px", boxShadow: "10 10px 12px rgba(0, 0, 0, 0.3)", maxWidth: "500px", margin: "auto", height: "600px" }}>
+      <div style={{ marginBottom: '20px' }}> 
+        <Button 
+          type="text" 
+          icon={<ArrowLeftOutlined />} 
+          onClick={handleGoBack} 
+          style={{ 
+            color: 'white', 
+            fontWeight: 'bold', 
+            fontSize: '16px', 
+          }}
+        >
+          Back
+        </Button>
+      </div>
       <div style={{ textAlign: 'left', width: '100%' }}>
         <h2 style={{ textAlign: "center", marginBottom: "50px",marginTop: "0px", borderRadius: "50px", maxWidth: "100%", color: "white" }}>
           Equipment</h2>

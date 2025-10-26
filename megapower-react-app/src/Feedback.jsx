@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { Button, Form, DatePicker, Space, message as antdMessage } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 export const Feedback = () => {
 
     const navigate = useNavigate();
+
+    const handleGoBack = () => {
+      navigate('/Feedbacktable');
+    };
    
    const [id, setId] = useState('');
 
@@ -50,6 +55,16 @@ export const Feedback = () => {
     return (
         <div className="auth-form-container" style={{ padding: "55px", backgroundColor: "rgba(0, 0, 0, 0.5)", borderRadius: "15px", boxShadow: "10px 10px 12px rgba(0, 0, 0, 0.3)", maxWidth: "500px", margin: "auto", height: "400px" }}>
             <div style={{ textAlign: 'left', width: '100%' }}>
+                <div style={{ marginBottom: '20px' }}>
+                  <Button 
+                    type="text" 
+                    icon={<ArrowLeftOutlined />} 
+                    onClick={handleGoBack} 
+                    style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}
+                  >
+                    Back
+                  </Button>
+                </div>
                 <h2 style={{ textAlign: "center", marginBottom: "50px", marginTop: "0px", borderRadius: "50px", maxWidth: "100%", color: "white" }}>
                     Feedback
                 </h2>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Space, DatePicker, Input, message } from 'antd'; 
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
@@ -48,11 +49,29 @@ export const Announcement = () => {
     setDate(date);
   };
 
+  const handleGoBack = () => {
+    navigate('/Announcementtable');
+  };
+
   return (
     <div
       className="auth-form-container"
       style={{ padding: '20px', backgroundColor: "rgba(0, 0, 0, 0.5)" }}
     >
+      <div style={{ marginBottom: '20px' }}> 
+        <Button 
+          type="text" 
+          icon={<ArrowLeftOutlined />} 
+          onClick={handleGoBack} 
+          style={{ 
+            color: 'white', 
+            fontWeight: 'bold', 
+            fontSize: '16px', 
+          }}
+        >
+          Back
+        </Button>
+      </div>
       <h2>Announcement</h2>
       <form 
         className="Announcement-form" 

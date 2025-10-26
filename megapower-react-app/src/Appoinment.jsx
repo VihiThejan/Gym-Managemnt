@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Space, DatePicker, message } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import axios from "axios";
@@ -12,6 +13,10 @@ export const Appoinment = () => {
    const [date, setDate] = useState(null); 
    const [mobileError, setMobileError] = useState('');
    const navigate = useNavigate(); 
+
+   const handleGoBack = () => {
+     navigate('/Appoinmenttable');
+   };
 
    const formattedDate = date ? date.toISOString() : '';
 
@@ -79,6 +84,16 @@ export const Appoinment = () => {
 
    return (
       <div className="auth-form-container" style={{ textAlign: 'Center', width: '300px', backgroundColor: "rgba(0, 0, 0, 0.5)",  margin: 'auto' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <Button 
+              type="text" 
+              icon={<ArrowLeftOutlined />} 
+              onClick={handleGoBack} 
+              style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}
+            >
+              Back
+            </Button>
+          </div>
           <h2>Appointment</h2>
           <form className="Appointment-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
               

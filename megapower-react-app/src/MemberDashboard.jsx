@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, theme, Typography, Input, Badge, Avatar, Dropdown, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, theme, Typography, Input, Badge, Avatar, Dropdown, Button, Card, Row, Col, Statistic, Progress } from 'antd';
 import { 
   MenuUnfoldOutlined, 
   UserOutlined, 
@@ -12,9 +12,13 @@ import {
   MessageOutlined, 
   StarOutlined, 
   ScheduleOutlined,
-  ArrowLeftOutlined 
+  ArrowLeftOutlined,
+  TrophyOutlined,
+  FireOutlined,
+  ClockCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Text } = Typography;
@@ -67,7 +71,57 @@ export const MemberDashboard = () => {
   } = theme.useToken();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [stats, setStats] = useState({
+    totalAttendance: 0,
+    upcomingAppointments: 0,
+    completedWorkouts: 0,
+    goalProgress: 75
+  });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchMemberDashboardStats();
+  }, []);
+
+  const fetchMemberDashboardStats = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current member ID from localStorage or context
+      const memberId = localStorage.getItem('userId');
+      
+      // Fetch attendance for current member
+      const attendanceRes = await axios.get('http://localhost:5000/api/v1/attendance/list');
+      const memberAttendance = attendanceRes.data?.data?.filter(
+        att => att.memberId === parseInt(memberId)
+      ) || [];
+      
+      // Fetch appointments for current member
+      const appointmentsRes = await axios.get('http://localhost:5000/api/v1/appointment/list');
+      const memberAppointments = appointmentsRes.data?.data?.filter(
+        app => app.memberid === parseInt(memberId)
+      ) || [];
+      
+      // Fetch schedules for completed workouts
+      const schedulesRes = await axios.get('http://localhost:5000/api/v1/schedule/list');
+      const memberWorkouts = schedulesRes.data?.data?.filter(
+        schedule => schedule.memberId === parseInt(memberId)
+      ) || [];
+
+      setStats({
+        totalAttendance: memberAttendance.length,
+        upcomingAppointments: memberAppointments.length,
+        completedWorkouts: memberWorkouts.length,
+        goalProgress: memberAttendance.length > 0 ? Math.min((memberAttendance.length / 30) * 100, 100) : 0
+      });
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching member dashboard stats:', error);
+      setLoading(false);
+    }
+  };
 
   const handleMenuClick = ({ key }) => {
     const selectedItem = items.find(item => item.key === key);
@@ -179,14 +233,140 @@ export const MemberDashboard = () => {
           <div
             style={{
               padding: 24,
-              textAlign: 'center',
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
               minHeight: 360,
             }}
           >
-            <h2>Member Dashboard Content</h2>
-            <p>Welcome to the Member Dashboard</p>
+            <h2 style={{ marginBottom: 24, fontSize: 24, fontWeight: 'bold' }}>Member Dashboard</h2>
+            
+            {/* Statistics Cards */}
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={12} lg={6}>
+                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                  <Statistic
+                    title={<span style={{ color: 'white' }}>Total Attendance</span>}
+                    value={stats.totalAttendance}
+                    prefix={<CalendarOutlined style={{ color: 'white' }} />}
+                    suffix={<span style={{ color: 'white', fontSize: 14 }}>days</span>}
+                    valueStyle={{ color: 'white', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+                  <Statistic
+                    title={<span style={{ color: 'white' }}>Appointments</span>}
+                    value={stats.upcomingAppointments}
+                    prefix={<ScheduleOutlined style={{ color: 'white' }} />}
+                    valueStyle={{ color: 'white', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+                  <Statistic
+                    title={<span style={{ color: 'white' }}>Completed Workouts</span>}
+                    value={stats.completedWorkouts}
+                    prefix={<TrophyOutlined style={{ color: 'white' }} />}
+                    valueStyle={{ color: 'white', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card loading={loading} bordered={false} style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
+                  <div style={{ color: 'white' }}>
+                    <div style={{ fontSize: 14, marginBottom: 8 }}>Monthly Goal</div>
+                    <Progress 
+                      type="circle" 
+                      percent={Math.round(stats.goalProgress)} 
+                      width={80}
+                      strokeColor="white"
+                      format={percent => <span style={{ color: 'white', fontWeight: 'bold' }}>{percent}%</span>}
+                    />
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Quick Actions */}
+            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+              <Col xs={24} md={12}>
+                <Card 
+                  title="Quick Actions" 
+                  bordered={false}
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <Button type="primary" icon={<ScheduleOutlined />} onClick={() => navigate('/Appoinmenttable')} block>
+                      View My Appointments
+                    </Button>
+                    <Button type="primary" icon={<CalendarOutlined />} onClick={() => navigate('/Scheduletable')} block>
+                      View Training Schedule
+                    </Button>
+                    <Button type="primary" icon={<CommentOutlined />} onClick={() => navigate('/Feedback')} block>
+                      Give Feedback
+                    </Button>
+                    <Button type="primary" icon={<StarOutlined />} onClick={() => navigate('/Trainerrate')} block>
+                      Rate Trainer
+                    </Button>
+                    <Button type="primary" icon={<MessageOutlined />} onClick={() => navigate('/chat')} block>
+                      Chat with Trainer
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+              <Col xs={24} md={12}>
+                <Card 
+                  title="Your Progress" 
+                  bordered={false}
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                      <Typography.Text>🔥 {stats.totalAttendance} days attended this month</Typography.Text>
+                    </div>
+                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                      <Typography.Text>💪 {stats.completedWorkouts} workouts completed</Typography.Text>
+                    </div>
+                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                      <Typography.Text>📅 {stats.upcomingAppointments} upcoming appointments</Typography.Text>
+                    </div>
+                    <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                      <Typography.Text>🎯 {Math.round(stats.goalProgress)}% monthly goal achieved</Typography.Text>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Motivation Section */}
+            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+              <Col span={24}>
+                <Card 
+                  title={<span><FireOutlined /> Keep Going!</span>}
+                  bordered={false}
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)', background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' }}
+                >
+                  <Typography.Paragraph style={{ fontSize: 16, marginBottom: 8 }}>
+                    <strong>Great job on your fitness journey! 💪</strong>
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>
+                    You've attended {stats.totalAttendance} training sessions. Keep up the excellent work!
+                  </Typography.Paragraph>
+                  {stats.goalProgress < 100 && (
+                    <Typography.Paragraph style={{ color: '#d4380d' }}>
+                      <ClockCircleOutlined /> You're {Math.round(100 - stats.goalProgress)}% away from your monthly goal. You can do it!
+                    </Typography.Paragraph>
+                  )}
+                  {stats.goalProgress >= 100 && (
+                    <Typography.Paragraph style={{ color: '#52c41a' }}>
+                      <TrophyOutlined /> Congratulations! You've achieved your monthly goal! 🎉
+                    </Typography.Paragraph>
+                  )}
+                </Card>
+              </Col>
+            </Row>
           </div>
         </Content>
         <Footer style={{ textAlign: 'center' }}>
