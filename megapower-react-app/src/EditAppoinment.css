@@ -1,0 +1,529 @@
+/* ============================================
+   EDIT APPOINTMENT PAGE - MODERN DESIGN
+   ============================================ */
+
+.edit-appointment-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 24px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* ============================================
+   PAGE HEADER
+   ============================================ */
+
+.page-header {
+  margin-bottom: 32px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 24px 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.header-icon {
+  font-size: 48px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-text h1 {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-text p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ============================================
+   FORM CARD
+   ============================================ */
+
+.edit-form-card {
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+  overflow: hidden;
+}
+
+.edit-form-card .ant-card-body {
+  padding: 40px !important;
+}
+
+/* ============================================
+   FORM STYLING
+   ============================================ */
+
+.edit-appointment-form {
+  width: 100%;
+}
+
+.edit-appointment-form .ant-form-item {
+  margin-bottom: 28px;
+}
+
+/* Form Labels */
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.label-icon {
+  font-size: 18px;
+  color: #667eea;
+}
+
+.edit-appointment-form .ant-form-item-label > label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  height: auto;
+}
+
+.edit-appointment-form .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  color: #ef4444;
+  font-size: 16px;
+}
+
+/* ============================================
+   INPUT FIELDS
+   ============================================ */
+
+.custom-input {
+  height: 52px !important;
+  border-radius: 12px !important;
+  border: 2px solid #e5e7eb !important;
+  font-size: 15px !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-input:hover {
+  border-color: #a5b4fc !important;
+}
+
+.custom-input:focus,
+.custom-input.ant-input-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+}
+
+.input-icon {
+  color: #9ca3af;
+  font-size: 18px;
+}
+
+/* DatePicker */
+.custom-datepicker {
+  height: 52px !important;
+  border-radius: 12px !important;
+  border: 2px solid #e5e7eb !important;
+  font-size: 15px !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-datepicker:hover {
+  border-color: #a5b4fc !important;
+}
+
+.custom-datepicker.ant-picker-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+}
+
+.custom-datepicker .ant-picker-input > input {
+  font-size: 15px !important;
+}
+
+.custom-datepicker .ant-picker-suffix {
+  color: #9ca3af;
+  font-size: 18px;
+}
+
+/* ============================================
+   PHONE INPUT STYLING
+   ============================================ */
+
+.phone-input-wrapper {
+  position: relative;
+}
+
+.phone-input-container {
+  width: 100% !important;
+}
+
+.custom-phone-input {
+  width: 100% !important;
+  height: 52px !important;
+  border-radius: 12px !important;
+  border: 2px solid #e5e7eb !important;
+  font-size: 15px !important;
+  padding-left: 58px !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-phone-input:hover {
+  border-color: #a5b4fc !important;
+}
+
+.custom-phone-input:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+  outline: none !important;
+}
+
+.phone-input-button {
+  border-radius: 12px 0 0 12px !important;
+  border: 2px solid #e5e7eb !important;
+  border-right: none !important;
+  background: #f9fafb !important;
+  height: 52px !important;
+  transition: all 0.3s ease !important;
+}
+
+.phone-input-button:hover {
+  background: #f3f4f6 !important;
+}
+
+.phone-input-wrapper:hover .phone-input-button {
+  border-color: #a5b4fc !important;
+}
+
+.custom-phone-input:focus + .phone-input-button,
+.phone-input-wrapper:focus-within .phone-input-button {
+  border-color: #667eea !important;
+}
+
+/* Phone Input Error State */
+.ant-form-item-has-error .custom-phone-input {
+  border-color: #ef4444 !important;
+}
+
+.ant-form-item-has-error .phone-input-button {
+  border-color: #ef4444 !important;
+}
+
+.ant-form-item-has-error .custom-phone-input:focus {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+
+.form-actions {
+  margin-top: 40px !important;
+  margin-bottom: 0 !important;
+}
+
+.button-group {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-start;
+}
+
+.submit-button {
+  height: 52px !important;
+  padding: 0 40px !important;
+  border: none !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease !important;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-button .anticon {
+  font-size: 18px;
+}
+
+.cancel-button {
+  height: 52px !important;
+  padding: 0 40px !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  color: #6b7280 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.cancel-button:hover:not(:disabled) {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  background: #fef2f2 !important;
+}
+
+.cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancel-button .anticon {
+  font-size: 18px;
+}
+
+/* ============================================
+   VALIDATION STATES
+   ============================================ */
+
+.edit-appointment-form .ant-form-item-has-error .custom-input,
+.edit-appointment-form .ant-form-item-has-error .custom-datepicker {
+  border-color: #ef4444 !important;
+}
+
+.edit-appointment-form .ant-form-item-has-error .custom-input:focus,
+.edit-appointment-form .ant-form-item-has-error .custom-datepicker.ant-picker-focused {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+.edit-appointment-form .ant-form-item-explain-error {
+  font-size: 13px;
+  margin-top: 6px;
+  color: #ef4444;
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.edit-form-card .ant-card-loading-content {
+  padding: 60px 0;
+}
+
+.ant-skeleton {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 992px) {
+  .edit-appointment-page {
+    padding: 32px 20px;
+  }
+
+  .edit-form-card {
+    max-width: 100%;
+  }
+
+  .header-content {
+    padding: 20px 24px;
+  }
+
+  .header-icon {
+    font-size: 40px;
+    padding: 12px;
+  }
+
+  .header-text h1 {
+    font-size: 28px;
+  }
+
+  .header-text p {
+    font-size: 14px;
+  }
+
+  .edit-form-card .ant-card-body {
+    padding: 32px 24px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .edit-appointment-page {
+    padding: 24px 16px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .header-icon {
+    font-size: 36px;
+  }
+
+  .header-text h1 {
+    font-size: 24px;
+  }
+
+  .header-text p {
+    font-size: 13px;
+  }
+
+  .edit-form-card .ant-card-body {
+    padding: 24px 20px !important;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .submit-button,
+  .cancel-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .edit-appointment-page {
+    padding: 20px 12px;
+  }
+
+  .header-content {
+    padding: 16px;
+  }
+
+  .header-icon {
+    font-size: 32px;
+    padding: 10px;
+  }
+
+  .header-text h1 {
+    font-size: 20px;
+  }
+
+  .edit-form-card .ant-card-body {
+    padding: 20px 16px !important;
+  }
+
+  .custom-input,
+  .custom-datepicker,
+  .custom-phone-input,
+  .submit-button,
+  .cancel-button {
+    height: 48px !important;
+  }
+
+  .phone-input-button {
+    height: 48px !important;
+  }
+
+  .form-label {
+    font-size: 14px;
+  }
+
+  .label-icon {
+    font-size: 16px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.submit-button:focus,
+.cancel-button:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .edit-form-card,
+  .header-content {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .edit-appointment-page,
+  .page-header,
+  .edit-form-card {
+    animation: none;
+  }
+
+  .submit-button:hover,
+  .cancel-button:hover {
+    transform: none;
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, message, Spin, Button } from 'antd';
+import { Layout, Menu, Card, Row, Col, Statistic, message, Button, Typography } from 'antd';
 import { 
   UserOutlined, 
   ShopOutlined, 
@@ -8,15 +8,20 @@ import {
   RiseOutlined, 
   CheckCircleOutlined,
   CalendarOutlined,
-  TrophyOutlined,
-  FireOutlined,
-  ThunderboltOutlined,
-  PlusCircleOutlined
+  PlusCircleOutlined,
+  AppstoreOutlined,
+  BellOutlined,
+  FileTextOutlined,
+  BarChartOutlined,
+  MessageOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import MainLayout from './components/Layout/MainLayout';
 import './Dashboard.css';
+
+const { Sider, Content } = Layout;
+const { Title } = Typography;
 
 export const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -92,9 +97,92 @@ export const Dashboard = () => {
     }
   };
 
+  const menuItems = [
+    {
+      key: '/dashboard',
+      icon: <AppstoreOutlined />,
+      label: 'Dashboard',
+    },
+    {
+      key: '/MemberTable',
+      icon: <TeamOutlined />,
+      label: 'Members',
+    },
+    {
+      key: '/staffTable',
+      icon: <UserOutlined />,
+      label: 'Staff',
+    },
+    {
+      key: '/Equipmenttable',
+      icon: <ShopOutlined />,
+      label: 'Equipment',
+    },
+    {
+      key: '/Attendancetable',
+      icon: <CalendarOutlined />,
+      label: 'Attendance',
+    },
+    {
+      key: '/payment',
+      icon: <DollarOutlined />,
+      label: 'Payments',
+    },
+    {
+      key: '/Announcementtable',
+      icon: <BellOutlined />,
+      label: 'Announcements',
+    },
+    {
+      key: '/Chat',
+      icon: <MessageOutlined />,
+      label: 'Chat',
+    },
+    {
+      key: '/reports',
+      icon: <BarChartOutlined />,
+      label: 'Reports',
+    },
+  ];
+
   return (
-    <MainLayout>
-      <div className="dashboard-page">
+    <Layout className="dashboard-layout" hasSider>
+      {/* Sidebar */}
+      <Sider
+        breakpoint="lg"
+        collapsedWidth="80"
+        className="dashboard-sider"
+        width={260}
+      >
+        <div className="sidebar-logo">
+          <div className="logo-icon">💪</div>
+          <Title level={4} className="logo-text">Mega Power</Title>
+        </div>
+        
+        <Menu
+          mode="inline"
+          selectedKeys={['/dashboard']}
+          className="sidebar-menu"
+          items={menuItems}
+          onClick={({ key }) => navigate(key)}
+        />
+
+        <div className="sidebar-footer">
+          <Button 
+            className="logout-button"
+            icon={<SettingOutlined />}
+            block
+            onClick={() => navigate('/')}
+          >
+            Logout
+          </Button>
+        </div>
+      </Sider>
+
+      {/* Main Content */}
+      <Layout>
+        <Content className="dashboard-content">
+          <div className="dashboard-page">
         {/* Header Section */}
         <div className="dashboard-header">
           <div className="header-content">
@@ -333,8 +421,10 @@ export const Dashboard = () => {
             </Card>
           </Col>
         </Row>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

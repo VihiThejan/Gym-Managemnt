@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Space, DatePicker, InputNumber, Form, message, Select, Input } from 'antd';
+import { Button, DatePicker, Form, message, Select, Input, Card } from 'antd';
+import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, ShoppingOutlined, 
+         TagsOutlined, NumberOutlined, FileTextOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
+import MainLayout from './components/Layout/MainLayout';
+import './EditEquipment.css';
 
 const { TextArea } = Input;
 
