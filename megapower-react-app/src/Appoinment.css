@@ -372,6 +372,48 @@
   }
 }
 
+/* Staff Select Dropdown */
+.appointment-staff-select {
+  width: 100%;
+}
+
+.appointment-staff-select .ant-select-selector {
+  padding: 12px 16px !important;
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 12px !important;
+  font-size: 15px !important;
+  transition: all 0.3s ease !important;
+  background: #f8f9fa !important;
+  min-height: 52px !important;
+}
+
+.appointment-staff-select:hover .ant-select-selector {
+  border-color: #a5b4fc !important;
+  background: white !important;
+}
+
+.appointment-staff-select.ant-select-focused .ant-select-selector {
+  border-color: #667eea !important;
+  background: white !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+}
+
+.appointment-staff-select.error .ant-select-selector {
+  border-color: #ff4d4f !important;
+  background: #fff5f5 !important;
+}
+
+.appointment-staff-select .ant-select-selection-placeholder {
+  color: #999 !important;
+  line-height: 28px !important;
+}
+
+.appointment-staff-select .ant-select-selection-item {
+  line-height: 28px !important;
+  color: #333 !important;
+  font-weight: 500 !important;
+}
+
 /* Animations */
 @keyframes slideUp {
   from {

@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import { Button, Space, Form, DatePicker, TimePicker, message } from "antd";
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from "react";
+import { Button, Space, Form, DatePicker, TimePicker, message, Select } from "antd";
+import { ArrowLeftOutlined, ClockCircleOutlined, CalendarOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import MainLayout from "./components/Layout/MainLayout";
+import "./Attendance.css";
+
+const { Option } = Select;
 
 export const Attendance = () => {
   const [id, setId] = useState("");
@@ -10,8 +14,71 @@ export const Attendance = () => {
   const [inTime, setInTime] = useState(null);
   const [outTime, setOutTime] = useState(null);
   const [formErrors, setFormErrors] = useState({});
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [memberList, setMemberList] = useState([]);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch member list for dropdown
+    fetchMemberList();
+
+    // Check if user is logged in and get their details
+    const loginData = localStorage.getItem('login');
+    if (loginData) {
+      try {
+        const userData = JSON.parse(loginData);
+        setLoggedInUser(userData);
+        
+        // Detect user role and auto-fill Member ID
+        if (userData.Member_Id) {
+          setUserRole('Member');
+          setId(userData.Member_Id.toString());
+          // Find and set the selected member
+          fetchMemberList().then(members => {
+            const member = members.find(m => m.Member_Id === userData.Member_Id);
+            if (member) {
+              setSelectedMember(member);
+            }
+          });
+        } else if (userData.User_ID) {
+          setUserRole('Admin');
+        } else if (userData.Staff_ID) {
+          setUserRole('Staff');
+        }
+      } catch (error) {
+        console.error('Error parsing login data:', error);
+      }
+    }
+
+    // Set today's date by default
+    setDate(null); // User can select date manually
+  }, []);
+
+  const fetchMemberList = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/v1/member/list');
+      const members = response.data.data || [];
+      setMemberList(members);
+      return members;
+    } catch (error) {
+      console.error('Error fetching member list:', error);
+      message.error('Failed to load member list');
+      return [];
+    }
+  };
+
+  const handleMemberChange = (value) => {
+    setId(value);
+    const member = memberList.find(m => m.Member_Id.toString() === value);
+    setSelectedMember(member);
+    // Clear error when user selects
+    if (formErrors.id) {
+      setFormErrors({ ...formErrors, id: '' });
+    }
+  };
 
   const handleGoBack = () => {
     navigate('/Attendancetable');
@@ -62,151 +129,212 @@ export const Attendance = () => {
     setInTime(null);
     setOutTime(null);
     setFormErrors({});
+    setSelectedMember(null);
+    
+    // Re-apply auto-fill if user is a member
+    if (userRole === 'Member' && loggedInUser) {
+      setId(loggedInUser.Member_Id.toString());
+      const member = memberList.find(m => m.Member_Id === loggedInUser.Member_Id);
+      if (member) {
+        setSelectedMember(member);
+      }
+    }
   };
 
   return (
-    <div
-      className="auth-form-container"
-      style={{
-        padding: "50px",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        borderRadius: "15px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-        maxWidth: "400px",
-        margin: "auto",
-      }}
-    >
-      <div style={{ marginBottom: '20px' }}>
-        <Button 
-          type="text" 
-          icon={<ArrowLeftOutlined />} 
-          onClick={handleGoBack} 
-          style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}
-        >
-          Back
-        </Button>
-      </div>
-      <h2 style={{ color: "white", textAlign: "center", marginBottom: "30px" }}>
-        Attendance
-      </h2>
-      <form
-        className="Attendance-form"
-        onSubmit={handleSubmit}
-        style={{ textAlign: "left" }}
-      >
-      
-        <label
-          htmlFor="Id"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          Member Id
-        </label>
-        <input
-          value={id}
-          name="Id"
-          onChange={(e) => setId(e.target.value)}
-          id="Id"
-          placeholder="Id"
-          style={{
-            width: "100%",
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-            marginBottom: "15px",
-          }}
-        />
-        {formErrors.id && <p style={{ color: "red" }}>{formErrors.id}</p>}
-
-        
-        <label
-          htmlFor="Date"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          Date
-        </label>
-        <Space direction="vertical" style={{ width: "100%", marginBottom: "20px" }}>
-          <DatePicker
-            onChange={(date) => setDate(date)}
-            style={{ width: "100%", borderRadius: "5px" }}
-          />
-        </Space>
-        {formErrors.date && <p style={{ color: "red" }}>{formErrors.date}</p>}
-
-        
-        <label
-          htmlFor="InTime"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          In Time
-        </label>
-        <TimePicker
-          onChange={(time) => setInTime(time)}
-          minuteStep={15}
-          secondStep={10}
-          hourStep={1}
-          format="HH:mm:ss"
-          style={{ width: "100%", borderRadius: "5px", marginBottom: "20px" }}
-        />
-        {formErrors.inTime && <p style={{ color: "red" }}>{formErrors.inTime}</p>}
-
-        
-        <label
-          htmlFor="OutTime"
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          Out Time
-        </label>
-        <TimePicker
-          onChange={(time) => setOutTime(time)}
-          minuteStep={15}
-          secondStep={10}
-          hourStep={1}
-          format="HH:mm:ss"
-          style={{ width: "100%", borderRadius: "5px", marginBottom: "20px" }}
-        />
-        {formErrors.outTime && <p style={{ color: "red" }}>{formErrors.outTime}</p>}
-
-        
-        <Form.Item style={{ textAlign: "left", marginTop: "20px" }}>
-          <Space size="large">
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-            <Button
-              onClick={handleReset} 
-              type="default"
-              htmlType="button"
-              style={{
-                backgroundColor: "white",
-                color: "black",
-                border: "1px solid #d9d9d9",
-              }}
+    <MainLayout>
+      <div className="attendance-page">
+        <div className="attendance-container">
+          {/* Header Section */}
+          <div className="attendance-header">
+            <Button 
+              type="text" 
+              icon={<ArrowLeftOutlined />} 
+              onClick={handleGoBack}
+              className="back-button"
             >
-              Cancel
+              Back to Attendance List
             </Button>
-          </Space>
-        </Form.Item>
-      </form>
-    </div>
+            <h1 className="attendance-title">
+              <ClockCircleOutlined /> Mark Attendance
+            </h1>
+            <p className="attendance-subtitle">
+              Record member check-in and check-out times
+            </p>
+          </div>
+
+          {/* Info Box */}
+          {loggedInUser && userRole === 'Member' && (
+            <div className="attendance-info-box">
+              <UserOutlined style={{ fontSize: '20px', color: '#10b981' }} />
+              <div>
+                <strong>Logged in as:</strong> {loggedInUser.FName} (Member ID: {loggedInUser.Member_Id})
+                <div style={{ fontSize: '13px', marginTop: '4px', opacity: 0.9 }}>
+                  Your member ID has been automatically filled
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Form Card */}
+          <div className="attendance-form-card">
+            <form className="attendance-form" onSubmit={handleSubmit}>
+              {/* Member ID Field */}
+              <div className="form-group">
+                <label htmlFor="Id" className="form-label">
+                  <UserOutlined /> Member Selection
+                  {selectedMember && (
+                    <span style={{ color: '#10b981', marginLeft: '8px' }}>
+                      ({selectedMember.FName} {selectedMember.LName})
+                    </span>
+                  )}
+                </label>
+                {userRole === 'Member' ? (
+                  // Read-only input for logged-in members
+                  <>
+                    <input
+                      value={id}
+                      name="Id"
+                      id="Id"
+                      placeholder="Auto-filled from your profile"
+                      readOnly={true}
+                      className={`form-input readonly ${formErrors.id ? 'error' : ''}`}
+                      style={{ 
+                        backgroundColor: '#f0f9ff', 
+                        fontWeight: 'bold',
+                        cursor: 'not-allowed'
+                      }}
+                    />
+                    {formErrors.id && <p className="error-text">{formErrors.id}</p>}
+                    <p className="helper-text success">
+                      ✓ Using your logged-in member ID: {loggedInUser.FName}
+                    </p>
+                  </>
+                ) : (
+                  // Searchable dropdown for Admin/Staff
+                  <>
+                    <Select
+                      showSearch
+                      value={id || undefined}
+                      onChange={handleMemberChange}
+                      placeholder="Search by Member ID or Name..."
+                      className={`attendance-member-select ${formErrors.id ? 'error' : ''}`}
+                      style={{ width: '100%' }}
+                      filterOption={(input, option) => {
+                        const searchText = input.toLowerCase();
+                        const member = memberList.find(m => m.Member_Id.toString() === option.value);
+                        if (!member) return false;
+                        
+                        const fullName = `${member.FName} ${member.LName}`.toLowerCase();
+                        const memberId = member.Member_Id.toString();
+                        
+                        return fullName.includes(searchText) || memberId.includes(searchText);
+                      }}
+                      size="large"
+                    >
+                      {memberList.map((member) => (
+                        <Option key={member.Member_Id} value={member.Member_Id.toString()}>
+                          {member.FName} {member.LName} - ID: {member.Member_Id} ({member.Gender})
+                        </Option>
+                      ))}
+                    </Select>
+                    {formErrors.id && <p className="error-text">{formErrors.id}</p>}
+                    <p className="helper-text">
+                      👥 {memberList.length} members available - Search by name or ID
+                    </p>
+                  </>
+                )}
+              </div>
+
+              {/* Date Field */}
+              <div className="form-group">
+                <label htmlFor="Date" className="form-label">
+                  <CalendarOutlined /> Date
+                </label>
+                <DatePicker
+                  value={date}
+                  onChange={(date) => setDate(date)}
+                  placeholder="Select attendance date"
+                  className={`attendance-date-picker ${formErrors.date ? 'error' : ''}`}
+                  style={{ width: "100%" }}
+                  format="YYYY-MM-DD"
+                />
+                {formErrors.date && <p className="error-text">{formErrors.date}</p>}
+                <p className="helper-text">
+                  📅 Select the date for this attendance record
+                </p>
+              </div>
+
+              {/* In Time Field */}
+              <div className="form-group">
+                <label htmlFor="InTime" className="form-label">
+                  <LoginOutlined /> Check-In Time
+                </label>
+                <TimePicker
+                  value={inTime}
+                  onChange={(time) => setInTime(time)}
+                  minuteStep={15}
+                  secondStep={10}
+                  hourStep={1}
+                  format="HH:mm:ss"
+                  placeholder="Select check-in time"
+                  className={`attendance-time-picker ${formErrors.inTime ? 'error' : ''}`}
+                  style={{ width: "100%" }}
+                />
+                {formErrors.inTime && <p className="error-text">{formErrors.inTime}</p>}
+                <p className="helper-text">
+                  🕐 Record when the member entered the gym
+                </p>
+              </div>
+
+              {/* Out Time Field */}
+              <div className="form-group">
+                <label htmlFor="OutTime" className="form-label">
+                  <LogoutOutlined /> Check-Out Time
+                </label>
+                <TimePicker
+                  value={outTime}
+                  onChange={(time) => setOutTime(time)}
+                  minuteStep={15}
+                  secondStep={10}
+                  hourStep={1}
+                  format="HH:mm:ss"
+                  placeholder="Select check-out time"
+                  className={`attendance-time-picker ${formErrors.outTime ? 'error' : ''}`}
+                  style={{ width: "100%" }}
+                />
+                {formErrors.outTime && <p className="error-text">{formErrors.outTime}</p>}
+                <p className="helper-text">
+                  🕐 Record when the member left the gym
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <Form.Item className="form-actions">
+                <Space size="large">
+                  <Button 
+                    type="primary" 
+                    htmlType="submit"
+                    className="submit-button"
+                    size="large"
+                  >
+                    <ClockCircleOutlined /> Mark Attendance
+                  </Button>
+                  <Button
+                    onClick={handleReset} 
+                    type="default"
+                    htmlType="button"
+                    className="cancel-button"
+                    size="large"
+                  >
+                    Cancel
+                  </Button>
+                </Space>
+              </Form.Item>
+            </form>
+          </div>
+        </div>
+      </div>
+    </MainLayout>
   );
 };
