@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Space, Form, message } from 'antd';  
+import { message } from 'antd';  
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, UserAddOutlined } from '@ant-design/icons';
+import MainLayout from './components/Layout/MainLayout';
+import './Admin.css';
 
 export const Admin = () => {
     const navigate = useNavigate();
@@ -16,9 +18,24 @@ export const Admin = () => {
     const [passwordError, setPasswordError] = useState('');
     const [nameError, setNameError] = useState('');
     const [mobileError, setMobileError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     
-   
-  
+    const getPasswordStrength = (password) => {
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        const isLongEnough = password.length >= 6;
+        
+        return {
+            hasUppercase,
+            hasLowercase,
+            hasNumber,
+            hasSpecialChar,
+            isLongEnough
+        };
+    };
+    
     const validateName = (name) => {
         const nameRegex = /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/;
         if (!nameRegex.test(name)) {
@@ -100,6 +117,8 @@ export const Admin = () => {
         e.preventDefault();
         
         if (!validateForm()) return;
+        
+        setIsSubmitting(true);
 
         const body = {
             name: name,
@@ -110,11 +129,19 @@ export const Admin = () => {
         try {
             const res = await axios.post('http://localhost:5000/api/v1/auth/register', body);  
             console.log(res?.data?.data);
-            message.success("Admin registered successfully.");
-            navigate('/');
+            message.success({
+                content: 'Admin registered successfully! Redirecting to login...',
+                icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
+                duration: 3
+            });
+            
+            setTimeout(() => {
+                navigate('/');
+            }, 1500);
         } catch (Err) {
             console.log(Err.message);
-            message.error("Failed to register Admin.");
+            message.error("Failed to register Admin. Please try again.");
+            setIsSubmitting(false);
         }
     };
 
@@ -127,80 +154,163 @@ export const Admin = () => {
         setMobileError('');
     };
 
-    const handleGoBack = () => {
-      navigate('/'); 
-  };
+    const passwordStrength = getPasswordStrength(pass);
 
     return (
-        <div className="auth-form-container" style={{ maxWidth: '400px', margin: 'auto', textAlign: 'left', backgroundColor: "rgba(0, 0, 0, 0.5)", padding: '20px' }}>
-            
-            <div style={{ marginBottom: '40px' }}> 
-                <Button 
-                    type="text" 
-                    icon={<ArrowLeftOutlined />} 
-                    onClick={handleGoBack} 
-                    style={{ 
-                        color: 'white', 
-                        fontWeight: 'bold', 
-                        fontSize: '18px', 
-                    }}
-                >
-                    Back
-                </Button>
+        <MainLayout>
+            <div className="admin-register-container">
+                <div className="register-card">
+                    <div className="register-card-header">
+                        <div className="register-icon">
+                            <UserAddOutlined />
+                        </div>
+                        <h1 className="register-title">Create Admin Account</h1>
+                        <p className="register-subtitle">Join Mega Power Gym Management System</p>
+                    </div>
+
+                    <div className="register-card-body">
+                        <form onSubmit={handleSubmit}>
+                            {/* Full Name Field */}
+                            <div className="modern-form-group">
+                                <label htmlFor="name" className="modern-form-label">
+                                    Full Name
+                                </label>
+                                <input
+                                    value={name}
+                                    name="name"
+                                    onChange={(e) => {
+                                        setName(e.target.value);
+                                        if (e.target.value) {
+                                            setNameError(validateName(e.target.value));
+                                        } else {
+                                            setNameError('');
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        if (e.target.value) {
+                                            setNameError(validateName(e.target.value));
+                                        }
+                                    }}
+                                    id="name"
+                                    placeholder="John Doe"
+                                    className={`modern-form-input ${nameError ? 'error' : ''}`}
+                                />
+                                {nameError && <p className="error-message">{nameError}</p>}
+                            </div>
+
+                            {/* Mobile Field */}
+                            <div className="modern-form-group">
+                                <label htmlFor="mobile" className="modern-form-label">
+                                    Mobile Number
+                                </label>
+                                <PhoneInput
+                                    country={'lk'}
+                                    value={mobile}
+                                    onChange={(phone) => {
+                                        setMobile(phone);
+                                        if (phone) {
+                                            setMobileError(validateMobile(phone));
+                                        } else {
+                                            setMobileError('');
+                                        }
+                                    }}
+                                    containerClass={`modern-phone-input ${mobileError ? 'error' : ''}`}
+                                    inputProps={{
+                                        name: 'mobile',
+                                        required: true,
+                                        autoFocus: false
+                                    }}
+                                />
+                                {mobileError && <p className="error-message">{mobileError}</p>}
+                            </div>
+
+                            {/* Password Field */}
+                            <div className="modern-form-group">
+                                <label htmlFor="password" className="modern-form-label">
+                                    Password
+                                </label>
+                                <input
+                                    value={pass}
+                                    onChange={(e) => {
+                                        setPass(e.target.value);
+                                        if (e.target.value) {
+                                            setPasswordError(validatePassword(e.target.value));
+                                        } else {
+                                            setPasswordError('');
+                                        }
+                                    }}
+                                    type="password"
+                                    placeholder="Enter a strong password"
+                                    id="password"
+                                    name="password"
+                                    className={`modern-form-input ${passwordError ? 'error' : ''}`}
+                                />
+                                {passwordError && <p className="error-message">{passwordError}</p>}
+                                
+                                {/* Password Strength Indicator */}
+                                {pass && (
+                                    <div className="password-requirements">
+                                        <div className="password-requirements-title">Password Requirements:</div>
+                                        <div className={`requirement-item ${passwordStrength.isLongEnough ? 'met' : ''}`}>
+                                            At least 6 characters
+                                        </div>
+                                        <div className={`requirement-item ${passwordStrength.hasUppercase ? 'met' : ''}`}>
+                                            One uppercase letter
+                                        </div>
+                                        <div className={`requirement-item ${passwordStrength.hasLowercase ? 'met' : ''}`}>
+                                            One lowercase letter
+                                        </div>
+                                        <div className={`requirement-item ${passwordStrength.hasNumber ? 'met' : ''}`}>
+                                            One number
+                                        </div>
+                                        <div className={`requirement-item ${passwordStrength.hasSpecialChar ? 'met' : ''}`}>
+                                            One special character
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="button-group">
+                                <button 
+                                    type="submit" 
+                                    className="modern-button modern-button-primary"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <>⏳ Registering...</>
+                                    ) : (
+                                        <>
+                                            <CheckCircleOutlined /> Create Account
+                                        </>
+                                    )}
+                                </button>
+                                <button 
+                                    type="button" 
+                                    onClick={handleReset} 
+                                    className="modern-button modern-button-secondary"
+                                    disabled={isSubmitting}
+                                >
+                                    Clear Form
+                                </button>
+                            </div>
+                        </form>
+
+                        {/* Login Link */}
+                        <div className="login-link-container">
+                            <span className="login-link-text">Already have an account?</span>
+                            <button 
+                                onClick={() => navigate('/')} 
+                                className="login-link"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                            >
+                                Login here
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <h2 style={{ textAlign: 'center' }}>Register</h2>
-            <form className="register-form" onSubmit={handleSubmit}>
-                
-                <label htmlFor="name">Full Name</label>
-                <input
-                    value={name}
-                    name="name"
-                    onChange={(e) => {
-                        setName(e.target.value);
-                        setNameError(validateName(e.target.value));
-                    }}
-                    id="name"
-                    placeholder="Full Name"
-                />
-                {nameError && <p style={{ color: 'red' }}>{nameError}</p>}
-
-              
-                <label htmlFor="mobile">Mobile</label>
-                <PhoneInput
-                    country={'lk'}
-                    value={mobile}
-                    onChange={(phone) => {
-                        setMobile(phone);
-                        setMobileError(validateMobile(phone));
-                    }}
-                />
-                {mobileError && <p style={{ color: 'red' }}>{mobileError}</p>} <br/>
-
-                
-                <label htmlFor="password">Password</label>
-                <input
-                    value={pass}
-                    onChange={(e) => {
-                        setPass(e.target.value);
-                        setPasswordError(validatePassword(e.target.value));
-                    }}
-                    type="password"
-                    placeholder=""
-                    id="password"
-                    name="password"
-                />
-                {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>} <br/>
-
-                
-                <Form.Item style={{ textAlign: 'left' }}> 
-                    <Space>
-                        <Button type="primary" htmlType="submit" onClick={handleSubmit}>Submit</Button>
-                        <Button htmlType="button" onClick={handleReset}>Cancel</Button> 
-                    </Space>
-                </Form.Item>
-            </form>
-        </div>
+        </MainLayout>
     );
 };
 
