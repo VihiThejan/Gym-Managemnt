@@ -92,13 +92,14 @@
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
     font-weight: 700;
-    color: #333;
+    color: #00008B;
 }
 
 .card-header p {
     margin: 0;
     font-size: 1rem;
-    color: #666;
+    color: #2d3748 !important;
+    font-weight: 600 !important;
 }
 
 /* ================================

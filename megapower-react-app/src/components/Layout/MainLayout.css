@@ -8,8 +8,9 @@
 /* Modern Header */
 .modern-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 0;
-  height: 80px;
+  padding: 10px 0;
+  height: auto;
+  min-height: 70px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   position: sticky;
   top: 0;
@@ -20,10 +21,10 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 70px;
 }
 
 .logo-section {
@@ -32,6 +33,7 @@
   gap: 12px;
   cursor: pointer;
   transition: transform 0.3s ease;
+  margin-left: 1cm;
 }
 
 .logo-section:hover {
@@ -64,13 +66,14 @@
   display: flex;
   gap: 20px;
   align-items: center;
+  margin-right: 1cm;
 }
 
 .nav-link {
   color: white;
   text-decoration: none;
-  padding: 8px 20px;
-  border-radius: 25px;
+  padding: 6px 20px;
+  border-radius: 20px;
   transition: all 0.3s ease;
   font-weight: 500;
   cursor: pointer;
@@ -79,6 +82,9 @@
   gap: 8px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
+  font-size: 14px;
+  white-space: nowrap;
+  height: 36px;
 }
 
 .nav-link:hover {

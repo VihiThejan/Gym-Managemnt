@@ -132,14 +132,22 @@
 
 /* Main Content Area */
 .dashboard-content {
-  margin-left: 260px;
+  margin-left: 0;
+  padding-left: 260px;
   background: transparent;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .dashboard-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 32px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 /* ============================================
@@ -147,12 +155,13 @@
    ============================================ */
 
 .dashboard-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px;
-  border-radius: 20px;
+  background: transparent;
+  padding: 6px 40px;
+  border-radius: 0;
   margin-bottom: 32px;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  box-shadow: none;
   animation: fadeInDown 0.6s ease-out;
+  width: 100%;
 }
 
 .header-content {
@@ -164,35 +173,43 @@
 }
 
 .header-title h1 {
-  color: #ffffff;
-  font-size: 36px;
+  color: #ffffff !important;
+  font-size: 28px;
   font-weight: 700;
-  margin: 0 0 8px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 0 4px 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: none !important;
+  line-height: 1.2;
 }
 
 .header-title p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
+  color: #ffffff !important;
+  font-size: 14px;
   margin: 0;
-  font-weight: 400;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  background: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  line-height: 1.4;
 }
 
 .header-date {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 12px 24px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 500;
+  gap: 8px;
+  color: #1a1a2e;
+  font-size: 18px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header-date .date-icon {
-  font-size: 20px;
+  font-size: 24px;
+  color: #667eea;
 }
 
 /* ============================================
@@ -201,6 +218,7 @@
 
 .stats-section {
   animation: fadeInUp 0.6s ease-out 0.2s backwards;
+  width: 100%;
 }
 
 .stat-card {
@@ -225,40 +243,65 @@
 
 /* Card Color Themes */
 .stat-card-purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ffffff;
+  border: 2px solid #667eea;
 }
 
 .stat-card-pink {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: #ffffff;
+  border: 2px solid #f093fb;
 }
 
 .stat-card-blue {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: #ffffff;
+  border: 2px solid #4facfe;
 }
 
 .stat-card-green {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: #ffffff;
+  border: 2px solid #43e97b;
 }
 
 .stat-card-orange {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: #ffffff;
+  border: 2px solid #fa709a;
 }
 
 .stat-card-teal {
-  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+  background: #ffffff;
+  border: 2px solid #30cfd0;
 }
 
 /* Stat Icon */
 .stat-icon-wrapper {
   width: 64px;
   height: 64px;
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  backdrop-filter: blur(10px);
+}
+
+.stat-card-pink .stat-icon-wrapper {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-card-blue .stat-icon-wrapper {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-card-green .stat-icon-wrapper {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stat-card-orange .stat-icon-wrapper {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.stat-card-teal .stat-icon-wrapper {
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
 }
 
 .stat-icon {
@@ -268,34 +311,43 @@
 
 /* Stat Title and Value */
 .stat-card .ant-statistic-title {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: #2d3748 !important;
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   margin-bottom: 8px !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-shadow: none;
 }
 
 .stat-card .ant-statistic-content {
   margin-top: 8px;
 }
 
+.stat-card .ant-statistic-content-value {
+  color: #1a1a2e !important;
+  text-shadow: none;
+}
+
 .stat-card .ant-statistic-content-prefix,
 .stat-card .ant-statistic-content-suffix {
-  color: #ffffff !important;
+  color: #1a1a2e !important;
   font-size: 18px;
+  text-shadow: none;
 }
 
 /* Stat Footer */
 .stat-footer {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: #4a5568 !important;
   font-size: 13px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 6px;
+  text-shadow: none;
 }
 
 .stat-footer .anticon {
@@ -457,9 +509,9 @@
 
 .activity-title {
   font-size: 13px;
-  color: #6c757d;
+  color: #495057;
   margin-bottom: 4px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -467,7 +519,7 @@
 .activity-value {
   font-size: 16px;
   color: #212529;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ============================================
@@ -527,11 +579,14 @@
 
 @media (max-width: 992px) {
   .dashboard-content {
-    margin-left: 80px;
+    margin-left: 0;
+    padding-left: 80px;
   }
 
   .dashboard-page {
     padding: 24px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .sidebar-logo .logo-text {
@@ -560,6 +615,7 @@
 @media (max-width: 768px) {
   .dashboard-content {
     margin-left: 0;
+    padding-left: 0;
   }
 
   .dashboard-sider {
@@ -569,6 +625,8 @@
 
   .dashboard-page {
     padding: 16px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .dashboard-header {

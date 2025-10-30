@@ -214,7 +214,7 @@ export const Dashboard = () => {
                 <Statistic
                   title="Total Members"
                   value={stats.totalMembers}
-                  valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '32px' }}
+                  valueStyle={{ color: '#1a1a2e', fontWeight: 'bold', fontSize: '32px' }}
                 />
                 <div className="stat-footer">
                   <RiseOutlined /> Active registrations
@@ -231,7 +231,7 @@ export const Dashboard = () => {
                 <Statistic
                   title="Total Staff"
                   value={stats.totalStaff}
-                  valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '32px' }}
+                  valueStyle={{ color: '#1a1a2e', fontWeight: 'bold', fontSize: '32px' }}
                 />
                 <div className="stat-footer">
                   <CheckCircleOutlined /> Team members
@@ -248,7 +248,7 @@ export const Dashboard = () => {
                 <Statistic
                   title="Today's Check-ins"
                   value={stats.todayAttendance}
-                  valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '32px' }}
+                  valueStyle={{ color: '#1a1a2e', fontWeight: 'bold', fontSize: '32px' }}
                 />
                 <div className="stat-footer">
                   <CalendarOutlined /> Members present
@@ -265,7 +265,7 @@ export const Dashboard = () => {
                 <Statistic
                   title="Total Equipment"
                   value={stats.totalEquipment}
-                  valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '32px' }}
+                  valueStyle={{ color: '#1a1a2e', fontWeight: 'bold', fontSize: '32px' }}
                 />
                 <div className="stat-footer">
                   <CheckCircleOutlined /> Assets available
@@ -284,7 +284,7 @@ export const Dashboard = () => {
                   value={stats.totalRevenue}
                   prefix="LKR "
                   precision={2}
-                  valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '28px' }}
+                  valueStyle={{ color: '#1a1a2e', fontWeight: 'bold', fontSize: '28px' }}
                 />
                 <div className="stat-footer">
                   <RiseOutlined /> All-time earnings
@@ -303,7 +303,7 @@ export const Dashboard = () => {
                   value={stats.monthlyRevenue}
                   prefix="LKR "
                   precision={2}
-                  valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '28px' }}
+                  valueStyle={{ color: '#1a1a2e', fontWeight: 'bold', fontSize: '28px' }}
                 />
                 <div className="stat-footer">
                   <RiseOutlined /> This month's earnings

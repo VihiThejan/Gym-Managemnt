@@ -80,7 +80,7 @@ npm start
 ## 🔧 Backend Setup
 
 ### 1. Navigate to Backend Directory
-```bash
+```bash 
 cd Backend
 ```
 
