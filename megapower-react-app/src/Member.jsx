@@ -168,9 +168,7 @@ export const Member = () => {
   };
 
   
-  const handleSubmit = async (e) => {
-    e.preventDefault(); 
-
+  const handleSubmit = async (values) => {
     if (!validateForm()) return;
 
     setSubmitting(true);
