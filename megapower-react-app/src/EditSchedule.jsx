@@ -48,9 +48,7 @@ export const EditSchedule = () => {
 
 
 
- const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+ const handleSubmit = async () => {
     // Validation
     if (!staffId || !memberId || !exercise || !equipment || !quantity || !date) {
        message.error('Please fill in all fields');
@@ -108,7 +106,7 @@ export const EditSchedule = () => {
         {/* Form Section */}
         <div className="edit-schedule-content">
           <Card className="edit-schedule-card" loading={loading}>
-            <Form onSubmit={handleSubmit} className="edit-schedule-form">
+            <Form onFinish={handleSubmit} className="edit-schedule-form">
               {/* Staff ID */}
               <Form.Item>
                 <label className="form-label">

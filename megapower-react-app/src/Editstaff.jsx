@@ -88,9 +88,7 @@ export const EditStaff = () => {
         return '';
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
+    const handleSubmit = async () => {
         // Validation
         if (!name || !address || !email || !mobile || !date) {
             message.error("Please fill in all required fields.");
@@ -181,7 +179,7 @@ export const EditStaff = () => {
                 {/* Form Section */}
                 <div className="edit-staff-content">
                     <Card className="edit-staff-card" loading={loading}>
-                        <Form onSubmit={handleSubmit} className="edit-staff-form">
+                        <Form onFinish={handleSubmit} className="edit-staff-form">
                             {/* Full Name */}
                             <Form.Item validateStatus={nameError ? 'error' : ''} help={nameError}>
                                 <label className="form-label">

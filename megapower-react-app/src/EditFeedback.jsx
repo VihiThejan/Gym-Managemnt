@@ -39,9 +39,7 @@ export const EditFeedback = () => {
    }, [id]);
 
 
-   const handleSubmit = async (e) => {
-      e.preventDefault();
-      
+   const handleSubmit = async () => {
       if (!id || !feedbackMessage || !date) {
          message.error("Please fill in all required fields.");
          return;

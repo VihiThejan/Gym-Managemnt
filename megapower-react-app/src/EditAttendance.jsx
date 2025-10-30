@@ -39,9 +39,7 @@ export const EditAttendance = () => {
     fetchAttendance();
   }, [id]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!memberid || !date || !inTime || !outTime) {
       message.error("Please fill in all required fields.");
       return;

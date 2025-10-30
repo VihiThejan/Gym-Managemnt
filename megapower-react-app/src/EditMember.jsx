@@ -76,9 +76,7 @@ export const EditMember = () => {
     return password.length >= minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!name || !address || !email || !mobile || !pass || !date || !height || !weight) {
       message.error("Please fill in all required fields.");
       return;

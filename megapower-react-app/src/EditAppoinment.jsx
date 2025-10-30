@@ -66,8 +66,7 @@ export const EditAppoinment = () => {
         return true;
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         if (!validateForm()) return;
 
         const formattedDate = date ? date.toISOString() : null;
