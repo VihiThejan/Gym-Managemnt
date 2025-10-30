@@ -143,6 +143,12 @@ export const Dashboard = () => {
       icon: <BarChartOutlined />,
       label: 'Reports',
     },
+    {
+      key: 'logout',
+      icon: <SettingOutlined />,
+      label: 'Logout',
+      className: 'logout-menu-item',
+    },
   ];
 
   return (
@@ -172,19 +178,14 @@ export const Dashboard = () => {
           selectedKeys={['/dashboard']}
           className="sidebar-menu"
           items={menuItems}
-          onClick={({ key }) => navigate(key)}
+          onClick={({ key }) => {
+            if (key === 'logout') {
+              navigate('/');
+            } else {
+              navigate(key);
+            }
+          }}
         />
-
-        <div className="sidebar-footer">
-          <Button 
-            className="logout-button"
-            icon={<SettingOutlined />}
-            block
-            onClick={() => navigate('/')}
-          >
-            Logout
-          </Button>
-        </div>
       </Sider>
 
       {/* Main Content */}
