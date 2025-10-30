@@ -47,9 +47,7 @@ export const EditEquipment = () => {
         fetchEquipment();
     }, [id]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
+    const handleSubmit = async () => {
         if (!name || !qty || !date || !vendor || !description) {
             message.error("Please fill in all required fields.");
             return;
