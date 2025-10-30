@@ -15,6 +15,7 @@
   left: 0;
   top: 0;
   bottom: 0;
+  height: 100vh !important;
   overflow-y: auto;
   z-index: 100;
 }
@@ -133,12 +134,13 @@
 /* Main Content Area */
 .dashboard-content {
   margin-left: 260px;
-  background: transparent;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  transition: margin-left 0.2s ease;
 }
 
 .dashboard-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 32px;
 }
 
@@ -147,12 +149,13 @@
    ============================================ */
 
 .dashboard-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ffffff;
   padding: 40px;
   border-radius: 20px;
   margin-bottom: 32px;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   animation: fadeInDown 0.6s ease-out;
+  border-left: 6px solid #667eea;
 }
 
 .header-content {
@@ -164,15 +167,15 @@
 }
 
 .header-title h1 {
-  color: #ffffff;
+  color: #1a1a2e !important;
   font-size: 36px;
   font-weight: 700;
   margin: 0 0 8px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .header-title p {
-  color: rgba(255, 255, 255, 0.9);
+  color: #4a5568 !important;
   font-size: 16px;
   margin: 0;
   font-weight: 400;
@@ -182,11 +185,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 12px 24px;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
-  color: #ffffff;
+  color: #ffffff !important;
   font-size: 14px;
   font-weight: 500;
 }
@@ -221,31 +223,32 @@
   padding: 28px !important;
   position: relative;
   z-index: 2;
+  min-height: 200px;
 }
 
 /* Card Color Themes */
 .stat-card-purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
 
 .stat-card-pink {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
 }
 
 .stat-card-blue {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
 }
 
 .stat-card-green {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
 }
 
 .stat-card-orange {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
 }
 
 .stat-card-teal {
-  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+  background: linear-gradient(135deg, #30cfd0 0%, #330867 100%) !important;
 }
 
 /* Stat Icon */
@@ -259,31 +262,44 @@
   justify-content: center;
   margin-bottom: 16px;
   backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 3;
 }
 
 .stat-icon {
   font-size: 32px;
-  color: #ffffff;
+  color: #ffffff !important;
+  display: inline-block;
 }
 
 /* Stat Title and Value */
 .stat-card .ant-statistic-title {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   margin-bottom: 8px !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  position: relative;
+  z-index: 3;
 }
 
 .stat-card .ant-statistic-content {
   margin-top: 8px;
+  position: relative;
+  z-index: 3;
+}
+
+.stat-card .ant-statistic-content-value {
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 .stat-card .ant-statistic-content-prefix,
 .stat-card .ant-statistic-content-suffix {
   color: #ffffff !important;
   font-size: 18px;
+  font-weight: 600 !important;
 }
 
 /* Stat Footer */
@@ -291,15 +307,19 @@
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95) !important;
   font-size: 13px;
   display: flex;
   align-items: center;
   gap: 6px;
+  position: relative;
+  z-index: 3;
+  font-weight: 500;
 }
 
 .stat-footer .anticon {
   font-size: 14px;
+  color: #ffffff !important;
 }
 
 /* ============================================
@@ -534,10 +554,6 @@
     padding: 24px;
   }
 
-  .sidebar-logo .logo-text {
-    display: none;
-  }
-
   .dashboard-header {
     padding: 30px;
   }
@@ -578,10 +594,12 @@
 
   .header-title h1 {
     font-size: 24px;
+    color: #1a1a2e !important;
   }
 
   .header-title p {
     font-size: 14px;
+    color: #4a5568 !important;
   }
 
   .stat-card .ant-card-body {
@@ -636,6 +654,7 @@
 
   .header-title h1 {
     font-size: 20px;
+    color: #1a1a2e !important;
   }
 
   .header-date {

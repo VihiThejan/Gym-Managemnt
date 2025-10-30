@@ -194,35 +194,59 @@
 }
 
 .stat-card-purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
 
 .stat-card-pink {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
 }
 
 .stat-card-blue {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
 }
 
 .stat-card-green {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
 }
 
 .stat-card .ant-card-body {
   padding: 24px;
+  position: relative;
+  z-index: 2;
+  min-height: 180px;
 }
 
 .stat-title {
-  color: white;
+  color: white !important;
   font-size: 14px;
-  font-weight: 500;
-  opacity: 0.9;
+  font-weight: 600;
+  opacity: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
 }
 
 .stat-icon {
-  color: white;
+  color: white !important;
   font-size: 24px;
+}
+
+.stat-card .ant-statistic-title {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card .ant-statistic-content {
+  color: #ffffff !important;
+}
+
+.stat-card .ant-statistic-content-value {
+  color: #ffffff !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
 }
 
 /* Action Cards */

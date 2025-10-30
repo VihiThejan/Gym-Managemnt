@@ -153,6 +153,14 @@ export const Dashboard = () => {
         collapsedWidth="80"
         className="dashboard-sider"
         width={260}
+        style={{
+          overflow: 'auto',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+        }}
       >
         <div className="sidebar-logo">
           <div className="logo-icon">💪</div>
@@ -180,7 +188,7 @@ export const Dashboard = () => {
       </Sider>
 
       {/* Main Content */}
-      <Layout>
+      <Layout style={{ marginLeft: 260 }}>
         <Content className="dashboard-content">
           <div className="dashboard-page">
         {/* Header Section */}

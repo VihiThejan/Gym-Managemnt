@@ -193,11 +193,15 @@
 
 /* Welcome Text */
 .welcome-text {
-  color: #1a1d3a;
+  color: #1a1d3a !important;
   font-size: 20px;
   font-weight: 600;
   flex: 1;
   margin-left: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Header Actions Container */
@@ -302,11 +306,15 @@
 }
 
 .dashboard-title {
-  color: #1a1d3a;
+  color: #1a1d3a !important;
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 24px;
   text-align: left;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ============================================
@@ -332,26 +340,29 @@
 
 /* Purple Card */
 .stat-card-purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
 
 /* Pink Card */
 .stat-card-pink {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
 }
 
 /* Blue Card */
 .stat-card-blue {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
 }
 
 /* Green Card */
 .stat-card-green {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
 }
 
 .stat-card .ant-card-body {
   padding: 24px;
+  position: relative;
+  z-index: 2;
+  min-height: 180px;
 }
 
 .stat-card .ant-statistic {
@@ -361,24 +372,31 @@
 }
 
 .stat-card .ant-statistic-title {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 14px !important;
+  font-weight: 600 !important;
   margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .stat-card .ant-statistic-content {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #ffffff !important;
 }
 
 .stat-card .ant-statistic-content-value {
   font-size: 32px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 .stat-card .ant-statistic-content-prefix {
   font-size: 24px;
   margin-right: 8px;
+  color: #ffffff !important;
 }
 
 /* Progress Circle in Green Card */
