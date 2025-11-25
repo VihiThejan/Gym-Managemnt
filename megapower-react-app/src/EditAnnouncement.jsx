@@ -31,8 +31,14 @@ export const EditAnnouncement = () => {
         setMessage(announcement.Message);
         if (announcement.Date_Time) {
           const dateTime = moment(announcement.Date_Time);
+          console.log('Loaded DateTime:', dateTime.format('YYYY-MM-DD HH:mm:ss'));
           setDate(dateTime);
+          // Always set time, even if it's midnight - this allows user to change it
           setTime(dateTime);
+        } else {
+          // If no date/time exists, set defaults
+          setDate(moment());
+          setTime(moment());
         }
         setLoading(false);
       } catch (error) {
@@ -67,8 +73,10 @@ export const EditAnnouncement = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    // Combine date and time
-    const combinedDateTime = moment(date.format('YYYY-MM-DD') + ' ' + time.format('HH:mm:ss'));
+    // Combine date and time properly to avoid timezone issues
+    const dateStr = date.format('YYYY-MM-DD');
+    const timeStr = time.format('HH:mm:ss');
+    const combinedDateTime = moment(`${dateStr}T${timeStr}`);
     const formattedDate = combinedDateTime.toISOString();
 
     const body = {
@@ -78,6 +86,7 @@ export const EditAnnouncement = () => {
     };
 
     console.log("Sending update request with body:", body);
+    console.log("Combined DateTime:", combinedDateTime.format('YYYY-MM-DD HH:mm:ss'));
 
     try {
       setSubmitting(true);
@@ -185,12 +194,23 @@ export const EditAnnouncement = () => {
               >
                 <TimePicker
                   value={time}
-                  onChange={(time) => setTime(time)}
+                  onChange={(newTime) => {
+                    console.log('Time changed to:', newTime ? newTime.format('HH:mm:ss') : 'null');
+                    if (newTime) {
+                      setTime(newTime);
+                    }
+                  }}
                   className="custom-timepicker"
                   size="large"
-                  format="HH:mm:ss"
+                  format="HH:mm"
                   placeholder="Select time"
                   style={{ width: '100%' }}
+                  showNow={true}
+                  minuteStep={5}
+                  use12Hours={false}
+                  allowClear={false}
+                  inputReadOnly={false}
+                  disabled={false}
                 />
               </Form.Item>
             </div>
