@@ -118,16 +118,16 @@ export const Announcementtable = () => {
       width: 180,
       fixed: "right", 
       render: (_, record) => (
-        <div className="announcement-table-action-buttons">
+        <div className="action-buttons">
           <button 
-            className="announcement-table-btn announcement-table-btn-edit"
+            className="edit-button"
             onClick={() => handleEdit(record.Announcement_ID)}
           >
             <EditOutlined />
             Edit
           </button>
           <button 
-            className="announcement-table-btn announcement-table-btn-delete"
+            className="delete-button"
             onClick={() => handleDelete(record.Announcement_ID)}
           >
             <DeleteOutlined />
@@ -148,109 +148,45 @@ export const Announcementtable = () => {
   return (
     <MainLayout showSidebar={true} showNavigation={false}>
       <div className="announcement-table-container">
-        <div className="announcement-table-card">
-          {/* Header */}
-          <div className="announcement-table-header">
-            <div className="announcement-table-header-content">
-              <div className="announcement-table-title-section">
-                <div className="announcement-table-icon">📢</div>
-                <div className="announcement-table-title-group">
-                  <h1>Announcements</h1>
-                  <p className="announcement-table-subtitle">
-                    Manage and view all system announcements
-                  </p>
-                </div>
-              </div>
-              <div className="announcement-table-actions">
-                <button 
-                  className="announcement-action-button announcement-action-button-primary"
-                  onClick={() => navigate("/Announcement")}
-                >
-                  <PlusOutlined />
-                  New Announcement
-                </button>
-                <button 
-                  className="announcement-action-button announcement-action-button-secondary"
-                  onClick={() => navigate("/Dashboard")}
-                >
-                  <ArrowLeftOutlined />
-                  Dashboard
-                </button>
-              </div>
-            </div>
+        {/* Header */}
+        <div className="table-header">
+          <div className="header-left">
+            <SoundOutlined className="header-icon" />
+            <h1 className="table-title">Announcement Management</h1>
           </div>
-
-          {/* Body */}
-          <div className="announcement-table-body">
-            {/* Controls */}
-            <div className="announcement-table-controls">
-              <div className="announcement-table-stats">
-                <div className="announcement-stat-item">
-                  <SoundOutlined style={{ fontSize: '20px', color: '#f093fb' }} />
-                  <span className="announcement-stat-label">Total:</span>
-                  <span className="announcement-stat-value">{data.length}</span>
-                </div>
-                <div className="announcement-stat-item">
-                  <CalendarOutlined style={{ fontSize: '20px', color: '#f093fb' }} />
-                  <span className="announcement-stat-label">Showing:</span>
-                  <span className="announcement-stat-value">{filteredData.length}</span>
-                </div>
-              </div>
-
-              <div className="announcement-search-box">
-                <input
-                  type="text"
-                  placeholder="🔍 Search announcements..."
-                  className="announcement-search-input"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Table */}
-            <div className="announcement-custom-table">
-              {loading ? (
-                <div className="announcement-loading">
-                  <div className="announcement-loading-spinner">⏳</div>
-                  <p className="announcement-loading-text">Loading announcements...</p>
-                </div>
-              ) : filteredData.length === 0 ? (
-                <div className="announcement-empty-state">
-                  <div className="announcement-empty-icon">📭</div>
-                  <h3 className="announcement-empty-title">No announcements found</h3>
-                  <p className="announcement-empty-text">
-                    {searchText ? 'Try adjusting your search terms' : 'Create your first announcement to get started'}
-                  </p>
-                  {!searchText && (
-                    <button 
-                      className="announcement-action-button announcement-action-button-primary"
-                      onClick={() => navigate("/Announcement")}
-                      style={{ margin: '0 auto' }}
-                    >
-                      <PlusOutlined />
-                      Create Announcement
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <Table
-                  columns={columns}
-                  dataSource={filteredData}
-                  rowKey="Announcement_ID"
-                  scroll={{
-                    x: 1000, 
-                    y: 500, 
-                  }}
-                  pagination={{
-                    pageSize: 10,
-                    showSizeChanger: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} announcements`,
-                  }}
-                />
-              )}
-            </div>
+          <div className="header-actions">
+            <input
+              type="text"
+              placeholder="Search announcements..."
+              className="search-input"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <button 
+              className="add-button"
+              onClick={() => navigate("/Announcement")}
+            >
+              <PlusOutlined />
+              New Announcement
+            </button>
           </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="table-content">
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            rowKey="Announcement_ID"
+            loading={loading}
+            scroll={{ x: 1000 }}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} announcements`,
+            }}
+            className="announcement-table"
+          />
         </div>
       </div>
     </MainLayout>

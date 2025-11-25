@@ -157,7 +157,7 @@ export const Payment = () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="payment-page">
         <div className="payment-header">
           <div className="header-content">

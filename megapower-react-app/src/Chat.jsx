@@ -248,7 +248,7 @@ function Chat() {
     };
 
     return (
-        <MainLayout>
+        <MainLayout showSidebar={true} showNavigation={false}>
             <div className="chat-page">
                 <div className="chat-container">
                     {isLoggedIn && currentUser ? (
