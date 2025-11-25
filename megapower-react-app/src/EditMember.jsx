@@ -77,7 +77,7 @@ export const EditMember = () => {
   };
 
   const handleSubmit = async () => {
-    if (!name || !address || !email || !mobile || !pass || !date || !height || !weight) {
+    if (!name || !address || !email || !mobile || !date || !height || !weight) {
       message.error("Please fill in all required fields.");
       return;
     }
@@ -89,11 +89,6 @@ export const EditMember = () => {
 
     if (!validateEmail(email)) {
       message.error("Invalid email format.");
-      return;
-    }
-
-    if (!validatePassword(pass)) {
-      message.error("Password must be at least 6 characters with uppercase, lowercase, number, and special character.");
       return;
     }
 
@@ -123,7 +118,6 @@ export const EditMember = () => {
         Weight: weight,
         Height: height,
         UName: mobile,
-        Password: pass,
       };
 
       await axios.put(`http://localhost:5000/api/v1/member/update/${id}`, body);
@@ -141,7 +135,7 @@ export const EditMember = () => {
 
   if (loading) {
     return (
-      <MainLayout>
+      <MainLayout showSidebar={true} showNavigation={false}>
         <div className="edit-member-page">
           <div className="edit-member-container">
             <Card className="edit-member-card" loading={true}>
@@ -154,18 +148,20 @@ export const EditMember = () => {
   }
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="edit-member-page">
-        <div className="edit-member-header">
-          <EditOutlined className="header-icon" />
-          <div>
-            <h1 className="header-title">Edit Member</h1>
-            <p className="header-subtitle">Update member information and subscription details</p>
-          </div>
-        </div>
-
         <div className="edit-member-container">
           <Card className="edit-member-card">
+            <div className="card-header">
+              <div className="header-icon-card">
+                <EditOutlined className="header-icon" />
+              </div>
+              <div>
+                <h1 className="card-title">Edit Member</h1>
+                <p className="card-subtitle">Update member information and subscription details</p>
+              </div>
+            </div>
+
             <Form layout="vertical" onFinish={handleSubmit}>
               <Form.Item
                 label={
@@ -358,27 +354,6 @@ export const EditMember = () => {
                   />
                 </Form.Item>
               </div>
-
-              <Form.Item
-                label={
-                  <span className="form-label">
-                    <LockOutlined className="label-icon" />
-                    Password
-                  </span>
-                }
-                required
-                validateStatus={pass && !validatePassword(pass) ? 'error' : ''}
-                help={pass && !validatePassword(pass) ? 'Password must be 6+ chars with uppercase, lowercase, number & special char' : ''}
-              >
-                <Input.Password
-                  value={pass}
-                  onChange={(e) => setPass(e.target.value)}
-                  placeholder="Enter password"
-                  size="large"
-                  className="form-input"
-                  required
-                />
-              </Form.Item>
 
               <div className="form-actions">
                 <Button

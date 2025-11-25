@@ -263,27 +263,27 @@
 }
 
 .sidebar-logo {
-  padding: 32px 24px;
+  padding: 24px 20px;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.sidebar-logo .logo-icon {
-  font-size: 32px;
-  line-height: 1;
+.sidebar-logo .mega-power-logo {
+  width: 100%;
+  justify-content: center;
 }
 
-.sidebar-logo .logo-text {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 !important;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+.sidebar-logo .logo-svg {
+  filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.4));
+}
+
+.sidebar-logo:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
 }
 
 /* Menu Styles */

@@ -43,15 +43,25 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
   padding: 0 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
 }
 
-.sidebar-logo .logo-icon {
-  font-size: 32px;
-  animation: pulse 2s ease-in-out infinite;
+.sidebar-logo .mega-power-logo {
+  width: 100%;
+  justify-content: center;
+}
+
+.sidebar-logo .logo-svg {
+  filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.4));
+}
+
+.sidebar-logo:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
 }
 
 @keyframes pulse {
@@ -61,16 +71,6 @@ html {
   50% {
     transform: scale(1.1);
   }
-}
-
-.sidebar-logo .logo-text {
-  color: #ffffff !important;
-  margin: 0 !important;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* Sidebar Menu */

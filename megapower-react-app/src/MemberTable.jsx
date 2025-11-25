@@ -202,7 +202,9 @@ export const MemberTable = () => {
       <div className="member-table-container">
         <div className="table-header">
           <div className="header-left">
-            <UserOutlined className="header-icon" />
+            <div className="header-icon-card">
+              <UserOutlined className="header-icon" />
+            </div>
             <h1 className="table-title">Members Management</h1>
           </div>
 

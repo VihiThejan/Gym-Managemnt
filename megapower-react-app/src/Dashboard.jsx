@@ -18,6 +18,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Logo from './components/Logo';
 import './Dashboard.css';
 
 const { Sider, Content } = Layout;
@@ -171,8 +172,7 @@ export const Dashboard = () => {
         }}
       >
         <div className="sidebar-logo">
-          <div className="logo-icon">💪</div>
-          <Title level={4} className="logo-text">Mega Power</Title>
+          <Logo size="small" showText={true} variant="white" />
         </div>
         
         <Menu

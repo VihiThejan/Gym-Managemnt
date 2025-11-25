@@ -1,0 +1,219 @@
+/* Modern Logo Styles */
+.mega-power-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+}
+
+.mega-power-logo.small {
+  gap: 8px;
+}
+
+.mega-power-logo.large {
+  gap: 16px;
+}
+
+/* SVG Logo Animation */
+.logo-svg {
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 2px 8px rgba(102, 126, 234, 0.3));
+}
+
+.mega-power-logo:hover .logo-svg {
+  transform: scale(1.05) rotate(2deg);
+  filter: drop-shadow(0 4px 16px rgba(102, 126, 234, 0.5));
+}
+
+/* Text Container */
+.logo-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Main Logo Text */
+.logo-text {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+}
+
+.logo-text-highlight {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+  margin-left: 4px;
+}
+
+/* Tagline */
+.logo-tagline {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #6b7280;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-top: -2px;
+}
+
+/* Size Variants */
+.mega-power-logo.small .logo-tagline {
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+
+.mega-power-logo.large .logo-tagline {
+  font-size: 11px;
+  letter-spacing: 3px;
+}
+
+/* Color Variants */
+.mega-power-logo.white .logo-text {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mega-power-logo.white .logo-text-highlight {
+  background: linear-gradient(135deg, #ffd700 0%, #ff6b6b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mega-power-logo.white .logo-tagline {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark Variant */
+.mega-power-logo.dark .logo-text {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mega-power-logo.dark .logo-text-highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.mega-power-logo:hover .logo-svg circle,
+.mega-power-logo:hover .logo-svg path {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mega-power-logo {
+    gap: 8px;
+  }
+  
+  .logo-tagline {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+}
+
+/* Icon Only Mode */
+.mega-power-logo.icon-only {
+  gap: 0;
+}
+
+.mega-power-logo.icon-only .logo-text-container {
+  display: none;
+}
+
+/* Sidebar Specific Styles */
+.sidebar-logo .mega-power-logo {
+  padding: 12px 0;
+}
+
+.sidebar-logo .logo-svg {
+  filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2));
+}
+
+/* Header Specific Styles */
+.logo-section .mega-power-logo {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logo-section .mega-power-logo:hover {
+  transform: translateY(-2px);
+}
+
+/* Loading Animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mega-power-logo.loading .logo-svg {
+  animation: spin 2s linear infinite;
+}
+
+/* Glass Morphism Effect */
+.mega-power-logo.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Glow Effect */
+.mega-power-logo.glow .logo-svg {
+  filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.6))
+          drop-shadow(0 0 40px rgba(118, 75, 162, 0.4));
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .logo-svg,
+  .mega-power-logo:hover .logo-svg {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .logo-text,
+  .logo-text-highlight {
+    -webkit-text-fill-color: currentColor;
+    background: none;
+  }
+  
+  .logo-tagline {
+    opacity: 1;
+  }
+}

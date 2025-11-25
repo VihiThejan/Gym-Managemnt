@@ -16,6 +16,7 @@ import {
   MessageOutlined,
   LogoutOutlined
 } from '@ant-design/icons';
+import Logo from '../Logo';
 import './MainLayout.css';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -102,8 +103,7 @@ const MainLayout = ({ children, showNavigation = true, showSidebar = false }) =>
           }}
         >
           <div className="sidebar-logo">
-            <div className="logo-icon">💪</div>
-            <Title level={4} className="logo-text">Mega Power</Title>
+            <Logo size="small" showText={true} variant="white" />
           </div>
           
           <Menu
@@ -135,10 +135,11 @@ const MainLayout = ({ children, showNavigation = true, showSidebar = false }) =>
       <Layout style={{ marginLeft: showSidebar ? 260 : 0, transition: 'margin-left 0.2s' }}>
         <Header className="modern-header">
           <div className="header-content">
-            <div className="logo-section" onClick={() => navigate('/')}>
-              <div className="logo-icon">💪</div>
-              <Title level={3} className="brand-name">Mega Power Gym</Title>
-            </div>
+            {!showSidebar && (
+              <div className="logo-section" onClick={() => navigate('/')}>
+                <Logo size="medium" showText={true} variant="color" />
+              </div>
+            )}
             
             {showNavigation && !showSidebar && (
               <nav className="header-nav">
@@ -176,7 +177,7 @@ const MainLayout = ({ children, showNavigation = true, showSidebar = false }) =>
           <Footer className="modern-footer">
             <div className="footer-content">
               <div className="footer-section">
-                <Title level={5} className="footer-title">Mega Power Gym</Title>
+                <Logo size="small" showText={true} variant="color" />
                 <p className="footer-text">Transform your body, transform your life</p>
               </div>
               
