@@ -105,25 +105,19 @@ export const Paymenttable = () => {
   ];
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="payment-table-container">
         <div className="table-header">
-          <Button
-            icon={<LeftOutlined />}
-            onClick={() => navigate("/Admin")}
-            className="back-button"
-          >
-            Back
-          </Button>
-
-          <h1 className="table-title">Payment Records</h1>
-
+          <div className="header-left">
+            <CreditCardOutlined className="header-icon" />
+            <h1 className="table-title">Payment Management</h1>
+          </div>
           <div className="header-actions">
             <Input
               placeholder="Search by Payment ID, Member ID, Package or Amount..."
               value={searchText}
               onChange={(e) => handleSearch(e.target.value)}
-              prefix={<SearchOutlined className="search-icon" />}
+              prefix={<SearchOutlined />}
               allowClear
               className="search-input"
             />
@@ -138,20 +132,18 @@ export const Paymenttable = () => {
           </div>
         </div>
 
-        <div className="table-wrapper">
+        <div className="table-content">
           <Table
             columns={columns}
             dataSource={filteredData}
             loading={loading}
             rowKey="Payment_ID"
-            scroll={{ x: 800, y: 500 }}
+            scroll={{ x: 800 }}
             pagination={{
               pageSize: 10,
               showSizeChanger: true,
               showTotal: (total) => `Total ${total} payments`,
-              className: "table-pagination"
             }}
-            bordered
             className="payment-table"
           />
         </div>

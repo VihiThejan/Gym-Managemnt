@@ -146,7 +146,7 @@ export const Announcementtable = () => {
   );
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="announcement-table-container">
         <div className="announcement-table-card">
           {/* Header */}

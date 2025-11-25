@@ -124,21 +124,16 @@ const Equipmenttable = () => {
       render: (_, record) => (
         <div className="action-buttons">
           <Button 
-            type="primary" 
-            size="small"
             icon={<EditOutlined />}
             onClick={() => handleEdit(record.Equipment_Id)}
-            className="edit-btn"
+            className="edit-button"
           >
             Edit
           </Button>
           <Button 
-            type="primary" 
-            danger 
-            size="small"
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record.Equipment_Id)}
-            className="delete-btn"
+            className="delete-button"
           >
             Delete
           </Button>
@@ -148,22 +143,15 @@ const Equipmenttable = () => {
   ];
 
   return (
-    <MainLayout>
-      <div className="equipment-table-page">
+    <MainLayout showSidebar={true} showNavigation={false}>
+      <div className="equipment-table-container">
         {/* Header Section */}
         <div className="table-header">
-          <div className="header-content">
+          <div className="header-left">
             <TableOutlined className="header-icon" />
-            <div className="header-text">
-              <h1>Equipment Management</h1>
-              <p>View and manage gym equipment inventory</p>
-            </div>
+            <h1 className="table-title">Equipment Management</h1>
           </div>
-        </div>
-
-        {/* Table Section */}
-        <div className="table-content">
-          <div className="table-controls">
+          <div className="header-actions">
             <Input
               placeholder="Search by equipment name..."
               prefix={<SearchOutlined />}
@@ -181,23 +169,24 @@ const Equipmenttable = () => {
               Add Equipment
             </Button>
           </div>
+        </div>
 
-          <div className="table-wrapper">
-            <Table
-              columns={columns}
-              dataSource={filteredData}
-              rowKey="Equipment_Id"
-              loading={loading}
-              scroll={{ x: 1200, y: 500 }}
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} items`,
-                pageSizeOptions: ['10', '20', '50', '100'],
-              }}
-              className="equipment-table"
-            />
-          </div>
+        {/* Table Section */}
+        <div className="table-content">
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            rowKey="Equipment_Id"
+            loading={loading}
+            scroll={{ x: 1200, y: 500 }}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showTotal: (total) => `Total ${total} items`,
+              pageSizeOptions: ['10', '20', '50', '100'],
+            }}
+            className="equipment-table"
+          />
         </div>
       </div>
     </MainLayout>

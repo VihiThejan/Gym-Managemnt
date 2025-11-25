@@ -45,46 +45,48 @@ export const Dashboard = () => {
     try {
       setLoading(true);
       
-      // Fetch members
-      const membersRes = await axios.get('http://localhost:5000/api/v1/member/list');
+      // Fetch all data in parallel for better performance
+      const [membersRes, staffRes, equipmentRes, paymentsRes, attendanceRes] = await Promise.all([
+        axios.get('http://localhost:5000/api/v1/member/list').catch(() => ({ data: { data: [] } })),
+        axios.get('http://localhost:5000/api/v1/staffmember/list').catch(() => ({ data: { data: [] } })),
+        axios.get('http://localhost:5000/api/v1/equipment/list').catch(() => ({ data: { data: [] } })),
+        axios.get('http://localhost:5000/api/v1/payment/list').catch(() => ({ data: { data: [] } })),
+        axios.get('http://localhost:5000/api/v1/attendance/list').catch(() => ({ data: { data: [] } }))
+      ]);
+      
       const totalMembers = membersRes.data?.data?.length || 0;
-      
-      // Fetch staff
-      const staffRes = await axios.get('http://localhost:5000/api/v1/staffmember/list');
       const totalStaff = staffRes.data?.data?.length || 0;
-      
-      // Fetch equipment
-      const equipmentRes = await axios.get('http://localhost:5000/api/v1/equipment/list');
       const totalEquipment = equipmentRes.data?.data?.length || 0;
       
-      // Fetch payments
-      const paymentsRes = await axios.get('http://localhost:5000/api/v1/payment/list');
+      // Calculate payments
       const payments = paymentsRes.data?.data || [];
       const totalRevenue = payments.reduce((sum, payment) => sum + (parseFloat(payment.Amount) || 0), 0);
       
-      // Calculate monthly revenue (mock - filter by current month)
+      // Calculate monthly revenue
       const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
       const monthlyRevenue = payments
-        .filter(p => new Date(p.createdAt || Date.now()).getMonth() === currentMonth)
+        .filter(p => {
+          const paymentDate = new Date(p.Date || p.createdAt || Date.now());
+          return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
+        })
         .reduce((sum, payment) => sum + (parseFloat(payment.Amount) || 0), 0);
       
-      // Fetch attendance
-      const attendanceRes = await axios.get('http://localhost:5000/api/v1/attendance/list');
+      // Calculate attendance
       const attendanceData = attendanceRes.data?.data || [];
-      
-      // Calculate today's attendance
       const today = new Date().toISOString().split('T')[0];
-      const todayAttendance = attendanceData.filter(a => 
-        a.Date && a.Date.startsWith(today)
-      ).length;
+      const todayAttendance = attendanceData.filter(a => {
+        const attendanceDate = new Date(a.Current_date || a.Date || '').toISOString().split('T')[0];
+        return attendanceDate === today;
+      }).length;
 
       setStats({
         totalMembers,
         totalStaff,
         totalEquipment,
         totalRevenue,
-        activeMembers: attendanceData.length,
-        pendingPayments: Math.floor(totalMembers * 0.15),
+        activeMembers: totalMembers,
+        pendingPayments: 0,
         todayAttendance,
         monthlyRevenue
       });
@@ -92,7 +94,7 @@ export const Dashboard = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
-      message.error('Failed to load dashboard statistics');
+      message.error('Failed to load dashboard statistics. Please check your connection.');
       setLoading(false);
     }
   };
@@ -199,14 +201,25 @@ export const Dashboard = () => {
               <h1>Admin Dashboard</h1>
               <p>Welcome back! Here's what's happening with your gym today.</p>
             </div>
-            <div className="header-date">
-              <CalendarOutlined className="date-icon" />
-              <span>{new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}</span>
+            <div className="header-actions">
+              <Button 
+                icon={<RiseOutlined />} 
+                onClick={fetchDashboardStats}
+                loading={loading}
+                className="refresh-button"
+                size="large"
+              >
+                Refresh
+              </Button>
+              <div className="header-date">
+                <CalendarOutlined className="date-icon" />
+                <span>{new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}</span>
+              </div>
             </div>
           </div>
         </div>

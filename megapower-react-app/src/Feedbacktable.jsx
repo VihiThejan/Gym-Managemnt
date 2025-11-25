@@ -134,7 +134,7 @@ export const Feedbacktable = () => {
   ];
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="feedbacktable-page">
         <div className="feedbacktable-header">
           <div className="header-content">

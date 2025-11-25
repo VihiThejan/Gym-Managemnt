@@ -166,7 +166,7 @@ export const Trainerratetable = () => {
   ];
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="trainerrate-table-container">
         <div className="trainerrate-table-header">
           <div className="header-icon">

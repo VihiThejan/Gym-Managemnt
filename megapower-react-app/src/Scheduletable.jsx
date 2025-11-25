@@ -196,7 +196,7 @@ export const Scheduletable = () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="scheduletable-page">
         <div className="page-header">
           <div className="header-content">

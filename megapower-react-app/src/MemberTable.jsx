@@ -198,18 +198,13 @@ export const MemberTable = () => {
   ];
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="member-table-container">
         <div className="table-header">
-          <Button
-            icon={<LeftOutlined />}
-            onClick={() => navigate("/Admin")}
-            className="back-button"
-          >
-            Back
-          </Button>
-
-          <h1 className="table-title">Members Management</h1>
+          <div className="header-left">
+            <UserOutlined className="header-icon" />
+            <h1 className="table-title">Members Management</h1>
+          </div>
 
           <div className="header-actions">
             <Input
