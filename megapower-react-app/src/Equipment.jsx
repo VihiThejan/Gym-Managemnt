@@ -79,33 +79,40 @@ export const Equipment = () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="equipment-page">
-        {/* Header Section */}
-        <div className="equipment-header">
-          <div className="header-content">
-            <PlusOutlined className="header-icon" />
-            <div className="header-text">
-              <h1>Add New Equipment</h1>
-              <p>Register new gym equipment and inventory</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Form Section */}
-        <div className="equipment-content">
+        <div className="equipment-container">
           <Card className="equipment-card">
+            {/* Card Header */}
+            <div className="card-header">
+              <div className="header-icon-card">
+                <PlusOutlined className="header-icon" />
+              </div>
+              <div className="header-text">
+                <h1>Add New Equipment</h1>
+                <p>Register new gym equipment and inventory</p>
+              </div>
+            </div>
+
+            {/* Form */}
             <Form onSubmit={handleSubmit} className="equipment-form">
               {/* Equipment Name */}
-              <Form.Item validateStatus={nameError ? 'error' : ''} help={nameError}>
-                <label className="form-label">
-                  <TagsOutlined className="label-icon" />
-                  Equipment Name
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <TagsOutlined className="label-icon" />
+                    Equipment Name
+                  </span>
+                }
+                validateStatus={nameError ? 'error' : ''}
+                help={nameError}
+                className="form-item"
+              >
                 <Select
                   value={name}
                   onChange={(value) => setName(value)}
                   placeholder="Select equipment name"
+                  size="large"
                   className="form-select"
                 >
                   {equipmentNames.map((e, index) => (
@@ -117,11 +124,15 @@ export const Equipment = () => {
               </Form.Item>
 
               {/* Quantity */}
-              <Form.Item>
-                <label className="form-label">
-                  <NumberOutlined className="label-icon" />
-                  Quantity
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <NumberOutlined className="label-icon" />
+                    Quantity
+                  </span>
+                }
+                className="form-item"
+              >
                 <Input
                   type="number"
                   min={1}
@@ -129,20 +140,26 @@ export const Equipment = () => {
                   value={qty}
                   onChange={(e) => setQty(e.target.value)}
                   placeholder="Enter quantity (1-100)"
+                  size="large"
                   className="form-input"
                 />
               </Form.Item>
 
               {/* Vendor */}
-              <Form.Item>
-                <label className="form-label">
-                  <ShoppingOutlined className="label-icon" />
-                  Vendor
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <ShoppingOutlined className="label-icon" />
+                    Vendor
+                  </span>
+                }
+                className="form-item"
+              >
                 <Select
                   value={vendor}
                   onChange={(value) => setVendor(value)}
                   placeholder="Select vendor"
+                  size="large"
                   className="form-select"
                 >
                   {vendors.map((v, index) => (
@@ -153,12 +170,35 @@ export const Equipment = () => {
                 </Select>
               </Form.Item>
 
+              {/* Purchase Date */}
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <CalendarOutlined className="label-icon" />
+                    Purchase Date
+                  </span>
+                }
+                className="form-item"
+              >
+                <DatePicker
+                  onChange={(date) => setDate(date)}
+                  placeholder="Select purchase date"
+                  size="large"
+                  className="form-datepicker"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+
               {/* Description */}
-              <Form.Item>
-                <label className="form-label">
-                  <FileTextOutlined className="label-icon" />
-                  Description
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <FileTextOutlined className="label-icon" />
+                    Description
+                  </span>
+                }
+                className="form-item"
+              >
                 <div className="textarea-wrapper">
                   <TextArea
                     value={description}
@@ -177,43 +217,29 @@ export const Equipment = () => {
                 </div>
               </Form.Item>
 
-              {/* Purchase Date */}
-              <Form.Item>
-                <label className="form-label">
-                  <CalendarOutlined className="label-icon" />
-                  Purchase Date
-                </label>
-                <DatePicker
-                  onChange={(date) => setDate(date)}
-                  placeholder="Select purchase date"
-                  className="form-datepicker"
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-
               {/* Action Buttons */}
-              <Form.Item className="form-actions">
-                <div className="button-group">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={submitting}
-                    icon={<SaveOutlined />}
-                    className="submit-button"
-                    onClick={handleSubmit}
-                  >
-                    {submitting ? 'Submitting...' : 'Add Equipment'}
-                  </Button>
-                  <Button
-                    type="default"
-                    icon={<CloseOutlined />}
-                    className="cancel-button"
-                    onClick={() => navigate('/Equipmenttable')}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </Form.Item>
+              <div className="form-actions">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={submitting}
+                  icon={<SaveOutlined />}
+                  size="large"
+                  className="submit-button"
+                  onClick={handleSubmit}
+                >
+                  {submitting ? 'Submitting...' : 'Add Equipment'}
+                </Button>
+                <Button
+                  type="default"
+                  icon={<CloseOutlined />}
+                  size="large"
+                  className="cancel-button"
+                  onClick={() => navigate('/Equipmenttable')}
+                >
+                  Cancel
+                </Button>
+              </div>
             </Form>
           </Card>
         </div>

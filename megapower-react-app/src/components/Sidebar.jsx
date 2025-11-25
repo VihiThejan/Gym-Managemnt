@@ -64,11 +64,6 @@ export const Sidebar = () => {
       icon: <MessageOutlined />,
       label: 'Chat',
     },
-    {
-      key: '/reports',
-      icon: <BarChartOutlined />,
-      label: 'Reports',
-    },
   ];
 
   const handleMenuClick = ({ key }) => {

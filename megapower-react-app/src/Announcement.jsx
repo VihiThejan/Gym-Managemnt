@@ -159,45 +159,47 @@ export const Announcement = () => {
   };
 
   return (
-    <MainLayout>
-      <div className="announcement-container">
-        <div className="announcement-card">
-          {/* Header */}
-          <div className="announcement-card-header">
-            <div className="announcement-icon">📢</div>
-            <h2 className="announcement-title">Create Announcement</h2>
-            <p className="announcement-subtitle">Broadcast important messages to your team</p>
-          </div>
-
-          {/* Body */}
-          <div className="announcement-card-body">
-            {/* Info Box */}
-            <div className="announcement-info-box">
-              <div className="announcement-info-title">
-                <InfoCircleOutlined />
-                Announcement Guidelines
+    <MainLayout showSidebar={true} showNavigation={false}>
+      <div className="announcement-page">
+        <div className="announcement-container">
+          <div className="announcement-card">
+            {/* Card Header */}
+            <div className="card-header">
+              <div className="header-icon-card">
+                <SoundOutlined className="header-icon" />
               </div>
-              <p className="announcement-info-text">
-                • Logged in as: <strong>{loggedInUser?.Name || 'Admin'}</strong>
-              </p>
-              <p className="announcement-info-text">
-                • Keep messages clear, concise, and professional
-              </p>
-              <p className="announcement-info-text">
-                • Maximum {MAX_MESSAGE_LENGTH} characters allowed
-              </p>
+              <div className="header-text">
+                <h1>Create Announcement</h1>
+                <p>Broadcast important messages to your team</p>
+              </div>
             </div>
+
+            {/* Body */}
+            <div className="announcement-card-body">
+            {/* Info Box */}
+            {loggedInUser && (
+              <div className="announcement-info-box">
+                <InfoCircleOutlined style={{ fontSize: '18px' }} />
+                <div>
+                  <strong>Logged in as:</strong> {loggedInUser?.Name || 'Admin'}
+                  <div style={{ fontSize: '13px', marginTop: '4px', opacity: 0.9 }}>
+                    Your Admin ID has been automatically filled
+                  </div>
+                </div>
+              </div>
+            )}
 
             <form className="announcement-form" onSubmit={handleSubmit}>
               {/* Admin ID */}
-              <div className="announcement-form-group">
-                <label className="announcement-form-label">
+              <div className="form-group">
+                <label className="form-label">
                   <UserOutlined className="label-icon" />
-                  Admin User ID {loggedInUser && <span style={{ color: '#52c41a', fontWeight: 'normal' }}>({loggedInUser.Name})</span>}
+                  Admin User ID
+                  {loggedInUser && <span style={{ color: '#10b981', marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>({loggedInUser.Name})</span>}
                 </label>
                 <input
                   type="number"
-                  className={`announcement-form-input ${errors.staff_id ? 'error' : ''}`}
+                  className="form-input readonly"
                   value={staff_id}
                   onChange={handleStaffIdChange}
                   placeholder="Auto-filled from login"
@@ -207,71 +209,70 @@ export const Announcement = () => {
                   style={{ 
                     backgroundColor: '#f0f9ff', 
                     cursor: 'not-allowed',
-                    color: '#0066cc',
-                    fontWeight: '600'
+                    fontWeight: '600',
+                    borderColor: '#3b82f6'
                   }}
                 />
                 {errors.staff_id && (
-                  <p className="error-message">{errors.staff_id}</p>
+                  <p className="error-text">{errors.staff_id}</p>
                 )}
-                <p style={{ fontSize: '12px', color: '#52c41a', marginTop: '4px' }}>
-                  ✅ Auto-filled with your logged-in Admin ID
-                </p>
               </div>
 
               {/* Message */}
-              <div className="announcement-form-group">
-                <label className="announcement-form-label">
+              <div className="form-group">
+                <label className="form-label">
                   <MessageOutlined className="label-icon" />
                   Message
                 </label>
-                <textarea
-                  className={`announcement-form-input announcement-textarea ${errors.message ? 'error' : ''}`}
-                  value={messageText}
-                  onChange={handleMessageChange}
-                  placeholder="Type your announcement message here..."
-                  disabled={isSubmitting}
-                  maxLength={MAX_MESSAGE_LENGTH}
-                />
-                <div className={`announcement-char-count ${getCharCountClass()}`}>
-                  {messageText.length} / {MAX_MESSAGE_LENGTH} characters
+                <div className="textarea-wrapper">
+                  <textarea
+                    className={`form-textarea ${errors.message ? 'error' : ''}`}
+                    value={messageText}
+                    onChange={handleMessageChange}
+                    placeholder="Type your announcement message here..."
+                    disabled={isSubmitting}
+                    maxLength={MAX_MESSAGE_LENGTH}
+                    rows={5}
+                  />
+                  <div className={`char-counter ${getCharCountClass()}`}>
+                    {messageText.length} / {MAX_MESSAGE_LENGTH} characters
+                  </div>
                 </div>
                 {errors.message && (
-                  <p className="error-message">{errors.message}</p>
+                  <p className="error-text">{errors.message}</p>
                 )}
               </div>
 
               {/* Date */}
-              <div className="announcement-form-group">
-                <label className="announcement-form-label">
+              <div className="form-group">
+                <label className="form-label">
                   <CalendarOutlined className="label-icon" />
                   Announcement Date
                 </label>
-                <div className={`announcement-datepicker ${errors.date ? 'error' : ''}`}>
-                  <DatePicker
-                    value={date}
-                    onChange={handleDateChange}
-                    format="YYYY-MM-DD"
-                    placeholder="Select announcement date"
-                    disabled={isSubmitting}
-                    style={{ width: '100%' }}
-                  />
-                </div>
+                <DatePicker
+                  value={date}
+                  onChange={handleDateChange}
+                  format="YYYY-MM-DD"
+                  placeholder="Select announcement date"
+                  disabled={isSubmitting}
+                  size="large"
+                  className={`form-datepicker ${errors.date ? 'error' : ''}`}
+                  style={{ width: '100%' }}
+                />
                 {errors.date && (
-                  <p className="error-message">{errors.date}</p>
+                  <p className="error-text">{errors.date}</p>
                 )}
               </div>
 
               {/* Buttons */}
-              <div className="announcement-button-group">
+              <div className="form-actions">
                 <button
                   type="submit"
-                  className="announcement-button announcement-button-primary"
+                  className="submit-button"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
-                      <span>⏳</span>
                       Creating...
                     </>
                   ) : (
@@ -283,7 +284,7 @@ export const Announcement = () => {
                 </button>
                 <button
                   type="button"
-                  className="announcement-button announcement-button-secondary"
+                  className="cancel-button"
                   onClick={handleReset}
                   disabled={isSubmitting}
                 >
@@ -291,21 +292,8 @@ export const Announcement = () => {
                 </button>
               </div>
             </form>
-
-            {/* Back Link */}
-            <div className="announcement-back-link">
-              <span className="announcement-back-text">
-                View all announcements?
-              </span>
-              <button
-                className="announcement-back-button"
-                onClick={handleGoBack}
-                disabled={isSubmitting}
-              >
-                Go to Announcements
-              </button>
-            </div>
           </div>
+        </div>
         </div>
       </div>
     </MainLayout>

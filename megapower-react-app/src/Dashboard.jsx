@@ -142,11 +142,6 @@ export const Dashboard = () => {
       label: 'Chat',
     },
     {
-      key: '/reports',
-      icon: <BarChartOutlined />,
-      label: 'Reports',
-    },
-    {
       key: 'logout',
       icon: <SettingOutlined />,
       label: 'Logout',

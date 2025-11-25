@@ -27,6 +27,7 @@ export const EditMember = () => {
   const [date, setDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   
   useEffect(() => {
@@ -45,8 +46,8 @@ export const EditMember = () => {
           setPackages(member.Package);
           setWeight(Number(member.Weight));
           setHeight(Number(member.Height));
-          setMobile(member.UName);
-          setPass(member.Password);
+          // Load current password for editing
+          setPass(member.Password || '');
           setLoading(false);
        } catch (error) {
           console.error(`Error fetching member data: ${error.message}`);
@@ -77,7 +78,7 @@ export const EditMember = () => {
   };
 
   const handleSubmit = async () => {
-    if (!name || !address || !email || !mobile || !date || !height || !weight) {
+    if (!name || !address || !email || !mobile || !date || !height || !weight || !pass) {
       message.error("Please fill in all required fields.");
       return;
     }
@@ -89,6 +90,13 @@ export const EditMember = () => {
 
     if (!validateEmail(email)) {
       message.error("Invalid email format.");
+      return;
+    }
+
+    // Always validate password
+    if (!validatePassword(pass)) {
+      setPasswordError("Password must be at least 6 characters long and include uppercase, lowercase, a number, and a special character.");
+      message.error("Invalid password format.");
       return;
     }
 
@@ -115,9 +123,10 @@ export const EditMember = () => {
         Address: address,
         Contact: mobile,
         Package: packages,
-        Weight: weight,
-        Height: height,
+        Weight: Number(weight),
+        Height: Number(height),
         UName: mobile,
+        Password: pass,
       };
 
       await axios.put(`http://localhost:5000/api/v1/member/update/${id}`, body);
@@ -348,12 +357,37 @@ export const EditMember = () => {
                     placeholder="0"
                     min={1}
                     max={200}
+                    step={0.1}
                     size="large"
                     className="form-input"
                     required
                   />
                 </Form.Item>
               </div>
+
+              {/* Password Field */}
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <LockOutlined className="label-icon" />
+                    Password
+                  </span>
+                }
+                validateStatus={passwordError ? 'error' : ''}
+                help={passwordError}
+                className="form-item"
+              >
+                <Input.Password
+                  value={pass}
+                  onChange={(e) => {
+                    setPass(e.target.value);
+                    setPasswordError('');
+                  }}
+                  placeholder="Enter password"
+                  size="large"
+                  className="form-input"
+                />
+              </Form.Item>
 
               <div className="form-actions">
                 <Button

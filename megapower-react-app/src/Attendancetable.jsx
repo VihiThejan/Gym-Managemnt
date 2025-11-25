@@ -73,8 +73,8 @@ export const Attendancetable = () => {
         String(item.Attendance_ID).includes(value) ||
         String(item.Member_Id).includes(value) ||
         moment(item.Current_date).format("YYYY-MM-DD").includes(searchLower) ||
-        moment(item.In_time).format("HH:mm:ss").includes(searchLower) ||
-        moment(item.Out_time).format("HH:mm:ss").includes(searchLower)
+        moment(item.In_time).format("hh:mm A").toLowerCase().includes(searchLower) ||
+        moment(item.Out_time).format("hh:mm A").toLowerCase().includes(searchLower)
       ));
     } else {
       setFilteredData(data);
@@ -126,7 +126,7 @@ export const Attendancetable = () => {
       render: (time) => (
         <div className="time-cell in-time">
           <LoginOutlined style={{ marginRight: '6px' }} />
-          {moment(time, "HH:mm:ss").format("hh:mm:ss A")}
+          {moment(time).format("hh:mm A")}
         </div>
       ),
     },
@@ -138,7 +138,7 @@ export const Attendancetable = () => {
       render: (time) => (
         <div className="time-cell out-time">
           <LogoutOutlined style={{ marginRight: '6px' }} />
-          {moment(time, "HH:mm:ss").format("hh:mm:ss A")}
+          {moment(time).format("hh:mm A")}
         </div>
       ),
     },

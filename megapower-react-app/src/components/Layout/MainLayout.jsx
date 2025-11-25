@@ -69,11 +69,6 @@ const MainLayout = ({ children, showNavigation = true, showSidebar = false }) =>
       icon: <MessageOutlined />,
       label: 'Chat',
     },
-    {
-      key: '/reports',
-      icon: <BarChartOutlined />,
-      label: 'Reports',
-    },
   ];
 
   const handleMenuClick = ({ key }) => {

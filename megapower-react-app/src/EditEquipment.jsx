@@ -79,33 +79,21 @@ export const EditEquipment = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <MainLayout>
-                <div className="edit-equipment-page">
-                    <div className="edit-equipment-container">
-                        <Card className="edit-equipment-card" loading={true}>
-                            <div style={{ padding: '40px' }}>Loading equipment data...</div>
-                        </Card>
-                    </div>
-                </div>
-            </MainLayout>
-        );
-    }
-
     return (
-        <MainLayout>
+        <MainLayout showSidebar={true} showNavigation={false}>
             <div className="edit-equipment-page">
-                <div className="edit-equipment-header">
-                    <EditOutlined className="header-icon" />
-                    <div>
-                        <h1 className="header-title">Edit Equipment</h1>
-                        <p className="header-subtitle">Update gym equipment details and inventory information</p>
-                    </div>
-                </div>
+                <div className="edit-equipment-content">
+                    <Card className="edit-equipment-card" loading={loading}>
+                        <div className="card-header">
+                            <div className="header-icon-card">
+                                <EditOutlined className="header-icon" />
+                            </div>
+                            <div className="header-text">
+                                <h2 className="card-title">Edit Equipment</h2>
+                                <p className="card-subtitle">Update gym equipment details and inventory information</p>
+                            </div>
+                        </div>
 
-                <div className="edit-equipment-container">
-                    <Card className="edit-equipment-card">
                         <Form layout="vertical" onFinish={handleSubmit}>
                             <Form.Item
                                 label={

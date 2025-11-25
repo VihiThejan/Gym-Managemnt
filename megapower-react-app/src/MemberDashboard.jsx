@@ -59,7 +59,6 @@ const items = [
   { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/payment' },
   { label: 'Announcement', icon: <NotificationOutlined />, key: '4', path: '/Announcementtable' },
   { label: 'Attendance', icon: <CalendarOutlined />, key: '5', path: '/Attendancetable' },
-  { label: 'Reports', icon: <BarChartOutlined />, key: '6', path: '/reports' },
   { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/Appoinmenttable' },
   { label: 'Feedback', icon: <CommentOutlined />, key: '8', path: '/Feedbacktable' },
   { label: 'Chat', icon: <MessageOutlined />, key: '9', path: '/chat' },

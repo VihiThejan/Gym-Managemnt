@@ -528,7 +528,7 @@ html {
 
 .action-card .ant-card-head-title,
 .activity-card .ant-card-head-title {
-  color: #ffffff;
+  color: #ffffff !important;
   font-size: 18px;
   font-weight: 600;
 }
@@ -543,7 +543,11 @@ html {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffffff;
+  color: #ffffff !important;
+}
+
+.card-title span {
+  color: #ffffff !important;
 }
 
 .card-title .title-icon {

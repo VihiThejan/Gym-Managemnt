@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Button, Radio, InputNumber, Select, DatePicker, message, Card, Input, Form } from 'antd';
-import { ArrowLeftOutlined, UserOutlined, HomeOutlined, CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, GiftOutlined, ColumnHeightOutlined, DashboardOutlined, LockOutlined, UserAddOutlined } from '@ant-design/icons';
+import { UserOutlined, HomeOutlined, CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, GiftOutlined, ColumnHeightOutlined, DashboardOutlined, LockOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import MainLayout from './components/Layout/MainLayout';
 import './Member.css';
 
 export const Member = () => {
@@ -225,30 +226,20 @@ export const Member = () => {
     setGender(e.target.value);
   };
 
-  const handleGoBack = () => {
-    navigate('/'); 
-  };
-
   return (
-    <div className="member-page">
-      <div className="member-container">
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={handleGoBack}
-          className="back-button"
-        >
-          Back to Login
-        </Button>
-
-        <Card className="member-card">
-          <div className="card-header">
-            <div className="header-icon">
-              <UserAddOutlined />
+    <MainLayout showSidebar={true} showNavigation={false}>
+      <div className="member-page">
+        <div className="member-container">
+          <Card className="member-card">
+            <div className="card-header">
+              <div className="header-icon-card">
+                <UserAddOutlined className="header-icon" />
+              </div>
+              <div>
+                <h1 className="card-title">Member Registration</h1>
+                <p className="card-subtitle">Create your new member account</p>
+              </div>
             </div>
-            <h2>Member Registration</h2>
-            <p>Create your new member account</p>
-          </div>
 
           <Form layout="vertical" onFinish={handleSubmit} className="member-form">
             <Form.Item>
@@ -391,6 +382,8 @@ export const Member = () => {
                   onChange={value => setWeight(value)}
                   min={1}
                   max={200}
+                  step={0.1}
+                  precision={2}
                   size="large"
                   style={{ width: '100%' }}
                   placeholder="0"
@@ -438,5 +431,6 @@ export const Member = () => {
         </Card>
       </div>
     </div>
+    </MainLayout>
   );
 };

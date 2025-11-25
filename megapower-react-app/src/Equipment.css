@@ -5,113 +5,115 @@
 /* Page Container */
 .equipment-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  padding: 40px;
 }
 
-/* Header Section */
-.equipment-header {
-  width: 100%;
-  max-width: 900px;
-  margin-bottom: 30px;
+.equipment-container {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+/* Card Styling */
+.equipment-card {
   border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: none;
+  overflow: hidden;
+}
+
+.equipment-card .ant-card-body {
+  padding: 0;
+}
+
+/* Card Header */
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-icon-card {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .header-icon {
-  font-size: 48px;
+  font-size: 32px;
   color: white;
-  opacity: 0.9;
 }
 
 .header-text h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   color: white;
   letter-spacing: -0.5px;
 }
 
 .header-text p {
-  margin: 5px 0 0 0;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.85);
+  margin: 6px 0 0 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 400;
-}
-
-/* Content Section */
-.equipment-content {
-  width: 100%;
-  max-width: 900px;
-}
-
-/* Card Styling */
-.equipment-card {
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  border: none;
-  overflow: hidden;
-}
-
-.equipment-card .ant-card-body {
-  padding: 50px;
 }
 
 /* Form Styling */
 .equipment-form {
   width: 100%;
+  padding: 40px;
 }
 
-.equipment-form .ant-form-item {
-  margin-bottom: 28px;
+.form-item {
+  margin-bottom: 24px;
+}
+
+.form-item .ant-form-item-label {
+  padding-bottom: 8px;
 }
 
 /* Form Labels */
 .form-label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 10px;
+  color: #1f2937;
 }
 
 .label-icon {
-  font-size: 20px;
+  font-size: 18px;
   color: #667eea;
 }
 
 /* Input Fields */
 .form-input {
-  height: 52px;
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
   font-size: 15px;
   transition: all 0.3s ease;
-  padding: 0 20px;
 }
 
 .form-input:hover {
-  border-color: #a5b4fc;
+  border-color: #9ca3af;
 }
 
 .form-input:focus {
   border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-input::placeholder {
@@ -131,43 +133,36 @@
 }
 
 /* Select Dropdown */
-.form-select {
-  width: 100%;
-}
-
 .form-select .ant-select-selector {
-  height: 52px !important;
-  border-radius: 12px !important;
-  border: 2px solid #e5e7eb !important;
-  padding: 0 20px !important;
-  display: flex;
-  align-items: center;
+  height: 48px !important;
+  border-radius: 8px !important;
+  border: 1px solid #d1d5db !important;
   transition: all 0.3s ease;
 }
 
 .form-select .ant-select-selection-search-input {
-  height: 50px !important;
+  height: 46px !important;
 }
 
 .form-select .ant-select-selection-placeholder {
-  line-height: 50px !important;
+  line-height: 46px !important;
   color: #9ca3af;
   font-size: 15px;
 }
 
 .form-select .ant-select-selection-item {
-  line-height: 50px !important;
+  line-height: 46px !important;
   font-size: 15px;
   color: #1f2937;
 }
 
 .form-select:hover .ant-select-selector {
-  border-color: #a5b4fc !important;
+  border-color: #9ca3af !important;
 }
 
 .form-select.ant-select-focused .ant-select-selector {
   border-color: #667eea !important;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
 }
 
 /* Select Dropdown Menu */
@@ -213,22 +208,22 @@
 }
 
 .form-textarea {
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
   font-size: 15px;
   transition: all 0.3s ease;
-  padding: 16px 20px;
+  padding: 12px 16px;
   resize: vertical;
   min-height: 120px;
 }
 
 .form-textarea:hover {
-  border-color: #a5b4fc;
+  border-color: #9ca3af;
 }
 
 .form-textarea:focus {
   border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-textarea::placeholder {
@@ -237,27 +232,22 @@
 
 .char-counter {
   position: absolute;
-  bottom: 12px;
-  right: 16px;
+  bottom: 10px;
+  right: 14px;
   font-size: 12px;
-  color: #9ca3af;
-  background: white;
+  color: #6b7280;
+  background: rgba(255, 255, 255, 0.9);
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   font-weight: 500;
 }
 
 /* DatePicker */
-.form-datepicker {
-  width: 100%;
-}
-
 .form-datepicker .ant-picker {
   width: 100%;
-  height: 52px;
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
-  padding: 0 20px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
   transition: all 0.3s ease;
 }
 
@@ -272,17 +262,17 @@
 }
 
 .form-datepicker .ant-picker:hover {
-  border-color: #a5b4fc;
+  border-color: #9ca3af;
 }
 
 .form-datepicker .ant-picker-focused {
   border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-datepicker .ant-picker-suffix {
   color: #667eea;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 /* DatePicker Dropdown */
@@ -354,29 +344,26 @@
 
 /* Action Buttons */
 .form-actions {
-  margin-top: 40px;
-  margin-bottom: 0;
-}
-
-.button-group {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
   display: flex;
-  gap: 16px;
-  justify-content: center;
+  gap: 12px;
+  justify-content: flex-end;
 }
 
 .submit-button,
 .cancel-button {
-  height: 52px;
-  border-radius: 12px;
-  font-size: 16px;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 15px;
   font-weight: 600;
-  padding: 0 40px;
-  display: flex;
+  padding: 0 32px;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   transition: all 0.3s ease;
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .submit-button {
@@ -386,7 +373,7 @@
 
 .submit-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
   background: linear-gradient(135deg, #5568d3 0%, #6a4190 100%);
 }
 
@@ -401,17 +388,17 @@
 }
 
 .cancel-button {
-  background: white;
+  background: #f3f4f6;
   color: #6b7280;
-  border: 2px solid #e5e7eb !important;
+  border: 1px solid #d1d5db !important;
 }
 
 .cancel-button:hover {
   color: #374151;
-  border-color: #d1d5db !important;
-  background: #f9fafb;
+  border-color: #9ca3af !important;
+  background: #e5e7eb;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .cancel-button:active {
@@ -441,113 +428,41 @@
 /* Tablet View */
 @media (max-width: 768px) {
   .equipment-page {
-    padding: 30px 15px;
+    padding: 24px;
   }
 
-  .header-content {
-    padding: 25px;
-    gap: 15px;
+  .equipment-container {
+    max-width: 100%;
+  }
+
+  .card-header {
+    padding: 24px 28px;
+    gap: 16px;
+  }
+
+  .header-icon-card {
+    width: 56px;
+    height: 56px;
   }
 
   .header-icon {
-    font-size: 40px;
+    font-size: 28px;
   }
 
   .header-text h1 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .header-text p {
     font-size: 14px;
   }
 
-  .equipment-card .ant-card-body {
-    padding: 35px;
+  .equipment-form {
+    padding: 28px;
   }
 
   .form-label {
     font-size: 14px;
-  }
-
-  .label-icon {
-    font-size: 18px;
-  }
-
-  .form-input,
-  .form-select .ant-select-selector,
-  .form-datepicker .ant-picker {
-    height: 48px !important;
-  }
-
-  .form-select .ant-select-selection-search-input {
-    height: 46px !important;
-  }
-
-  .form-select .ant-select-selection-placeholder,
-  .form-select .ant-select-selection-item {
-    line-height: 46px !important;
-    font-size: 14px;
-  }
-
-  .form-input,
-  .form-textarea,
-  .form-datepicker .ant-picker-input > input,
-  .form-datepicker .ant-picker-input > input::placeholder {
-    font-size: 14px;
-  }
-
-  .form-textarea {
-    padding: 14px 18px;
-    min-height: 110px;
-  }
-
-  .button-group {
-    gap: 12px;
-  }
-
-  .submit-button,
-  .cancel-button {
-    height: 48px;
-    font-size: 15px;
-    padding: 0 32px;
-  }
-}
-
-/* Mobile View */
-@media (max-width: 480px) {
-  .equipment-page {
-    padding: 20px 10px;
-  }
-
-  .header-content {
-    flex-direction: column;
-    text-align: center;
-    padding: 20px;
-  }
-
-  .header-icon {
-    font-size: 36px;
-  }
-
-  .header-text h1 {
-    font-size: 22px;
-  }
-
-  .header-text p {
-    font-size: 13px;
-  }
-
-  .equipment-card .ant-card-body {
-    padding: 25px;
-  }
-
-  .equipment-form .ant-form-item {
-    margin-bottom: 24px;
-  }
-
-  .form-label {
-    font-size: 13px;
-    gap: 8px;
   }
 
   .label-icon {
@@ -557,103 +472,7 @@
   .form-input,
   .form-select .ant-select-selector,
   .form-datepicker .ant-picker {
-    height: 46px !important;
-    padding: 0 16px !important;
-  }
-
-  .form-select .ant-select-selection-search-input {
     height: 44px !important;
-  }
-
-  .form-select .ant-select-selection-placeholder,
-  .form-select .ant-select-selection-item {
-    line-height: 44px !important;
-    font-size: 14px;
-  }
-
-  .form-input,
-  .form-textarea,
-  .form-datepicker .ant-picker-input > input,
-  .form-datepicker .ant-picker-input > input::placeholder {
-    font-size: 14px;
-  }
-
-  .form-textarea {
-    padding: 12px 16px;
-    min-height: 100px;
-  }
-
-  .char-counter {
-    font-size: 11px;
-    bottom: 10px;
-    right: 14px;
-  }
-
-  .form-actions {
-    margin-top: 32px;
-  }
-
-  .button-group {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .submit-button,
-  .cancel-button {
-    width: 100%;
-    height: 46px;
-    font-size: 14px;
-    padding: 0 24px;
-    justify-content: center;
-  }
-
-  /* Mobile Dropdown Adjustments */
-  .ant-select-dropdown {
-    max-width: calc(100vw - 40px);
-  }
-
-  .ant-select-item {
-    padding: 10px 14px;
-    font-size: 14px;
-  }
-
-  /* Mobile DatePicker Adjustments */
-  .ant-picker-dropdown {
-    max-width: calc(100vw - 20px);
-  }
-}
-
-/* Small Mobile View */
-@media (max-width: 360px) {
-  .equipment-page {
-    padding: 15px 8px;
-  }
-
-  .header-content {
-    padding: 15px;
-  }
-
-  .header-icon {
-    font-size: 32px;
-  }
-
-  .header-text h1 {
-    font-size: 20px;
-  }
-
-  .header-text p {
-    font-size: 12px;
-  }
-
-  .equipment-card .ant-card-body {
-    padding: 20px;
-  }
-
-  .form-input,
-  .form-select .ant-select-selector,
-  .form-datepicker .ant-picker {
-    height: 44px !important;
-    padding: 0 14px !important;
   }
 
   .form-select .ant-select-selection-search-input {
@@ -663,44 +482,133 @@
   .form-select .ant-select-selection-placeholder,
   .form-select .ant-select-selection-item {
     line-height: 42px !important;
-    font-size: 13px;
   }
 
   .form-textarea {
-    padding: 10px 14px;
+    min-height: 100px;
   }
 
   .submit-button,
   .cancel-button {
     height: 44px;
-    font-size: 13px;
-    padding: 0 20px;
+    font-size: 14px;
+    padding: 0 24px;
   }
 }
 
-/* Print Styles */
-@media print {
+/* Mobile View */
+@media (max-width: 576px) {
   .equipment-page {
-    background: white;
+    padding: 16px;
+  }
+
+  .card-header {
+    padding: 20px;
+    gap: 12px;
+  }
+
+  .header-icon-card {
+    width: 48px;
+    height: 48px;
+  }
+
+  .header-icon {
+    font-size: 24px;
+  }
+
+  .header-text h1 {
+    font-size: 20px;
+  }
+
+  .header-text p {
+    font-size: 13px;
+  }
+
+  .equipment-form {
     padding: 20px;
   }
 
-  .header-content {
-    background: white;
-    border: 1px solid #e5e7eb;
+  .form-item {
+    margin-bottom: 20px;
   }
 
-  .header-icon,
+  .form-label {
+    font-size: 13px;
+  }
+
   .label-icon {
-    color: #667eea;
+    font-size: 15px;
   }
 
-  .header-text h1,
+  .form-input,
+  .form-select .ant-select-selector,
+  .form-datepicker .ant-picker {
+    height: 42px !important;
+  }
+
+  .form-select .ant-select-selection-search-input {
+    height: 40px !important;
+  }
+
+  .form-select .ant-select-selection-placeholder,
+  .form-select .ant-select-selection-item {
+    line-height: 40px !important;
+    font-size: 14px;
+  }
+
+  .form-textarea {
+    min-height: 90px;
+    padding: 10px 14px;
+  }
+
+  .char-counter {
+    font-size: 11px;
+  }
+
+  .form-actions {
+    margin-top: 24px;
+    padding-top: 20px;
+    flex-direction: column;
+  }
+
+  .submit-button,
+  .cancel-button {
+    width: 100%;
+    height: 42px;
+    font-size: 14px;
+    padding: 0 20px;
+    justify-content: center;
+  }
+}
+
+/* Small Mobile View */
+@media (max-width: 400px) {
+  .equipment-page {
+    padding: 12px;
+  }
+
+  .card-header {
+    padding: 16px;
+  }
+
+  .header-icon-card {
+    width: 44px;
+    height: 44px;
+  }
+
+  .header-icon {
+    font-size: 22px;
+  }
+
+  .header-text h1 {
+    font-size: 18px;
+  }
+
   .header-text p {
-    color: #000;
+    font-size: 12px;
   }
 
-  .button-group {
-    display: none;
+  .equipment-form {
+    padding: 16px;
   }
 }
