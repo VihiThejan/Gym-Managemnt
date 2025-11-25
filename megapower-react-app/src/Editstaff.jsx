@@ -163,22 +163,22 @@ export const EditStaff = () => {
     };
 
     return (
-        <MainLayout>
+        <MainLayout showSidebar={true} showNavigation={false}>
             <div className="edit-staff-page">
-                {/* Header Section */}
-                <div className="edit-staff-header">
-                    <div className="header-content">
-                        <EditOutlined className="header-icon" />
-                        <div className="header-text">
-                            <h1>Edit Staff Member</h1>
-                            <p>Update staff member information and details</p>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Form Section */}
                 <div className="edit-staff-content">
                     <Card className="edit-staff-card" loading={loading}>
+                        {!loading && (
+                            <div className="card-header">
+                                <div className="header-icon-card">
+                                    <EditOutlined className="header-icon" />
+                                </div>
+                                <div>
+                                    <h1 className="card-title">Edit Staff Member</h1>
+                                    <p className="card-subtitle">Update staff member information and details</p>
+                                </div>
+                            </div>
+                        )}
                         <Form onFinish={handleSubmit} className="edit-staff-form">
                             {/* Full Name */}
                             <Form.Item validateStatus={nameError ? 'error' : ''} help={nameError}>
@@ -304,7 +304,6 @@ export const EditStaff = () => {
                                         loading={submitting}
                                         icon={<SaveOutlined />}
                                         className="submit-button"
-                                        onClick={handleSubmit}
                                     >
                                         {submitting ? 'Updating...' : 'Update Staff'}
                                     </Button>

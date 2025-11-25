@@ -89,16 +89,18 @@ export const Staff = () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout showSidebar={true} showNavigation={false}>
       <div className="staff-page">
         <div className="staff-container">
           <Card className="staff-card">
             <div className="card-header">
-              <div className="header-icon">
-                <IdcardOutlined />
+              <div className="header-icon-card">
+                <IdcardOutlined className="header-icon" />
               </div>
-              <h2>Staff Registration</h2>
-              <p>Add new staff member to the system</p>
+              <div className="header-text">
+                <h2 className="card-title">Staff Registration</h2>
+                <p className="card-subtitle">Add new staff member to the system</p>
+              </div>
             </div>
 
             <Form

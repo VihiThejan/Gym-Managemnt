@@ -5,69 +5,68 @@
 /* Page Container */
 .edit-staff-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Header Section */
-.edit-staff-header {
-  width: 100%;
-  max-width: 900px;
-  margin-bottom: 30px;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.header-icon {
-  font-size: 48px;
-  color: white;
-  opacity: 0.9;
-}
-
-.header-text h1 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -0.5px;
-}
-
-.header-text p {
-  margin: 5px 0 0 0;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 400;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  padding: 32px;
 }
 
 /* Content Section */
 .edit-staff-content {
   width: 100%;
   max-width: 900px;
+  margin: 0 auto;
 }
 
 /* Card Styling */
 .edit-staff-card {
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: none;
   overflow: hidden;
+  background: #ffffff;
 }
 
 .edit-staff-card .ant-card-body {
-  padding: 50px;
+  padding: 32px;
+}
+
+/* Card Header */
+.edit-staff-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.edit-staff-card .header-icon-card {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  flex-shrink: 0;
+}
+
+.edit-staff-card .header-icon {
+  font-size: 28px;
+  color: #667eea;
+}
+
+.edit-staff-card .card-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1d3a;
+  margin: 0;
+}
+
+.edit-staff-card .card-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 4px 0 0 0;
 }
 
 /* Form Styling */
@@ -534,28 +533,33 @@
 /* Tablet View */
 @media (max-width: 768px) {
   .edit-staff-page {
-    padding: 30px 15px;
-  }
-
-  .header-content {
-    padding: 25px;
-    gap: 15px;
-  }
-
-  .header-icon {
-    font-size: 40px;
-  }
-
-  .header-text h1 {
-    font-size: 26px;
-  }
-
-  .header-text p {
-    font-size: 14px;
+    padding: 20px 15px;
   }
 
   .edit-staff-card .ant-card-body {
-    padding: 35px;
+    padding: 24px 20px;
+  }
+
+  .edit-staff-card .card-header {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+  }
+
+  .edit-staff-card .header-icon-card {
+    width: 56px;
+    height: 56px;
+  }
+
+  .edit-staff-card .header-icon {
+    font-size: 24px;
+  }
+
+  .edit-staff-card .card-title {
+    font-size: 20px;
+  }
+
+  .edit-staff-card .card-subtitle {
+    font-size: 13px;
   }
 
   .form-label {
@@ -607,32 +611,42 @@
   .submit-button,
   .cancel-button {
     height: 48px;
-    font-size: 15px;
-    padding: 0 32px;
   }
 }
 
 /* Mobile View */
 @media (max-width: 480px) {
   .edit-staff-page {
-    padding: 20px 10px;
+    padding: 15px 10px;
   }
 
-  .header-content {
-    flex-direction: column;
-    text-align: center;
-    padding: 20px;
+  .edit-staff-card .ant-card-body {
+    padding: 20px 15px;
   }
 
-  .header-icon {
-    font-size: 36px;
+  .edit-staff-card .card-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
   }
 
-  .header-text h1 {
-    font-size: 22px;
+  .edit-staff-card .header-icon-card {
+    width: 48px;
+    height: 48px;
   }
 
-  .header-text p {
+  .edit-staff-card .header-icon {
+    font-size: 20px;
+  }
+
+  .edit-staff-card .card-title {
+    font-size: 18px;
+  }
+
+  .edit-staff-card .card-subtitle {
+    font-size: 12px;
+  }
+
+  .form-label {
     font-size: 13px;
   }
 
@@ -740,27 +754,16 @@
 /* Small Mobile View */
 @media (max-width: 360px) {
   .edit-staff-page {
-    padding: 15px 8px;
-  }
-
-  .header-content {
-    padding: 15px;
-  }
-
-  .header-icon {
-    font-size: 32px;
-  }
-
-  .header-text h1 {
-    font-size: 20px;
-  }
-
-  .header-text p {
-    font-size: 12px;
+    padding: 12px 8px;
   }
 
   .edit-staff-card .ant-card-body {
-    padding: 20px;
+    padding: 16px 12px;
+  }
+
+  .edit-staff-card .card-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
   }
 
   .form-input,
@@ -805,18 +808,16 @@
     padding: 20px;
   }
 
-  .header-content {
-    background: white;
-    border: 1px solid #e5e7eb;
+  .edit-staff-card .card-header {
+    border-bottom: 1px solid #e5e7eb;
   }
 
-  .header-icon,
   .label-icon {
     color: #667eea;
   }
 
-  .header-text h1,
-  .header-text p {
+  .edit-staff-card .card-title,
+  .edit-staff-card .card-subtitle {
     color: #000;
   }
 
