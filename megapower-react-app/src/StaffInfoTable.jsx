@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col } from "antd";
+import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
@@ -20,12 +20,11 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   BellOutlined,
-  LogoutOutlined,
-  SettingOutlined
+  LogoutOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import Logo from './components/Logo';
-import './StaffInfoTable.css';
+import './StaffInfoView.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Search } = Input;
@@ -37,25 +36,32 @@ const siderStyle = {
   insetInlineStart: 0,
   top: 0,
   bottom: 0,
+  background: 'linear-gradient(180deg, #1a1f36 0%, #0f1419 100%)',
 };
 
-const items = [
+const navigationItems = [
   { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/staffDashboard' },
   { label: 'Staff Info', icon: <TeamOutlined />, key: '2', path: '/staffInfo' },
-  { label: 'Payment', icon: <DollarOutlined />, key: '5', path: '/Paymenttable' },
-  { label: 'Announcement', icon: <NotificationOutlined />, key: '6', path: '/staffAnnouncement' },
-  { label: 'Attendance', icon: <CalendarOutlined />, key: '7', path: '/Attendancetable' },
-  { label: 'Appointment', icon: <PhoneOutlined />, key: '8', path: '/Appoinmenttable' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '9', path: '/chat' },
+  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/staffPayment' },
+  { label: 'Announcement', icon: <NotificationOutlined />, key: '4', path: '/staffAnnouncement' },
+  { label: 'Attendance', icon: <CalendarOutlined />, key: '5', path: '/staffAttendance' },
+  { label: 'Appointment', icon: <PhoneOutlined />, key: '6', path: '/staffAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
 ];
 
 const StaffInfoTable = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); 
-  const [filteredData, setFilteredData] = useState([]); 
-  const [searchText, setSearchText] = useState("");
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState('');
   const [collapsed, setCollapsed] = useState(false);
+  const [stats, setStats] = useState({
+    total: 0,
+    trainers: 0,
+    male: 0,
+    female: 0
+  });
 
   useEffect(() => {
     fetchData();
@@ -65,8 +71,21 @@ const StaffInfoTable = () => {
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:5000/api/v1/staffmember/list");
-      setData(res?.data?.data);
-      setFilteredData(res?.data?.data);
+      const staffData = res?.data?.data || [];
+      setData(staffData);
+      setFilteredData(staffData);
+      
+      // Calculate stats
+      const trainers = staffData.filter(s => s.Job_Role === 'Trainer').length;
+      const male = staffData.filter(s => s.Gender === 'Male').length;
+      const female = staffData.filter(s => s.Gender === 'Female').length;
+      
+      setStats({
+        total: staffData.length,
+        trainers,
+        male,
+        female
+      });
     } catch (error) {
       message.error('Failed to fetch staff information');
     } finally {
@@ -90,28 +109,10 @@ const StaffInfoTable = () => {
     }
   };
 
-  const handleMenuClick = ({ key }) => {
-    const selectedItem = items.find(item => item.key === key);
-    if (selectedItem) {
-      navigate(selectedItem.path);  
-    }
-  };
-
   const handleLogout = () => {
     message.success('Logged out successfully');
     navigate('/login');
   };
-
-  const profileMenu = (
-    <div className="profile-dropdown">
-      <div className="profile-item" onClick={() => navigate('/profile')}>
-        <SettingOutlined /> Settings
-      </div>
-      <div className="profile-item" onClick={handleLogout}>
-        <LogoutOutlined /> Logout
-      </div>
-    </div>
-  );
 
   const columns = [
     {
@@ -250,10 +251,10 @@ const StaffInfoTable = () => {
         className="dashboard-sider"
       >
         <div className="logo-container">
-          <Logo size="small" />
+          <Logo size="small" showText={!collapsed} variant="white" />
         </div>
         <div className="dashboard-menu">
-          {items.map(({ label, icon, key, path }) => (
+          {navigationItems.map(({ label, icon, key, path }) => (
             <div
               key={key}
               className={`menu-item ${path === '/staffInfo' ? 'active' : ''}`}
@@ -263,6 +264,14 @@ const StaffInfoTable = () => {
               {!collapsed && <span className="menu-label">{label}</span>}
             </div>
           ))}
+          <div className="menu-divider"></div>
+          <div
+            className="menu-item logout-item"
+            onClick={handleLogout}
+          >
+            <span className="menu-icon"><LogoutOutlined /></span>
+            {!collapsed && <span className="menu-label">Logout</span>}
+          </div>
         </div>
       </Sider>
 
@@ -275,13 +284,16 @@ const StaffInfoTable = () => {
             >
               {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </div>
-            <h2 className="page-title">Staff Information</h2>
+            <h2 className="page-title">
+              <TeamOutlined style={{ marginRight: '8px' }} />
+              Staff Information
+            </h2>
           </div>
 
           <div className="header-right">
             <div className="notification-badge">
               <BellOutlined className="notification-icon" />
-              <span className="badge-count">3</span>
+              <span className="badge-count">{stats.total}</span>
             </div>
             <Avatar 
               className="user-avatar" 
@@ -294,8 +306,52 @@ const StaffInfoTable = () => {
 
         <Content className="staff-info-content">
           <div className="content-wrapper">
+            {/* Stats Cards */}
+            <Row gutter={[16, 16]} className="stats-row">
+              <Col xs={24} sm={12} lg={6}>
+                <Card className="stat-card stat-purple">
+                  <Statistic
+                    title={<span className="stat-title">Total Staff</span>}
+                    value={stats.total}
+                    prefix={<TeamOutlined />}
+                    valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card className="stat-card stat-blue">
+                  <Statistic
+                    title={<span className="stat-title">Trainers</span>}
+                    value={stats.trainers}
+                    prefix={<UserOutlined />}
+                    valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card className="stat-card stat-green">
+                  <Statistic
+                    title={<span className="stat-title">Male Staff</span>}
+                    value={stats.male}
+                    prefix={<ManOutlined />}
+                    valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card className="stat-card stat-pink">
+                  <Statistic
+                    title={<span className="stat-title">Female Staff</span>}
+                    value={stats.female}
+                    prefix={<WomanOutlined />}
+                    valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+            </Row>
+
             <Card 
-              className="info-card"
+              className="staff-card"
               title={
                 <div className="card-title-wrapper">
                   <div className="title-section">
@@ -318,53 +374,6 @@ const StaffInfoTable = () => {
                 />
               }
             >
-              <div className="stats-summary">
-                <Row gutter={16}>
-                  <Col span={6}>
-                    <div className="stat-box stat-purple">
-                      <TeamOutlined className="stat-icon" />
-                      <div className="stat-content">
-                        <div className="stat-value">{filteredData.length}</div>
-                        <div className="stat-label">Total Staff</div>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col span={6}>
-                    <div className="stat-box stat-blue">
-                      <UserOutlined className="stat-icon" />
-                      <div className="stat-content">
-                        <div className="stat-value">
-                          {filteredData.filter(s => s.Job_Role === 'Trainer').length}
-                        </div>
-                        <div className="stat-label">Trainers</div>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col span={6}>
-                    <div className="stat-box stat-green">
-                      <ManOutlined className="stat-icon" />
-                      <div className="stat-content">
-                        <div className="stat-value">
-                          {filteredData.filter(s => s.Gender === 'Male').length}
-                        </div>
-                        <div className="stat-label">Male Staff</div>
-                      </div>
-                    </div>
-                  </Col>
-                  <Col span={6}>
-                    <div className="stat-box stat-pink">
-                      <WomanOutlined className="stat-icon" />
-                      <div className="stat-content">
-                        <div className="stat-value">
-                          {filteredData.filter(s => s.Gender === 'Female').length}
-                        </div>
-                        <div className="stat-label">Female Staff</div>
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-
               <Table
                 columns={columns}
                 dataSource={filteredData}

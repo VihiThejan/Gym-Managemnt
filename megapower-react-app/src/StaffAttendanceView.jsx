@@ -14,15 +14,15 @@ import {
   MessageOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  BellOutlined,
-  IdcardOutlined,
   ClockCircleOutlined,
-  SoundOutlined,
-  LogoutOutlined
+  LoginOutlined,
+  LogoutOutlined,
+  BellOutlined,
+  CheckCircleOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import Logo from './components/Logo';
-import './StaffAnnouncementView.css';
+import './StaffAttendanceView.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Search } = Input;
@@ -47,7 +47,7 @@ const navigationItems = [
   { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
 ];
 
-const StaffAnnouncementView = () => {
+const StaffAttendanceView = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]); 
   const [filteredData, setFilteredData] = useState([]); 
@@ -55,8 +55,9 @@ const StaffAnnouncementView = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
-    newAnnouncements: 0,
-    latestDate: 'N/A'
+    today: 0,
+    thisWeek: 0,
+    thisMonth: 0
   });
 
   useEffect(() => {
@@ -66,27 +67,27 @@ const StaffAnnouncementView = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/v1/announcement/list");
-      const announcements = res?.data?.data || [];
-      setData(announcements);
-      setFilteredData(announcements);
+      const res = await axios.get("http://localhost:5000/api/v1/attendance/list");
+      const attendance = res?.data?.data || [];
+      setData(attendance);
+      setFilteredData(attendance);
       
-      // Calculate stats
-      const newAnnouncements = announcements.filter(a => 
-        moment().diff(moment(a.Date_Time), 'days') <= 7
-      ).length;
+      const today = moment().format('YYYY-MM-DD');
+      const weekStart = moment().startOf('week');
+      const monthStart = moment().startOf('month');
       
-      const latestDate = announcements.length > 0 
-        ? moment(announcements[0]?.Date_Time).format('MMM DD, YYYY')
-        : 'N/A';
+      const todayCount = attendance.filter(a => moment(a.Current_date).format('YYYY-MM-DD') === today).length;
+      const weekCount = attendance.filter(a => moment(a.Current_date).isSameOrAfter(weekStart)).length;
+      const monthCount = attendance.filter(a => moment(a.Current_date).isSameOrAfter(monthStart)).length;
       
       setStats({
-        total: announcements.length,
-        newAnnouncements,
-        latestDate
+        total: attendance.length,
+        today: todayCount,
+        thisWeek: weekCount,
+        thisMonth: monthCount
       });
     } catch (error) {
-      message.error('Failed to fetch announcement data');
+      message.error('Failed to fetch attendance data');
     } finally {
       setLoading(false);
     }
@@ -95,9 +96,9 @@ const StaffAnnouncementView = () => {
   const handleSearch = (value) => {
     if (value) {
       const filtered = data.filter((item) => 
-        String(item.Announcement_ID).toLowerCase().includes(value.toLowerCase()) ||
-        String(item.Staff_ID || '').toLowerCase().includes(value.toLowerCase()) ||
-        String(item.Message || '').toLowerCase().includes(value.toLowerCase())
+        String(item.Attendance_ID).toLowerCase().includes(value.toLowerCase()) ||
+        String(item.Member_Id || '').toLowerCase().includes(value.toLowerCase()) ||
+        moment(item.Current_date).format('YYYY-MM-DD').includes(value.toLowerCase())
       );
       setFilteredData(filtered);
     } else {
@@ -112,75 +113,108 @@ const StaffAnnouncementView = () => {
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "Announcement_ID",
-      key: "announcement_id",
+      title: "Attendance ID",
+      dataIndex: "Attendance_ID",
+      key: "attendanceid",
       fixed: "left",
-      width: 100,
+      width: 150,
       render: (id) => (
         <Tag color="purple" className="id-tag">
-          <NotificationOutlined /> #{id}
+          <CalendarOutlined /> {id}
         </Tag>
       ),
     },
     {
-      title: "Admin ID",
-      dataIndex: "Staff_ID",
-      key: "staff_id",
-      width: 120,
-      render: (staff_id) => (
-        <Tag color="blue" className="admin-tag">
-          <IdcardOutlined /> Admin #{staff_id}
+      title: "Member ID",
+      dataIndex: "Member_Id",
+      key: "memberid",
+      width: 130,
+      render: (id) => (
+        <Tag color="blue" className="member-tag">
+          <UserOutlined /> {id}
         </Tag>
       ),
     },
     {
-      title: "Message",
-      dataIndex: "Message",
-      key: "message",
-      width: 400,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (message) => (
-        <div className="message-cell" title={message}>
-          <BellOutlined className="cell-icon" />
-          <span>{message}</span>
-        </div>
-      ),
-    },
-    {
-      title: "Date & Time",
-      dataIndex: "Date_Time",
+      title: "Date",
+      dataIndex: "Current_date",
       key: "date",
-      width: 180,
+      width: 150,
       render: (date) => (
-        <div className="date-cell">
-          <ClockCircleOutlined className="cell-icon" />
-          <span>{date ? moment(date).format('DD MMM YYYY, HH:mm') : 'N/A'}</span>
+        <div className="info-cell">
+          <CalendarOutlined className="cell-icon" />
+          <span>{date ? moment(date).format('DD MMM YYYY') : 'N/A'}</span>
         </div>
       ),
-      sorter: (a, b) => moment(a.Date_Time).unix() - moment(b.Date_Time).unix(),
+      sorter: (a, b) => moment(a.Current_date).unix() - moment(b.Current_date).unix(),
+    },
+    {
+      title: "Check In",
+      dataIndex: "In_time",
+      key: "intime",
+      width: 140,
+      render: (time) => (
+        <div className="info-cell">
+          <LoginOutlined className="cell-icon" style={{ color: '#10b981' }} />
+          <span style={{ fontWeight: 500 }}>{time ? moment(time, 'HH:mm:ss').format('hh:mm A') : 'N/A'}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Check Out",
+      dataIndex: "Out_time",
+      key: "outtime",
+      width: 140,
+      render: (time) => (
+        <div className="info-cell">
+          <LogoutOutlined className="cell-icon" style={{ color: '#ef4444' }} />
+          <span style={{ fontWeight: 500 }}>{time ? moment(time, 'HH:mm:ss').format('hh:mm A') : 'N/A'}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Duration",
+      key: "duration",
+      width: 130,
+      render: (_, record) => {
+        if (record.In_time && record.Out_time) {
+          const inTime = moment(record.In_time, 'HH:mm:ss');
+          const outTime = moment(record.Out_time, 'HH:mm:ss');
+          const duration = moment.duration(outTime.diff(inTime));
+          const hours = Math.floor(duration.asHours());
+          const mins = duration.minutes();
+          return (
+            <Tag color="cyan" icon={<ClockCircleOutlined />}>
+              {hours}h {mins}m
+            </Tag>
+          );
+        }
+        return <Tag color="default">Ongoing</Tag>;
+      },
     },
     {
       title: "Status",
-      dataIndex: "Date_Time",
       key: "status",
       width: 120,
       fixed: "right",
-      render: (date) => {
-        const isNew = moment().diff(moment(date), 'days') <= 7;
-        return (
-          <Tag color={isNew ? 'green' : 'default'} className="status-tag">
-            {isNew ? 'New' : 'Posted'}
-          </Tag>
-        );
+      render: (_, record) => {
+        const today = moment().format('YYYY-MM-DD');
+        const recordDate = moment(record.Current_date).format('YYYY-MM-DD');
+        const isToday = today === recordDate;
+        const hasCheckedOut = record.Out_time;
+        
+        if (isToday && !hasCheckedOut) {
+          return <Tag color="processing">Active</Tag>;
+        } else if (hasCheckedOut) {
+          return <Tag color="success">Completed</Tag>;
+        }
+        return <Tag color="default">Past</Tag>;
       },
     },
   ];
 
   return (
-    <Layout className="staff-announcement-layout">
+    <Layout className="staff-attendance-layout">
       <Sider
         trigger={null}
         collapsible
@@ -196,7 +230,7 @@ const StaffAnnouncementView = () => {
           {navigationItems.map(({ label, icon, key, path }) => (
             <div
               key={key}
-              className={`menu-item ${path === '/staffAnnouncement' ? 'active' : ''}`}
+              className={`menu-item ${path === '/staffAttendance' ? 'active' : ''}`}
               onClick={() => navigate(path)}
             >
               <span className="menu-icon">{icon}</span>
@@ -215,7 +249,7 @@ const StaffAnnouncementView = () => {
       </Sider>
 
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
-        <Header className="staff-announcement-header">
+        <Header className="staff-attendance-header">
           <div className="header-left">
             <div 
               className="trigger-button"
@@ -224,15 +258,15 @@ const StaffAnnouncementView = () => {
               {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </div>
             <h2 className="page-title">
-              <SoundOutlined style={{ marginRight: '8px' }} />
-              Announcements
+              <CalendarOutlined style={{ marginRight: '8px' }} />
+              Attendance Records
             </h2>
           </div>
 
           <div className="header-right">
             <div className="notification-badge">
               <BellOutlined className="notification-icon" />
-              <span className="badge-count">{stats.newAnnouncements}</span>
+              <span className="badge-count">{stats.today}</span>
             </div>
             <Avatar 
               className="user-avatar" 
@@ -243,56 +277,66 @@ const StaffAnnouncementView = () => {
           </div>
         </Header>
 
-        <Content className="staff-announcement-content">
+        <Content className="staff-attendance-content">
           <div className="content-wrapper">
             {/* Stats Cards */}
             <Row gutter={[16, 16]} className="stats-row">
-              <Col xs={24} sm={12} md={8} lg={8}>
+              <Col xs={24} sm={12} md={6} lg={6}>
                 <Card className="stat-card stat-purple">
                   <Statistic
-                    title={<span className="stat-title">Total Announcements</span>}
+                    title={<span className="stat-title">Total Records</span>}
                     value={stats.total}
-                    prefix={<NotificationOutlined />}
+                    prefix={<CalendarOutlined />}
                     valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
                   />
                 </Card>
               </Col>
-              <Col xs={24} sm={12} md={8} lg={8}>
+              <Col xs={24} sm={12} md={6} lg={6}>
                 <Card className="stat-card stat-green">
                   <Statistic
-                    title={<span className="stat-title">New (Last 7 Days)</span>}
-                    value={stats.newAnnouncements}
-                    prefix={<BellOutlined />}
+                    title={<span className="stat-title">Today</span>}
+                    value={stats.today}
+                    prefix={<ClockCircleOutlined />}
                     valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
                   />
                 </Card>
               </Col>
-              <Col xs={24} sm={12} md={8} lg={8}>
+              <Col xs={24} sm={12} md={6} lg={6}>
                 <Card className="stat-card stat-blue">
                   <Statistic
-                    title={<span className="stat-title">Latest Update</span>}
-                    value={stats.latestDate}
-                    prefix={<ClockCircleOutlined />}
-                    valueStyle={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}
+                    title={<span className="stat-title">This Week</span>}
+                    value={stats.thisWeek}
+                    prefix={<CalendarOutlined />}
+                    valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} md={6} lg={6}>
+                <Card className="stat-card stat-orange">
+                  <Statistic
+                    title={<span className="stat-title">This Month</span>}
+                    value={stats.thisMonth}
+                    prefix={<CheckCircleOutlined />}
+                    valueStyle={{ color: 'white', fontSize: '28px', fontWeight: 'bold' }}
                   />
                 </Card>
               </Col>
             </Row>
 
             <Card 
-              className="announcement-card"
+              className="attendance-card"
               title={
                 <div className="card-title-wrapper">
                   <div className="title-section">
-                    <SoundOutlined className="title-icon" />
-                    <span className="title-text">Announcement Board</span>
+                    <CalendarOutlined className="title-icon" />
+                    <span className="title-text">Member Attendance Records</span>
                   </div>
-                  <span className="title-subtitle">View all announcements and updates from management</span>
+                  <span className="title-subtitle">Track and manage all member check-ins and check-outs</span>
                 </div>
               }
               extra={
                 <Search
-                  placeholder="Search by ID, admin, or message..."
+                  placeholder="Search by Attendance ID, Member ID, Date..."
                   allowClear
                   enterButton={<SearchOutlined />}
                   size="large"
@@ -306,16 +350,16 @@ const StaffAnnouncementView = () => {
               <Table
                 columns={columns}
                 dataSource={filteredData}
-                rowKey="Announcement_ID"
+                rowKey="Attendance_ID"
                 loading={loading}
-                scroll={{ x: 1000, y: 500 }}
-                className="staff-announcement-table"
+                scroll={{ x: 1200, y: 500 }}
+                className="staff-attendance-table"
                 sticky
                 pagination={{
                   pageSize: 10,
                   showSizeChanger: true,
                   showQuickJumper: true,
-                  showTotal: (total) => `Total ${total} announcements`,
+                  showTotal: (total) => `Total ${total} records`,
                   pageSizeOptions: ['10', '20', '50', '100'],
                   position: ['bottomCenter'],
                 }}
@@ -324,10 +368,10 @@ const StaffAnnouncementView = () => {
           </div>
         </Content>
 
-        <Footer className="staff-announcement-footer">
+        <Footer className="staff-attendance-footer">
           <div className="footer-content">
             <span>Mega Power Gym & Fitness © 2025</span>
-            <span>Announcements Portal</span>
+            <span>Attendance Portal</span>
           </div>
         </Footer>
       </Layout>
@@ -335,4 +379,4 @@ const StaffAnnouncementView = () => {
   );
 };
 
-export default StaffAnnouncementView;
+export default StaffAttendanceView;

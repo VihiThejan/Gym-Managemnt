@@ -1,6 +1,6 @@
-/* Staff Payment View Styles */
+/* Staff Info View Styles */
 
-.staff-payment-layout {
+.staff-info-layout {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
 }
@@ -9,7 +9,7 @@
   transition: margin-inline-start 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Sidebar - Reuse from StaffInfoTable */
+/* Sidebar */
 .dashboard-sider {
   background: linear-gradient(180deg, #1a1f36 0%, #0f1419 100%);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
@@ -86,7 +86,7 @@
 }
 
 /* Header */
-.staff-payment-header {
+.staff-info-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -177,7 +177,7 @@
 }
 
 /* Content */
-.staff-payment-content {
+.staff-info-content {
   padding: 24px;
   min-height: calc(100vh - 64px - 64px);
 }
@@ -219,16 +219,16 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.stat-card.stat-blue {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
 .stat-card.stat-green {
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
 }
 
-.stat-card.stat-orange {
+.stat-card.stat-pink {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.stat-card.stat-blue {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 .stat-card .ant-statistic-title {
@@ -257,29 +257,29 @@
   font-size: 13px;
 }
 
-/* Payment Card */
-.payment-card {
+/* Staff Card */
+.staff-card {
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   border: none;
   overflow: hidden;
 }
 
-.payment-card .ant-card-head {
+.staff-card .ant-card-head {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-bottom: none;
   padding: 24px 32px;
 }
 
-.payment-card .ant-card-head-title {
+.staff-card .ant-card-head-title {
   padding: 0;
 }
 
-.payment-card .ant-card-extra {
+.staff-card .ant-card-extra {
   padding: 0;
 }
 
-.payment-card .ant-card-body {
+.staff-card .ant-card-body {
   padding: 32px;
 }
 
@@ -357,16 +357,16 @@
 }
 
 /* Table */
-.staff-payment-table {
+.staff-info-table {
   margin-top: 0;
 }
 
-.staff-payment-table .ant-table {
+.staff-info-table .ant-table {
   border-radius: 12px;
   overflow: hidden;
 }
 
-.staff-payment-table .ant-table-thead > tr > th {
+.staff-info-table .ant-table-thead > tr > th {
   background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
   color: #1a1f36;
   font-weight: 700;
@@ -377,24 +377,23 @@
   border-bottom: 2px solid #667eea;
 }
 
-.staff-payment-table .ant-table-tbody > tr {
+.staff-info-table .ant-table-tbody > tr {
   transition: all 0.3s ease;
 }
 
-.staff-payment-table .ant-table-tbody > tr:hover {
+.staff-info-table .ant-table-tbody > tr:hover {
   background: rgba(102, 126, 234, 0.04);
   transform: scale(1.01);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.staff-payment-table .ant-table-tbody > tr > td {
+.staff-info-table .ant-table-tbody > tr > td {
   padding: 16px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 /* Table Cell Styles */
-.id-tag,
-.member-tag {
+.id-tag {
   padding: 6px 12px;
   border-radius: 8px;
   font-weight: 600;
@@ -403,6 +402,35 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.name-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.name-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1f36;
+}
+
+.gender-icon {
+  font-size: 14px;
+}
+
+.role-tag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 .info-cell {
@@ -417,43 +445,42 @@
   color: #667eea;
 }
 
-.date-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #495057;
+.status-tag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 /* Pagination */
-.staff-payment-table .ant-pagination {
+.staff-info-table .ant-pagination {
   margin-top: 24px;
   display: flex;
   justify-content: center;
 }
 
-.staff-payment-table .ant-pagination-item {
+.staff-info-table .ant-pagination-item {
   border-radius: 8px;
   border: 1px solid #e9ecef;
   transition: all 0.3s ease;
 }
 
-.staff-payment-table .ant-pagination-item:hover {
+.staff-info-table .ant-pagination-item:hover {
   border-color: #667eea;
   transform: translateY(-2px);
 }
 
-.staff-payment-table .ant-pagination-item-active {
+.staff-info-table .ant-pagination-item-active {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-color: #667eea;
 }
 
-.staff-payment-table .ant-pagination-item-active a {
+.staff-info-table .ant-pagination-item-active a {
   color: white;
 }
 
 /* Footer */
-.staff-payment-footer {
+.staff-info-footer {
   background: white;
   border-top: 1px solid #e9ecef;
   padding: 16px 24px;
@@ -503,23 +530,23 @@
 }
 
 @media (max-width: 768px) {
-  .staff-payment-header {
+  .staff-info-header {
     padding: 0 16px;
   }
   
-  .staff-payment-content {
+  .staff-info-content {
     padding: 16px;
   }
   
-  .payment-card .ant-card-head {
+  .staff-card .ant-card-head {
     padding: 16px;
   }
   
-  .payment-card .ant-card-body {
+  .staff-card .ant-card-body {
     padding: 16px;
   }
   
-  .payment-card .ant-card-extra {
+  .staff-card .ant-card-extra {
     margin-top: 12px;
   }
   

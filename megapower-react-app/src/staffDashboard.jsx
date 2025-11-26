@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, theme, Typography, Input, Badge, Avatar, Dropdown, Button, Card, Row, Col, Statistic } from 'antd';
+import { Layout, theme, Typography, Input, Badge, Avatar, Button, Card, Row, Col, Statistic } from 'antd';
 import { 
-  MenuUnfoldOutlined, 
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
   UserOutlined, 
   DollarOutlined, 
   NotificationOutlined, 
@@ -12,8 +13,6 @@ import {
   TeamOutlined, 
   CheckCircleOutlined, 
   ClockCircleOutlined,
-  LogoutOutlined,
-  SettingOutlined,
   DashboardOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +21,6 @@ import Logo from './components/Logo';
 import './staffDashboard.css';
 
 const { Header, Content, Footer, Sider } = Layout;
-const { Text } = Typography;
 const { Search } = Input;
 
 const siderStyle = {
@@ -32,40 +30,22 @@ const siderStyle = {
   insetInlineStart: 0,
   top: 0,
   bottom: 0,
+  background: 'linear-gradient(180deg, #1a1f3a 0%, #2d1b4e 100%)',
 };
 
-const logoStyle = {
-  height: '80px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: 'white',
-  fontSize: '18px',
-  fontWeight: 'bold',
-  backgroundColor: '#001529',
-  marginBottom: '16px',
-};
-
-const menuItemStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-start',
-  gap: '8px',
-};
-
-const items = [
+const navigationItems = [
   { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/staffDashboard' },
   { label: 'Staff Info', icon: <TeamOutlined />, key: '2', path: '/staffInfo' },
-  { label: 'Payment', icon: <DollarOutlined />, key: '5', path: '/Paymenttable' },
-  { label: 'Announcement', icon: <NotificationOutlined />, key: '6', path: '/staffAnnouncement' },
-  { label: 'Attendance', icon: <CalendarOutlined />, key: '7', path: '/Attendancetable' },
-  { label: 'Appointment', icon: <PhoneOutlined />, key: '8', path: '/Appoinmenttable' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '9', path: '/chat' },
+  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/staffPayment' },
+  { label: 'Announcement', icon: <NotificationOutlined />, key: '4', path: '/staffAnnouncement' },
+  { label: 'Attendance', icon: <CalendarOutlined />, key: '5', path: '/staffAttendance' },
+  { label: 'Appointment', icon: <PhoneOutlined />, key: '6', path: '/staffAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
 ];
 
 export const StaffDashboard = () => {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -112,13 +92,6 @@ export const StaffDashboard = () => {
     }
   };
 
-  const handleMenuClick = ({ key }) => {
-    const selectedItem = items.find(item => item.key === key);
-    if (selectedItem) {
-      navigate(selectedItem.path);  
-    }
-  };
-
   const handleSearch = (value) => {
     console.log('Search:', value);
   };
@@ -128,25 +101,12 @@ export const StaffDashboard = () => {
     navigate('/');
   };
 
-  const handleGoBack = () => {
-    navigate(-1); 
-  };
-
-  const profileMenu = (
-    <Menu>
-      <Menu.Item key="1" icon={<UserOutlined />}>Profile</Menu.Item>
-      <Menu.Item key="2" icon={<SettingOutlined />}>Settings</Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="3" icon={<LogoutOutlined />} onClick={handleLogout}>Logout</Menu.Item>
-    </Menu>
-  );
-
   return (
     <Layout hasSider className="staff-dashboard-layout">
       <Sider
+        trigger={null}
         collapsible
         collapsed={collapsed}
-        onCollapse={(collapsed) => setCollapsed(collapsed)}
         width={250}
         style={siderStyle}
         className="dashboard-sider"
@@ -154,23 +114,28 @@ export const StaffDashboard = () => {
         <div className="logo-container">
           <Logo size="small" showText={!collapsed} variant="white" />
         </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={['1']}
-          onClick={handleMenuClick}
-          className="dashboard-menu"
-        >
-          {items.map(({ label, icon, key }) => (
-            <Menu.Item key={key} style={menuItemStyle} icon={icon}>
-              {label}
-            </Menu.Item>
+        <div className="dashboard-menu">
+          {navigationItems.map(({ label, icon, key, path }) => (
+            <div
+              key={key}
+              className={`menu-item ${path === '/staffDashboard' ? 'active' : ''}`}
+              onClick={() => navigate(path)}
+            >
+              <span className="menu-icon">{icon}</span>
+              {!collapsed && <span className="menu-label">{label}</span>}
+            </div>
           ))}
-        </Menu>
+        </div>
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="dashboard-header" style={{ padding: '0 24px', background: colorBgContainer }}>
           <div className="header-left">
+            <div 
+              className="trigger-button"
+              onClick={() => setCollapsed(!collapsed)}
+            >
+              {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            </div>
             <Typography.Title level={4} className="welcome-text">
               Staff Dashboard
             </Typography.Title>
@@ -185,9 +150,12 @@ export const StaffDashboard = () => {
             <Badge count={5} className="notification-badge">
               <BellOutlined className="notification-icon" />
             </Badge>
-            <Dropdown overlay={profileMenu} trigger={['click']}>
-              <Avatar className="user-avatar" icon={<UserOutlined />} />
-            </Dropdown>
+            <Avatar 
+              className="user-avatar" 
+              icon={<UserOutlined />}
+              onClick={handleLogout}
+              style={{ cursor: 'pointer' }}
+            />
           </div>
         </Header>
         <Content className="dashboard-content">
