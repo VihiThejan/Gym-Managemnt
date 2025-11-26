@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Card, Row, Col, Statistic, message, Button, Typography } from 'antd';
+import { Layout, Menu, Card, Row, Col, Statistic, message, Button, Typography, Drawer } from 'antd';
 import { 
   UserOutlined, 
   ShopOutlined, 
@@ -14,7 +14,9 @@ import {
   FileTextOutlined,
   BarChartOutlined,
   MessageOutlined,
-  SettingOutlined
+  SettingOutlined,
+  MenuOutlined,
+  CloseOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -25,6 +27,7 @@ const { Sider, Content } = Layout;
 const { Title } = Typography;
 
 export const Dashboard = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState({
     totalMembers: 0,
     totalStaff: 0,
@@ -151,11 +154,11 @@ export const Dashboard = () => {
 
   return (
     <Layout className="dashboard-layout" hasSider>
-      {/* Sidebar */}
+      {/* Desktop Sidebar */}
       <Sider
         breakpoint="lg"
         collapsedWidth="80"
-        className="dashboard-sider"
+        className="dashboard-sider desktop-only"
         width={260}
         style={{
           overflow: 'auto',
@@ -185,10 +188,49 @@ export const Dashboard = () => {
         />
       </Sider>
 
+      {/* Mobile Sidebar Drawer */}
+      <Drawer
+        placement="left"
+        closable={false}
+        onClose={() => setMobileMenuOpen(false)}
+        open={mobileMenuOpen}
+        width={260}
+        className="mobile-sidebar-drawer"
+        bodyStyle={{ padding: 0, background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)' }}
+      >
+        <div className="sidebar-logo">
+          <Logo size="small" showText={true} variant="white" />
+        </div>
+        
+        <Menu
+          mode="inline"
+          selectedKeys={['/dashboard']}
+          className="sidebar-menu"
+          items={menuItems}
+          onClick={({ key }) => {
+            if (key === 'logout') {
+              navigate('/');
+            } else {
+              navigate(key);
+            }
+            setMobileMenuOpen(false);
+          }}
+        />
+      </Drawer>
+
       {/* Main Content */}
       <Layout style={{ marginLeft: 260 }}>
         <Content className="dashboard-content">
           <div className="dashboard-page">
+        {/* Mobile Menu Toggle */}
+        <Button 
+          className="mobile-menu-toggle"
+          icon={<MenuOutlined />}
+          onClick={() => setMobileMenuOpen(true)}
+          size="large"
+          type="primary"
+        />
+
         {/* Header Section */}
         <div className="dashboard-header">
           <div className="header-content">

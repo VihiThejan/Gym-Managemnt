@@ -41,11 +41,8 @@
   margin: 0;
   font-size: 28px;
   font-weight: 700;
-  color: #1a202c;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #667eea;
+  /* Fallback for better accessibility */
 }
 
 .attendancetable-container .header-actions {
@@ -170,9 +167,15 @@
 }
 
 /* Table Styles */
+.attendance-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .attendance-table .ant-table {
   border-radius: 12px;
   overflow: hidden;
+  min-width: 768px;
 }
 
 .attendance-table .ant-table-thead > tr > th {
@@ -208,12 +211,9 @@
 /* Custom Cell Styles */
 .attendance-id-cell {
   font-weight: 700;
-  color: #667eea;
+  color: #5568d3;
   font-size: 15px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Solid color for better contrast and accessibility */
 }
 
 .member-id-cell {
@@ -394,6 +394,39 @@
   }
 }
 
+/* Table Wrapper Scrollbar */
+.attendance-table::-webkit-scrollbar {
+  height: 8px;
+}
+
+.attendance-table::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.attendance-table::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+}
+
+.attendance-table::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #5d3882 100%);
+}
+
+/* Mobile Scroll Indicator */
+.attendance-table::after {
+  content: 'Scroll horizontally to see more →';
+  display: none;
+  text-align: center;
+  font-size: 12px;
+  color: #667eea;
+  font-weight: 600;
+  padding: 8px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .attendancetable-page {
@@ -430,12 +463,32 @@
   }
 
   .action-buttons {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 8px;
   }
 
   .edit-button,
   .delete-button {
-    width: 100%;
+    flex: 1;
+    min-width: auto;
+  }
+
+  .attendance-table::after {
+    display: block;
+  }
+
+  /* Sticky first column on mobile */
+  .attendance-table .ant-table-thead > tr > th:first-child,
+  .attendance-table .ant-table-tbody > tr > td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: #ffffff;
+  }
+
+  .attendance-table .ant-table-thead > tr > th:first-child {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 6;
   }
 }
 
