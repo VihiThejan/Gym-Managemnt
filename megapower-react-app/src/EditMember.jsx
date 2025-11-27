@@ -8,8 +8,11 @@ import { Button, Radio, Select, DatePicker, message, Form, Input, Card } from 'a
 import { SaveOutlined, CloseOutlined, EditOutlined, UserOutlined, HomeOutlined, 
          CalendarOutlined, MailOutlined, PhoneOutlined, GiftOutlined, 
          ColumnHeightOutlined, DashboardOutlined, LockOutlined, ManOutlined } from '@ant-design/icons';
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditMember.css';
+
+const { Content } = Layout;
 
 export const EditMember = () => {
   const navigate = useNavigate();
@@ -27,6 +30,7 @@ export const EditMember = () => {
   const [date, setDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   
   useEffect(() => {
@@ -45,8 +49,8 @@ export const EditMember = () => {
           setPackages(member.Package);
           setWeight(Number(member.Weight));
           setHeight(Number(member.Height));
-          setMobile(member.UName);
-          setPass(member.Password);
+          // Load current password for editing
+          setPass(member.Password || '');
           setLoading(false);
        } catch (error) {
           console.error(`Error fetching member data: ${error.message}`);
@@ -77,7 +81,7 @@ export const EditMember = () => {
   };
 
   const handleSubmit = async () => {
-    if (!name || !address || !email || !mobile || !pass || !date || !height || !weight) {
+    if (!name || !address || !email || !mobile || !date || !height || !weight || !pass) {
       message.error("Please fill in all required fields.");
       return;
     }
@@ -92,8 +96,10 @@ export const EditMember = () => {
       return;
     }
 
+    // Always validate password
     if (!validatePassword(pass)) {
-      message.error("Password must be at least 6 characters with uppercase, lowercase, number, and special character.");
+      setPasswordError("Password must be at least 6 characters long and include uppercase, lowercase, a number, and a special character.");
+      message.error("Invalid password format.");
       return;
     }
 
@@ -120,8 +126,8 @@ export const EditMember = () => {
         Address: address,
         Contact: mobile,
         Package: packages,
-        Weight: weight,
-        Height: height,
+        Weight: Number(weight),
+        Height: Number(height),
         UName: mobile,
         Password: pass,
       };
@@ -141,31 +147,41 @@ export const EditMember = () => {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="edit-member-page">
-          <div className="edit-member-container">
-            <Card className="edit-member-card" loading={true}>
-              <div style={{ padding: '40px' }}>Loading member data...</div>
-            </Card>
-          </div>
-        </div>
-      </MainLayout>
+      <Layout className="dashboard-layout" hasSider>
+        <AdminSidebar selectedKey="/MemberTable" />
+        <Layout style={{ marginLeft: 260 }}>
+          <Content>
+            <div className="edit-member-page">
+              <div className="edit-member-container">
+                <Card className="edit-member-card" loading={true}>
+                  <div style={{ padding: '40px' }}>Loading member data...</div>
+                </Card>
+              </div>
+            </div>
+          </Content>
+        </Layout>
+      </Layout>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="edit-member-page">
-        <div className="edit-member-header">
-          <EditOutlined className="header-icon" />
-          <div>
-            <h1 className="header-title">Edit Member</h1>
-            <p className="header-subtitle">Update member information and subscription details</p>
-          </div>
-        </div>
-
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/MemberTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="edit-member-page">
         <div className="edit-member-container">
           <Card className="edit-member-card">
+            <div className="card-header">
+              <div className="header-icon-card">
+                <EditOutlined className="header-icon" />
+              </div>
+              <div>
+                <h1 className="card-title">Edit Member</h1>
+                <p className="card-subtitle">Update member information and subscription details</p>
+              </div>
+            </div>
+
             <Form layout="vertical" onFinish={handleSubmit}>
               <Form.Item
                 label={
@@ -352,6 +368,7 @@ export const EditMember = () => {
                     placeholder="0"
                     min={1}
                     max={200}
+                    step={0.1}
                     size="large"
                     className="form-input"
                     required
@@ -359,6 +376,7 @@ export const EditMember = () => {
                 </Form.Item>
               </div>
 
+              {/* Password Field */}
               <Form.Item
                 label={
                   <span className="form-label">
@@ -366,17 +384,19 @@ export const EditMember = () => {
                     Password
                   </span>
                 }
-                required
-                validateStatus={pass && !validatePassword(pass) ? 'error' : ''}
-                help={pass && !validatePassword(pass) ? 'Password must be 6+ chars with uppercase, lowercase, number & special char' : ''}
+                validateStatus={passwordError ? 'error' : ''}
+                help={passwordError}
+                className="form-item"
               >
                 <Input.Password
                   value={pass}
-                  onChange={(e) => setPass(e.target.value)}
+                  onChange={(e) => {
+                    setPass(e.target.value);
+                    setPasswordError('');
+                  }}
                   placeholder="Enter password"
                   size="large"
                   className="form-input"
-                  required
                 />
               </Form.Item>
 
@@ -405,7 +425,9 @@ export const EditMember = () => {
             </Form>
           </Card>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

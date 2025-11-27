@@ -17,8 +17,12 @@ import {
   SearchOutlined
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
+import './Dashboard.css';
 import './staffTable.css';
+
+const { Content } = Layout;
 
 const StaffTable = () => {
   const navigate = useNavigate();
@@ -202,33 +206,35 @@ const StaffTable = () => {
   ];
 
   return (
-    <MainLayout>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/staffTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
       <div className="staff-table-container">
-        <div className="staff-table-header">
-          <div className="header-icon">
-            <TeamOutlined />
+        <div className="table-header">
+          <div className="header-left">
+            <TeamOutlined className="header-icon" />
+            <h1 className="table-title">Staff Management</h1>
           </div>
-          <h1 className="header-title">Staff Management</h1>
-          <p className="header-subtitle">Manage and view all staff members</p>
-        </div>
 
-        <div className="table-actions">
-          <Input
-            placeholder="Search by ID, Name, Email, Role, or Contact..."
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => handleSearch(e.target.value)}
-            allowClear
-            className="search-input"
-          />
-          <Button 
-            type="primary" 
-            icon={<UserOutlined />}
-            onClick={() => navigate("/staff")}
-            className="add-button"
-          >
-            Add New Staff
-          </Button>
+          <div className="header-actions">
+            <Input
+              placeholder="Search by ID, name, email, role or contact..."
+              value={searchText}
+              onChange={(e) => handleSearch(e.target.value)}
+              prefix={<SearchOutlined className="search-icon" />}
+              allowClear
+              className="search-input"
+            />
+            <Button 
+              type="primary" 
+              icon={<UserOutlined />}
+              onClick={() => navigate("/staff")}
+              className="add-button"
+            >
+              Add New Staff
+            </Button>
+          </div>
         </div>
 
         <div className="table-wrapper">
@@ -248,7 +254,9 @@ const StaffTable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

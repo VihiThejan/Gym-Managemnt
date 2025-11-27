@@ -12,8 +12,11 @@ import {
   DeleteOutlined,
   TrophyOutlined
 } from "@ant-design/icons";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Trainerratetable.css';
+
+const { Content } = Layout;
 
 export const Trainerratetable = () => {
   const navigate = useNavigate();
@@ -166,8 +169,11 @@ export const Trainerratetable = () => {
   ];
 
   return (
-    <MainLayout>
-      <div className="trainerrate-table-container">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Trainerratetable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="trainerrate-table-container">
         <div className="trainerrate-table-header">
           <div className="header-icon">
             <StarOutlined />
@@ -211,8 +217,10 @@ export const Trainerratetable = () => {
             className="trainerrate-table"
           />
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

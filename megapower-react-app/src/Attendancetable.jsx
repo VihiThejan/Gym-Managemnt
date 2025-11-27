@@ -14,8 +14,12 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from "./components/Layout/MainLayout";
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
+import './Dashboard.css';
 import "./Attendancetable.css";
+
+const { Content } = Layout;
 
 export const Attendancetable = () => {
   const navigate = useNavigate();
@@ -73,8 +77,8 @@ export const Attendancetable = () => {
         String(item.Attendance_ID).includes(value) ||
         String(item.Member_Id).includes(value) ||
         moment(item.Current_date).format("YYYY-MM-DD").includes(searchLower) ||
-        moment(item.In_time).format("HH:mm:ss").includes(searchLower) ||
-        moment(item.Out_time).format("HH:mm:ss").includes(searchLower)
+        moment(item.In_time).format("hh:mm A").toLowerCase().includes(searchLower) ||
+        moment(item.Out_time).format("hh:mm A").toLowerCase().includes(searchLower)
       ));
     } else {
       setFilteredData(data);
@@ -126,7 +130,7 @@ export const Attendancetable = () => {
       render: (time) => (
         <div className="time-cell in-time">
           <LoginOutlined style={{ marginRight: '6px' }} />
-          {moment(time, "HH:mm:ss").format("hh:mm:ss A")}
+          {moment(time).format("hh:mm A")}
         </div>
       ),
     },
@@ -138,7 +142,7 @@ export const Attendancetable = () => {
       render: (time) => (
         <div className="time-cell out-time">
           <LogoutOutlined style={{ marginRight: '6px' }} />
-          {moment(time, "HH:mm:ss").format("hh:mm:ss A")}
+          {moment(time).format("hh:mm A")}
         </div>
       ),
     },
@@ -173,113 +177,57 @@ export const Attendancetable = () => {
   ];
 
   return (
-    <MainLayout>
-      <div className="attendancetable-page">
-        <div className="attendancetable-container">
-          {/* Header Section */}
-          <div className="attendancetable-header">
-            <h1 className="attendancetable-title">
-              <ClockCircleOutlined /> Attendance Records
-            </h1>
-            <p className="attendancetable-subtitle">
-              Track member check-ins and check-outs
-            </p>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Attendancetable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
+      <div className="attendancetable-container">
+        {/* Header Section */}
+        <div className="table-header">
+          <div className="header-left">
+            <ClockCircleOutlined className="header-icon" />
+            <h1 className="table-title">Attendance Management</h1>
           </div>
-
-          {/* Statistics Dashboard */}
-          <div className="stats-dashboard">
-            <div className="stat-card">
-              <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <ClockCircleOutlined />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">{data.length}</div>
-                <div className="stat-label">Total Records</div>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-                <UserOutlined />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">{filteredData.length}</div>
-                <div className="stat-label">Filtered Results</div>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-                <CalendarOutlined />
-              </div>
-              <div className="stat-content">
-                <div className="stat-value">
-                  {data.filter(item => moment(item.Current_date).isSame(moment(), 'day')).length}
-                </div>
-                <div className="stat-label">Today's Records</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Table Card */}
-          <div className="table-card">
-            {/* Search and Actions Bar */}
-            <div className="table-header">
-              <div className="search-section">
-                <Input
-                  placeholder="Search by ID, Member, Date, or Time..."
-                  prefix={<SearchOutlined />}
-                  value={searchText}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  allowClear
-                  className="search-input"
-                  size="large"
-                />
-              </div>
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => navigate("/Attendance")}
-                className="add-button"
-                size="large"
-              >
-                Mark Attendance
-              </Button>
-            </div>
-
-            {/* Table */}
-            <Table
-              columns={columns}
-              dataSource={filteredData}
-              rowKey="Attendance_ID"
-              pagination={{
-                pageSize: 10,
-                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} records`,
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '20', '50', '100'],
-              }}
-              scroll={{ x: 1000 }}
-              className="attendance-table"
-              locale={{
-                emptyText: (
-                  <div className="empty-state">
-                    <ClockCircleOutlined style={{ fontSize: '48px', color: '#d1d5db' }} />
-                    <h3>No Attendance Records Found</h3>
-                    <p>Start marking attendance to see records here</p>
-                    <Button 
-                      type="primary" 
-                      icon={<PlusOutlined />}
-                      onClick={() => navigate("/Attendance")}
-                      style={{ marginTop: '16px' }}
-                    >
-                      Mark Attendance
-                    </Button>
-                  </div>
-                ),
-              }}
+          <div className="header-actions">
+            <Input
+              placeholder="Search by ID, Member, Date, or Time..."
+              prefix={<SearchOutlined />}
+              value={searchText}
+              onChange={(e) => handleSearch(e.target.value)}
+              allowClear
+              className="search-input"
             />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate("/Attendance")}
+              className="add-button"
+            >
+              Mark Attendance
+            </Button>
           </div>
         </div>
+
+        {/* Table Section */}
+        <div className="table-content">
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            rowKey="Attendance_ID"
+            pagination={{
+              pageSize: 10,
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} records`,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100'],
+            }}
+            scroll={{ x: 1200 }}
+            className="attendance-table"
+          />
+        </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

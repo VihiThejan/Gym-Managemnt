@@ -1,193 +1,157 @@
-/* ============================================
-   PAYMENT TABLE STYLES
-   Modern table design with enhanced UI/UX
-   ============================================ */
-
-/* Main Container */
+/* Payment Table Container */
 .payment-table-container {
   padding: 24px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-  min-height: calc(100vh - 64px);
+  background: #f5f7fa;
+  min-height: 100vh;
 }
 
-/* ============================================
-   HEADER SECTION
-   ============================================ */
-
-.table-header {
-  background: #fff;
+/* Header Section */
+.payment-table-container .table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
   padding: 24px;
+  background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.payment-table-container .header-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
   gap: 16px;
 }
 
-/* Back Button */
-.payment-table-container .back-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  padding: 0 24px;
-  height: 40px;
-  border-radius: 8px;
+.payment-table-container .header-icon {
+  font-size: 36px;
+  color: #667eea;
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 12px;
 }
 
-.payment-table-container .back-button:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.payment-table-container .back-button:active {
-  transform: translateY(0);
-}
-
-/* Title */
-.table-title {
-  color: #1a1d3a;
+.payment-table-container .table-title {
+  margin: 0;
   font-size: 28px;
   font-weight: 700;
-  margin: 0;
-  flex: 1;
-  text-align: center;
+  color: #1a202c;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Header Actions */
-.header-actions {
+.payment-table-container .header-actions {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 300px;
 }
 
 /* Search Input */
-.search-input {
-  width: 380px;
-  height: 40px;
+.payment-table-container .search-input {
+  flex: 1;
+  max-width: 400px;
+  height: 42px;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 2px solid #e2e8f0;
+  font-size: 14px;
   transition: all 0.3s ease;
 }
 
-.search-input:hover {
+.payment-table-container .search-input:hover {
+  border-color: #cbd5e0;
+}
+
+.payment-table-container .search-input.ant-input-affix-wrapper-focused {
   border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.search-input:focus,
-.search-input.ant-input-affix-wrapper-focused {
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
-}
-
-.search-input .ant-input {
-  font-size: 14px;
-}
-
-.search-icon {
+.payment-table-container .search-input .ant-input-prefix {
   color: #667eea;
   font-size: 16px;
 }
 
 /* Add Button */
-.add-button {
-  height: 40px;
+.payment-table-container .add-button {
+  height: 44px;
   padding: 0 24px;
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  border: none;
-  color: #fff;
-  font-weight: 600;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(67, 233, 123, 0.3);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
-.add-button:hover {
-  background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
-  color: #fff;
+.payment-table-container .add-button:hover {
+  color: #fff !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.4);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5568d3 0%, #5d3882 100%) !important;
 }
 
-.add-button:active {
-  transform: translateY(0);
-}
-
-.add-button .anticon {
+.payment-table-container .add-button .anticon {
   font-size: 16px;
+  color: #fff !important;
 }
 
-/* ============================================
-   TABLE WRAPPER
-   ============================================ */
-
-.table-wrapper {
-  background: #fff;
-  padding: 24px;
+/* Table Content */
+.payment-table-container .table-content {
+  background: white;
   border-radius: 12px;
+  padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* ============================================
-   TABLE STYLES
-   ============================================ */
-
-.payment-table .ant-table {
-  border-radius: 8px;
-  overflow: hidden;
+/* Table Styling */
+.payment-table-container .payment-table .ant-table {
+  font-size: 14px;
 }
 
-/* Table Header */
-.payment-table .ant-table-thead > tr > th {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  color: #fff;
-  font-weight: 700;
+.payment-table-container .payment-table .ant-table-thead > tr > th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  font-weight: 600;
   font-size: 14px;
   padding: 16px;
   border: none;
-  text-align: center;
+  transition: all 0.3s ease;
 }
 
-.payment-table .ant-table-thead > tr > th::before {
+.payment-table-container .payment-table .ant-table-thead > tr > th:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #5d3882 100%) !important;
+  cursor: pointer;
+  transform: translateY(-1px);
+}
+
+.payment-table-container .payment-table .ant-table-thead > tr > th::before {
   display: none;
 }
 
-/* Table Body */
-.payment-table .ant-table-tbody > tr {
-  transition: all 0.3s ease;
+.payment-table-container .payment-table .ant-table-tbody > tr > td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
-.payment-table .ant-table-tbody > tr:hover {
-  background: linear-gradient(135deg, rgba(67, 233, 123, 0.05) 0%, rgba(56, 249, 215, 0.05) 100%);
-  transform: scale(1.01);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.payment-table .ant-table-tbody > tr > td {
-  padding: 16px;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
-  color: #333;
-  text-align: center;
-}
-
-/* Alternating Row Colors */
-.payment-table .ant-table-tbody > tr:nth-child(even) {
-  background: #fafafa;
-}
-
-.payment-table .ant-table-tbody > tr:nth-child(even):hover {
-  background: linear-gradient(135deg, rgba(67, 233, 123, 0.05) 0%, rgba(56, 249, 215, 0.05) 100%);
+.payment-table-container .payment-table .ant-table-tbody > tr:hover > td {
+  background: #f9fafb;
 }
 
 /* ============================================

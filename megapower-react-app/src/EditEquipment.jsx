@@ -5,8 +5,11 @@ import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, ShoppingOu
          TagsOutlined, NumberOutlined, FileTextOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditEquipment.css';
+
+const { Content } = Layout;
 
 const { TextArea } = Input;
 
@@ -79,33 +82,24 @@ export const EditEquipment = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <MainLayout>
-                <div className="edit-equipment-page">
-                    <div className="edit-equipment-container">
-                        <Card className="edit-equipment-card" loading={true}>
-                            <div style={{ padding: '40px' }}>Loading equipment data...</div>
-                        </Card>
-                    </div>
-                </div>
-            </MainLayout>
-        );
-    }
-
     return (
-        <MainLayout>
-            <div className="edit-equipment-page">
-                <div className="edit-equipment-header">
-                    <EditOutlined className="header-icon" />
-                    <div>
-                        <h1 className="header-title">Edit Equipment</h1>
-                        <p className="header-subtitle">Update gym equipment details and inventory information</p>
-                    </div>
-                </div>
+        <Layout className="dashboard-layout" hasSider>
+            <AdminSidebar selectedKey="/Equipmenttable" />
+            <Layout style={{ marginLeft: 260 }}>
+                <Content>
+                    <div className="edit-equipment-page">
+                <div className="edit-equipment-content">
+                    <Card className="edit-equipment-card" loading={loading}>
+                        <div className="card-header">
+                            <div className="header-icon-card">
+                                <EditOutlined className="header-icon" />
+                            </div>
+                            <div className="header-text">
+                                <h2 className="card-title">Edit Equipment</h2>
+                                <p className="card-subtitle">Update gym equipment details and inventory information</p>
+                            </div>
+                        </div>
 
-                <div className="edit-equipment-container">
-                    <Card className="edit-equipment-card">
                         <Form layout="vertical" onFinish={handleSubmit}>
                             <Form.Item
                                 label={
@@ -241,7 +235,9 @@ export const EditEquipment = () => {
                         </Form>
                     </Card>
                 </div>
-            </div>
-        </MainLayout>
+                    </div>
+                </Content>
+            </Layout>
+        </Layout>
     );
 };

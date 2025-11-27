@@ -4,8 +4,11 @@ import { Button, Form, DatePicker, TimePicker, message, Input, Card } from "antd
 import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, UserOutlined, LoginOutlined, LogoutOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditAttendance.css';
+
+const { Content } = Layout;
 
 export const EditAttendance = () => {
   const navigate = useNavigate();
@@ -27,8 +30,9 @@ export const EditAttendance = () => {
 
         setMemberId(Number(attendance.Member_Id));
         setDate(attendance.Current_date ? moment(attendance.Current_date) : null);
-        setInTime(attendance.In_time ? moment(attendance.In_time, 'HH:mm:ss') : null);
-        setOutTime(attendance.Out_time ? moment(attendance.Out_time, 'HH:mm:ss') : null);
+        // Parse time from datetime object correctly
+        setInTime(attendance.In_time ? moment(attendance.In_time) : null);
+        setOutTime(attendance.Out_time ? moment(attendance.Out_time) : null);
         setLoading(false);
       } catch (error) {
         console.error(`Error fetching attendance data: ${error.message}`);
@@ -72,33 +76,24 @@ export const EditAttendance = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <MainLayout>
-        <div className="edit-attendance-page">
-          <div className="edit-attendance-container">
-            <Card className="edit-attendance-card" loading={true}>
-              <div style={{ padding: '40px' }}>Loading attendance data...</div>
-            </Card>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
-
   return (
-    <MainLayout>
-      <div className="edit-attendance-page">
-        <div className="edit-attendance-header">
-          <EditOutlined className="header-icon" />
-          <div>
-            <h1 className="header-title">Edit Attendance</h1>
-            <p className="header-subtitle">Update member attendance check-in and check-out times</p>
-          </div>
-        </div>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Attendancetable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="edit-attendance-page">
+        <div className="edit-attendance-content">
+          <Card className="edit-attendance-card" loading={loading}>
+            <div className="card-header">
+              <div className="header-icon-card">
+                <EditOutlined className="header-icon" />
+              </div>
+              <div className="header-text">
+                <h2 className="card-title">Edit Attendance</h2>
+                <p className="card-subtitle">Update member attendance check-in and check-out times</p>
+              </div>
+            </div>
 
-        <div className="edit-attendance-container">
-          <Card className="edit-attendance-card">
             <Form layout="vertical" onFinish={handleSubmit}>
               <Form.Item
                 label={
@@ -155,7 +150,9 @@ export const EditAttendance = () => {
                   style={{ width: "100%" }}
                   size="large"
                   className="form-input"
-                  format="HH:mm:ss"
+                  format="HH:mm"
+                  minuteStep={5}
+                  showNow={true}
                   required
                 />
               </Form.Item>
@@ -175,7 +172,9 @@ export const EditAttendance = () => {
                   style={{ width: "100%" }}
                   size="large"
                   className="form-input"
-                  format="HH:mm:ss"
+                  format="HH:mm"
+                  minuteStep={5}
+                  showNow={true}
                   required
                 />
               </Form.Item>
@@ -205,7 +204,9 @@ export const EditAttendance = () => {
             </Form>
           </Card>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

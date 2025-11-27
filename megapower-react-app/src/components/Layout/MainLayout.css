@@ -252,3 +252,157 @@
     padding: 16px 12px;
   }
 }
+
+/* ============================================
+   SIDEBAR STYLES
+   ============================================ */
+
+.dashboard-sider {
+  background: linear-gradient(180deg, #1a1d2e 0%, #16213e 100%) !important;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-logo {
+  padding: 24px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sidebar-logo .mega-power-logo {
+  width: 100%;
+  justify-content: center;
+}
+
+.sidebar-logo .logo-svg {
+  filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.4));
+}
+
+.sidebar-logo:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
+}
+
+/* Menu Styles */
+.sidebar-menu {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 16px;
+}
+
+.sidebar-menu .ant-menu-item {
+  margin: 8px 0;
+  height: 48px;
+  line-height: 48px;
+  border-radius: 12px;
+  color: #a8b2d1 !important;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-menu .ant-menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-menu .ant-menu-item:hover {
+  background: rgba(239, 68, 68, 0.4) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+}
+
+.sidebar-menu .ant-menu-item:hover::before {
+  opacity: 1;
+}
+
+.sidebar-menu .ant-menu-item-selected {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.sidebar-menu .ant-menu-item-selected::before {
+  opacity: 1;
+}
+
+.sidebar-menu .ant-menu-item .anticon {
+  font-size: 18px;
+  margin-right: 12px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-menu .ant-menu-item:hover .anticon {
+  transform: scale(1.1);
+}
+
+/* Logout Menu */
+.sidebar-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  padding: 0 16px;
+}
+
+.logout-menu {
+  background: transparent !important;
+  border: none !important;
+}
+
+.logout-menu-item {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+  margin: 0 !important;
+  height: 48px;
+  line-height: 48px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.logout-menu-item:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: #ef4444 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.logout-menu-item .anticon {
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+/* Responsive Styles for Sidebar */
+@media (max-width: 992px) {
+  .dashboard-sider {
+    z-index: 1001 !important;
+  }
+  
+  .sidebar-logo {
+    padding: 24px 16px;
+  }
+  
+  .sidebar-logo .logo-text {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-sider {
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+}

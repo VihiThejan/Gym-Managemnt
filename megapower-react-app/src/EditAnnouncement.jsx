@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, DatePicker, Input, message, Form, Card, Spin } from 'antd';
-import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons';
+import { Button, DatePicker, TimePicker, Input, message, Form, Card, Spin } from 'antd';
+import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, ClockCircleOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditAnnouncement.css';
+
+const { Content } = Layout;
 
 const { TextArea } = Input;
 
@@ -16,6 +19,7 @@ export const EditAnnouncement = () => {
   const [messageText, setMessage] = useState('');
   const [staff_id, setStaffId] = useState(null); 
   const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -28,7 +32,17 @@ export const EditAnnouncement = () => {
 
         setStaffId(Number(announcement.Staff_ID)); 
         setMessage(announcement.Message);
-        setDate(announcement.Date_Time ? moment(announcement.Date_Time) : null);
+        if (announcement.Date_Time) {
+          const dateTime = moment(announcement.Date_Time);
+          console.log('Loaded DateTime:', dateTime.format('YYYY-MM-DD HH:mm:ss'));
+          setDate(dateTime);
+          // Always set time, even if it's midnight - this allows user to change it
+          setTime(dateTime);
+        } else {
+          // If no date/time exists, set defaults
+          setDate(moment());
+          setTime(moment());
+        }
         setLoading(false);
       } catch (error) {
         console.error(`Error fetching announcement data: ${error.message}`);
@@ -52,13 +66,21 @@ export const EditAnnouncement = () => {
       message.error("Please select a date.");
       return false;
     }
+    if (!time) {
+      message.error("Please select a time.");
+      return false;
+    }
     return true;
   };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const formattedDate = date ? date.toISOString() : null;
+    // Combine date and time properly to avoid timezone issues
+    const dateStr = date.format('YYYY-MM-DD');
+    const timeStr = time.format('HH:mm:ss');
+    const combinedDateTime = moment(`${dateStr}T${timeStr}`);
+    const formattedDate = combinedDateTime.toISOString();
 
     const body = {
       Staff_ID: staff_id,
@@ -67,6 +89,7 @@ export const EditAnnouncement = () => {
     };
 
     console.log("Sending update request with body:", body);
+    console.log("Combined DateTime:", combinedDateTime.format('YYYY-MM-DD HH:mm:ss'));
 
     try {
       setSubmitting(true);
@@ -81,25 +104,25 @@ export const EditAnnouncement = () => {
     }
   };
 
-  const handleDateChange = (date) => {
-    setDate(date);
-  };
-
   return (
-    <MainLayout>
-      <div className="edit-announcement-page">
-        <div className="page-header">
-          <div className="header-content">
-            <EditOutlined className="header-icon" />
-            <div className="header-text">
-              <h1>Edit Announcement</h1>
-              <p>Update announcement details and save changes</p>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Announcementtable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="edit-announcement-page">
+        <div className="edit-announcement-content">
+          <Card className="edit-announcement-card" bordered={false} loading={loading}>
+            <div className="card-header">
+              <div className="header-icon-card">
+                <EditOutlined className="header-icon" />
+              </div>
+              <div className="header-text">
+                <h2 className="card-title">Edit Announcement</h2>
+                <p className="card-subtitle">Update announcement details and save changes</p>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <Card className="edit-form-card" bordered={false} loading={loading}>
-          <Form onFinish={handleSubmit} layout="vertical" className="edit-announcement-form">
+            <Form onFinish={handleSubmit} layout="vertical" className="edit-announcement-form">
             {/* Staff ID Field */}
             <Form.Item
               label={
@@ -142,55 +165,90 @@ export const EditAnnouncement = () => {
               />
             </Form.Item>
 
-            {/* Date Field */}
-            <Form.Item
-              label={
-                <span className="form-label">
-                  <CalendarOutlined className="label-icon" />
-                  Date & Time
-                </span>
-              }
-              required
-            >
-              <DatePicker
-                value={date}
-                onChange={handleDateChange}
-                className="custom-datepicker"
-                size="large"
-                showTime
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder="Select date and time"
-                style={{ width: '100%' }}
-              />
-            </Form.Item>
+            {/* Date and Time Fields */}
+            <div className="date-time-group">
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <CalendarOutlined className="label-icon" />
+                    Date
+                  </span>
+                }
+                required
+                className="date-field"
+              >
+                <DatePicker
+                  value={date}
+                  onChange={(date) => setDate(date)}
+                  className="custom-datepicker"
+                  size="large"
+                  format="YYYY-MM-DD"
+                  placeholder="Select date"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <ClockCircleOutlined className="label-icon" />
+                    Time
+                  </span>
+                }
+                required
+                className="time-field"
+              >
+                <TimePicker
+                  value={time}
+                  onChange={(newTime) => {
+                    console.log('Time changed to:', newTime ? newTime.format('HH:mm:ss') : 'null');
+                    if (newTime) {
+                      setTime(newTime);
+                    }
+                  }}
+                  className="custom-timepicker"
+                  size="large"
+                  format="HH:mm"
+                  placeholder="Select time"
+                  style={{ width: '100%' }}
+                  showNow={true}
+                  minuteStep={5}
+                  use12Hours={false}
+                  allowClear={false}
+                  inputReadOnly={false}
+                  disabled={false}
+                />
+              </Form.Item>
+            </div>
 
             {/* Action Buttons */}
-            <Form.Item className="form-actions">
-              <div className="button-group">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  icon={<SaveOutlined />}
-                  className="submit-button"
-                  size="large"
-                  loading={submitting}
-                >
-                  Update Announcement
-                </Button>
-                <Button
-                  onClick={() => navigate('/Announcementtable')}
-                  icon={<CloseOutlined />}
-                  className="cancel-button"
-                  size="large"
-                  disabled={submitting}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </Form.Item>
+            <div className="form-actions">
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<SaveOutlined />}
+                className="submit-button"
+                size="large"
+                loading={submitting}
+              >
+                {submitting ? 'Updating...' : 'Update Announcement'}
+              </Button>
+              <Button
+                onClick={() => navigate('/Announcementtable')}
+                icon={<CloseOutlined />}
+                className="cancel-button"
+                size="large"
+                disabled={submitting}
+              >
+                Cancel
+              </Button>
+            </div>
           </Form>
         </Card>
-      </div>
-    </MainLayout>
+        </div>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

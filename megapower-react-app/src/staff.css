@@ -3,9 +3,9 @@
    ================================ */
 
 .staff-page {
-    min-height: calc(100vh - 64px);
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 2rem;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+    padding: 32px;
 }
 
 .staff-container {
@@ -39,38 +39,53 @@
    Header Section
    ================================ */
 
-.card-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
-    border-bottom: 2px solid #f0f0f0;
+.card-header-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: -2.5rem -2.5rem 2rem -2.5rem;
+    padding: 2rem 2.5rem;
+    border-radius: 20px 20px 0 0;
 }
 
-.header-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.header-icon-card {
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
-    color: white;
-    margin: 0 auto 1.5rem;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-    animation: pulse 2s infinite;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
 }
 
-.card-header h2 {
-    font-size: 2rem;
+.header-icon {
+    font-size: 28px;
+    color: #ffffff;
+}
+
+.header-text {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 24px;
     font-weight: 700;
-    color: #1a1d3a;
-    margin: 0 0 0.5rem 0;
+    color: #ffffff;
+    margin: 0 0 4px 0;
 }
 
-.card-header p {
-    font-size: 1rem;
-    color: #666;
+.card-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.95);
     margin: 0;
 }
 
@@ -146,15 +161,30 @@
 }
 
 /* Gender Radio Buttons */
+.gender-radio {
+    display: flex;
+    gap: 12px;
+}
+
 .gender-radio .ant-radio-button-wrapper {
     height: 48px;
     line-height: 46px;
     padding: 0 24px;
     border-radius: 12px;
     border: 2px solid #e8e8e8;
-    margin-right: 12px;
+    margin-right: 0;
     font-weight: 600;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.gender-radio .ant-radio-button-wrapper span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
 
 .gender-radio .ant-radio-button-wrapper:hover {
@@ -363,15 +393,6 @@
     }
 }
 
-@keyframes pulse {
-    0%, 100% {
-        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-    }
-    50% {
-        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5);
-    }
-}
-
 /* ================================
    Responsive Design
    ================================ */
@@ -388,26 +409,34 @@
 
 @media (max-width: 768px) {
     .staff-page {
-        padding: 1rem;
+        padding: 20px 15px;
     }
 
     .staff-card .ant-card-body,
     .info-card .ant-card-body {
-        padding: 2rem;
+        padding: 24px 20px;
+    }
+
+    .card-header {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+    }
+
+    .header-icon-card {
+        width: 56px;
+        height: 56px;
     }
 
     .header-icon {
-        width: 70px;
-        height: 70px;
-        font-size: 36px;
+        font-size: 24px;
     }
 
-    .card-header h2 {
-        font-size: 1.75rem;
+    .card-title {
+        font-size: 20px;
     }
 
-    .card-header p {
-        font-size: 0.95rem;
+    .card-subtitle {
+        font-size: 13px;
     }
 
     .form-row {
@@ -482,7 +511,7 @@
 
 @media (max-width: 576px) {
     .staff-page {
-        padding: 0.5rem;
+        padding: 15px 10px;
     }
 
     .staff-card,
@@ -492,27 +521,37 @@
 
     .staff-card .ant-card-body,
     .info-card .ant-card-body {
-        padding: 1.5rem;
+        padding: 20px 15px;
     }
 
-    .header-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 32px;
-        border-radius: 16px;
+    .card-header-gradient {
+        margin: -20px -15px 20px -15px;
+        padding: 1.5rem 15px;
     }
 
     .card-header {
-        margin-bottom: 2rem;
-        padding-bottom: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        gap: 12px;
     }
 
-    .card-header h2 {
-        font-size: 1.5rem;
+    .header-icon-card {
+        width: 56px;
+        height: 56px;
     }
 
-    .card-header p {
-        font-size: 0.9rem;
+    .header-icon {
+        font-size: 24px;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    .card-subtitle {
+        font-size: 13px;
     }
 
     .form-label {

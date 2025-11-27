@@ -4,8 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { TableOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import moment from 'moment';
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Feedbacktable.css';
+
+const { Content } = Layout;
 
 
 
@@ -134,8 +137,11 @@ export const Feedbacktable = () => {
   ];
 
   return (
-    <MainLayout>
-      <div className="feedbacktable-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Feedbacktable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="feedbacktable-page">
         <div className="feedbacktable-header">
           <div className="header-content">
             <div className="header-icon">
@@ -187,8 +193,10 @@ export const Feedbacktable = () => {
             />
           </div>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

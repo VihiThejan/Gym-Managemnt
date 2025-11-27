@@ -1,0 +1,36 @@
+/* ============================================
+   ADMIN LAYOUT STYLES
+   ============================================ */
+
+.admin-layout {
+  min-height: 100vh;
+  background: #0a0e1a;
+}
+
+.admin-content-layout {
+  transition: margin-left 0.2s;
+  min-height: 100vh;
+}
+
+.admin-content {
+  padding: 24px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0e1a 0%, #16213e 100%);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .admin-content-layout {
+    margin-left: 0 !important;
+  }
+  
+  .admin-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-content {
+    padding: 12px;
+  }
+}

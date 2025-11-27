@@ -3,8 +3,12 @@ import { Button, Space, Form, DatePicker, TimePicker, message, Select } from "an
 import { ArrowLeftOutlined, ClockCircleOutlined, CalendarOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import MainLayout from "./components/Layout/MainLayout";
+import dayjs from 'dayjs';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import "./Attendance.css";
+
+const { Content } = Layout;
 
 const { Option } = Select;
 
@@ -105,12 +109,19 @@ export const Attendance = () => {
       return;
     }
   
+    // Format times without timezone conversion
+    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : null;
+    const formattedInTime = inTime ? dayjs(inTime).format("HH:mm:ss") : null;
+    const formattedOutTime = outTime ? dayjs(outTime).format("HH:mm:ss") : null;
+  
     const body = {
-      memberId: parseInt(id), // Ensure member ID is an integer
-      currentDate: date ? date.format("YYYY-MM-DD") : null, // Convert DatePicker value to string
-      inTime: inTime ? inTime.format("HH:mm:ss") : null, // Convert TimePicker value to string
-      outTime: outTime ? outTime.format("HH:mm:ss") : null, // Convert TimePicker value to string
+      memberId: parseInt(id),
+      currentDate: formattedDate,
+      inTime: formattedInTime,
+      outTime: formattedOutTime,
     };
+  
+    console.log("Submitting attendance data:", body);
   
     try {
       const res = await axios.post("http://localhost:5000/api/v1/attendance/create", body);
@@ -118,8 +129,8 @@ export const Attendance = () => {
       message.success("Attendance Created successfully.");
       navigate("/Attendancetable");
     } catch (Err) {
-      console.log(Err.message);
-      message.error("Failed to register Attendance.");
+      console.error("Error creating attendance:", Err.response?.data || Err.message);
+      message.error("Failed to register Attendance: " + (Err.response?.data?.message || Err.message));
     }
   };
   
@@ -142,199 +153,198 @@ export const Attendance = () => {
   };
 
   return (
-    <MainLayout>
-      <div className="attendance-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Attendancetable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="attendance-page">
         <div className="attendance-container">
-          {/* Header Section */}
-          <div className="attendance-header">
-            <Button 
-              type="text" 
-              icon={<ArrowLeftOutlined />} 
-              onClick={handleGoBack}
-              className="back-button"
-            >
-              Back to Attendance List
-            </Button>
-            <h1 className="attendance-title">
-              <ClockCircleOutlined /> Mark Attendance
-            </h1>
-            <p className="attendance-subtitle">
-              Record member check-in and check-out times
-            </p>
-          </div>
-
-          {/* Info Box */}
-          {loggedInUser && userRole === 'Member' && (
-            <div className="attendance-info-box">
-              <UserOutlined style={{ fontSize: '20px', color: '#10b981' }} />
-              <div>
-                <strong>Logged in as:</strong> {loggedInUser.FName} (Member ID: {loggedInUser.Member_Id})
-                <div style={{ fontSize: '13px', marginTop: '4px', opacity: 0.9 }}>
-                  Your member ID has been automatically filled
-                </div>
+          <div className="attendance-card">
+            {/* Card Header */}
+            <div className="card-header">
+              <div className="header-icon-card">
+                <ClockCircleOutlined className="header-icon" />
+              </div>
+              <div className="header-text">
+                <h1>Mark Attendance</h1>
+                <p>Record member check-in and check-out times</p>
               </div>
             </div>
-          )}
 
-          {/* Form Card */}
-          <div className="attendance-form-card">
+            {/* Info Box */}
+            {loggedInUser && userRole === 'Member' && (
+              <div className="attendance-info-box">
+                <UserOutlined style={{ fontSize: '20px' }} />
+                <div>
+                  <strong>Logged in as:</strong> {loggedInUser.FName} (Member ID: {loggedInUser.Member_Id})
+                  <div style={{ fontSize: '13px', marginTop: '4px', opacity: 0.9 }}>
+                    Your member ID has been automatically filled
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Form */}
             <form className="attendance-form" onSubmit={handleSubmit}>
               {/* Member ID Field */}
-              <div className="form-group">
-                <label htmlFor="Id" className="form-label">
-                  <UserOutlined /> Member Selection
-                  {selectedMember && (
-                    <span style={{ color: '#10b981', marginLeft: '8px' }}>
-                      ({selectedMember.FName} {selectedMember.LName})
-                    </span>
-                  )}
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <UserOutlined className="label-icon" />
+                    Member Selection
+                    {selectedMember && (
+                      <span style={{ color: '#10b981', marginLeft: '8px', fontSize: '14px' }}>
+                        ({selectedMember.FName} {selectedMember.LName})
+                      </span>
+                    )}
+                  </span>
+                }
+                validateStatus={formErrors.id ? 'error' : ''}
+                help={formErrors.id}
+                className="form-item"
+              >
                 {userRole === 'Member' ? (
-                  // Read-only input for logged-in members
-                  <>
-                    <input
-                      value={id}
-                      name="Id"
-                      id="Id"
-                      placeholder="Auto-filled from your profile"
-                      readOnly={true}
-                      className={`form-input readonly ${formErrors.id ? 'error' : ''}`}
-                      style={{ 
-                        backgroundColor: '#f0f9ff', 
-                        fontWeight: 'bold',
-                        cursor: 'not-allowed'
-                      }}
-                    />
-                    {formErrors.id && <p className="error-text">{formErrors.id}</p>}
-                    <p className="helper-text success">
-                      ✓ Using your logged-in member ID: {loggedInUser.FName}
-                    </p>
-                  </>
+                  <input
+                    value={id}
+                    name="Id"
+                    id="Id"
+                    placeholder="Auto-filled from your profile"
+                    readOnly={true}
+                    className="form-input readonly"
+                    style={{ 
+                      backgroundColor: '#f0f9ff', 
+                      fontWeight: 'bold',
+                      cursor: 'not-allowed'
+                    }}
+                  />
                 ) : (
-                  // Searchable dropdown for Admin/Staff
-                  <>
-                    <Select
-                      showSearch
-                      value={id || undefined}
-                      onChange={handleMemberChange}
-                      placeholder="Search by Member ID or Name..."
-                      className={`attendance-member-select ${formErrors.id ? 'error' : ''}`}
-                      style={{ width: '100%' }}
-                      filterOption={(input, option) => {
-                        const searchText = input.toLowerCase();
-                        const member = memberList.find(m => m.Member_Id.toString() === option.value);
-                        if (!member) return false;
-                        
-                        const fullName = `${member.FName} ${member.LName}`.toLowerCase();
-                        const memberId = member.Member_Id.toString();
-                        
-                        return fullName.includes(searchText) || memberId.includes(searchText);
-                      }}
-                      size="large"
-                    >
-                      {memberList.map((member) => (
-                        <Option key={member.Member_Id} value={member.Member_Id.toString()}>
-                          {member.FName} {member.LName} - ID: {member.Member_Id} ({member.Gender})
-                        </Option>
-                      ))}
-                    </Select>
-                    {formErrors.id && <p className="error-text">{formErrors.id}</p>}
-                    <p className="helper-text">
-                      👥 {memberList.length} members available - Search by name or ID
-                    </p>
-                  </>
+                  <Select
+                    showSearch
+                    value={id || undefined}
+                    onChange={handleMemberChange}
+                    placeholder="Search by Member ID or Name..."
+                    className="form-select"
+                    size="large"
+                    filterOption={(input, option) => {
+                      const searchText = input.toLowerCase();
+                      const member = memberList.find(m => m.Member_Id.toString() === option.value);
+                      if (!member) return false;
+                      
+                      const fullName = `${member.FName} ${member.LName}`.toLowerCase();
+                      const memberId = member.Member_Id.toString();
+                      
+                      return fullName.includes(searchText) || memberId.includes(searchText);
+                    }}
+                  >
+                    {memberList.map((member) => (
+                      <Option key={member.Member_Id} value={member.Member_Id.toString()}>
+                        {member.FName} {member.LName} - ID: {member.Member_Id} ({member.Gender})
+                      </Option>
+                    ))}
+                  </Select>
                 )}
-              </div>
+              </Form.Item>
 
               {/* Date Field */}
-              <div className="form-group">
-                <label htmlFor="Date" className="form-label">
-                  <CalendarOutlined /> Date
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <CalendarOutlined className="label-icon" />
+                    Date
+                  </span>
+                }
+                validateStatus={formErrors.date ? 'error' : ''}
+                help={formErrors.date}
+                className="form-item"
+              >
                 <DatePicker
                   value={date}
                   onChange={(date) => setDate(date)}
                   placeholder="Select attendance date"
-                  className={`attendance-date-picker ${formErrors.date ? 'error' : ''}`}
+                  className="form-datepicker"
+                  size="large"
                   style={{ width: "100%" }}
                   format="YYYY-MM-DD"
                 />
-                {formErrors.date && <p className="error-text">{formErrors.date}</p>}
-                <p className="helper-text">
-                  📅 Select the date for this attendance record
-                </p>
-              </div>
+              </Form.Item>
 
               {/* In Time Field */}
-              <div className="form-group">
-                <label htmlFor="InTime" className="form-label">
-                  <LoginOutlined /> Check-In Time
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <LoginOutlined className="label-icon" />
+                    Check-In Time
+                  </span>
+                }
+                validateStatus={formErrors.inTime ? 'error' : ''}
+                help={formErrors.inTime}
+                className="form-item"
+              >
                 <TimePicker
                   value={inTime}
                   onChange={(time) => setInTime(time)}
-                  minuteStep={15}
-                  secondStep={10}
-                  hourStep={1}
-                  format="HH:mm:ss"
+                  format="HH:mm"
                   placeholder="Select check-in time"
-                  className={`attendance-time-picker ${formErrors.inTime ? 'error' : ''}`}
+                  className="form-timepicker"
+                  size="large"
+                  minuteStep={5}
+                  showNow={true}
                   style={{ width: "100%" }}
                 />
-                {formErrors.inTime && <p className="error-text">{formErrors.inTime}</p>}
-                <p className="helper-text">
-                  🕐 Record when the member entered the gym
-                </p>
-              </div>
+              </Form.Item>
 
               {/* Out Time Field */}
-              <div className="form-group">
-                <label htmlFor="OutTime" className="form-label">
-                  <LogoutOutlined /> Check-Out Time
-                </label>
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <LogoutOutlined className="label-icon" />
+                    Check-Out Time
+                  </span>
+                }
+                validateStatus={formErrors.outTime ? 'error' : ''}
+                help={formErrors.outTime}
+                className="form-item"
+              >
                 <TimePicker
                   value={outTime}
                   onChange={(time) => setOutTime(time)}
-                  minuteStep={15}
-                  secondStep={10}
-                  hourStep={1}
-                  format="HH:mm:ss"
+                  format="HH:mm"
                   placeholder="Select check-out time"
-                  className={`attendance-time-picker ${formErrors.outTime ? 'error' : ''}`}
+                  className="form-timepicker"
+                  size="large"
+                  minuteStep={5}
+                  showNow={true}
                   style={{ width: "100%" }}
                 />
-                {formErrors.outTime && <p className="error-text">{formErrors.outTime}</p>}
-                <p className="helper-text">
-                  🕐 Record when the member left the gym
-                </p>
-              </div>
+              </Form.Item>
 
               {/* Action Buttons */}
-              <Form.Item className="form-actions">
-                <Space size="large">
-                  <Button 
-                    type="primary" 
-                    htmlType="submit"
-                    className="submit-button"
-                    size="large"
-                  >
-                    <ClockCircleOutlined /> Mark Attendance
-                  </Button>
-                  <Button
-                    onClick={handleReset} 
-                    type="default"
-                    htmlType="button"
-                    className="cancel-button"
-                    size="large"
-                  >
-                    Cancel
-                  </Button>
-                </Space>
-              </Form.Item>
+              <div className="form-actions">
+                <Button 
+                  type="primary" 
+                  htmlType="submit"
+                  className="submit-button"
+                  size="large"
+                  icon={<ClockCircleOutlined />}
+                >
+                  Mark Attendance
+                </Button>
+                <Button
+                  onClick={handleReset} 
+                  type="default"
+                  htmlType="button"
+                  className="cancel-button"
+                  size="large"
+                >
+                  Cancel
+                </Button>
+              </div>
             </form>
           </div>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

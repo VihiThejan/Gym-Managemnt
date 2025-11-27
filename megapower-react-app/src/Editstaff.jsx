@@ -7,8 +7,11 @@ import 'react-phone-input-2/lib/style.css';
 import { Button, Radio, Form, Select, DatePicker, message, Card, Input } from 'antd';
 import { SaveOutlined, CloseOutlined, EditOutlined, UserOutlined, HomeOutlined, 
          CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, IdcardOutlined } from '@ant-design/icons';
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Editstaff.css';
+
+const { Content } = Layout;
 
 export const EditStaff = () => {
     const navigate = useNavigate();
@@ -163,22 +166,25 @@ export const EditStaff = () => {
     };
 
     return (
-        <MainLayout>
-            <div className="edit-staff-page">
-                {/* Header Section */}
-                <div className="edit-staff-header">
-                    <div className="header-content">
-                        <EditOutlined className="header-icon" />
-                        <div className="header-text">
-                            <h1>Edit Staff Member</h1>
-                            <p>Update staff member information and details</p>
-                        </div>
-                    </div>
-                </div>
-
+        <Layout className="dashboard-layout" hasSider>
+            <AdminSidebar selectedKey="/staffTable" />
+            <Layout style={{ marginLeft: 260 }}>
+                <Content>
+                    <div className="edit-staff-page">
                 {/* Form Section */}
                 <div className="edit-staff-content">
                     <Card className="edit-staff-card" loading={loading}>
+                        {!loading && (
+                            <div className="card-header">
+                                <div className="header-icon-card">
+                                    <EditOutlined className="header-icon" />
+                                </div>
+                                <div>
+                                    <h1 className="card-title">Edit Staff Member</h1>
+                                    <p className="card-subtitle">Update staff member information and details</p>
+                                </div>
+                            </div>
+                        )}
                         <Form onFinish={handleSubmit} className="edit-staff-form">
                             {/* Full Name */}
                             <Form.Item validateStatus={nameError ? 'error' : ''} help={nameError}>
@@ -304,7 +310,6 @@ export const EditStaff = () => {
                                         loading={submitting}
                                         icon={<SaveOutlined />}
                                         className="submit-button"
-                                        onClick={handleSubmit}
                                     >
                                         {submitting ? 'Updating...' : 'Update Staff'}
                                     </Button>
@@ -321,7 +326,9 @@ export const EditStaff = () => {
                         </Form>
                     </Card>
                 </div>
-            </div>
-        </MainLayout>
+                    </div>
+                </Content>
+            </Layout>
+        </Layout>
     );
 };

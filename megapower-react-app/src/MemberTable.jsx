@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Input, Modal, message, Tag } from "antd";
+import { Layout, Button, Table, Input, Modal, message, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
@@ -12,8 +12,11 @@ import {
   ExclamationCircleOutlined
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from "./components/Layout/MainLayout";
+import AdminSidebar from "./components/AdminSidebar";
 import "./MemberTable.css";
+import "./Dashboard.css";
+
+const { Content } = Layout;
 
 export const MemberTable = () => {
   const navigate = useNavigate();
@@ -198,18 +201,18 @@ export const MemberTable = () => {
   ];
 
   return (
-    <MainLayout>
-      <div className="member-table-container">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/MemberTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
+          <div className="member-table-container">
         <div className="table-header">
-          <Button
-            icon={<LeftOutlined />}
-            onClick={() => navigate("/Admin")}
-            className="back-button"
-          >
-            Back
-          </Button>
-
-          <h1 className="table-title">Members Management</h1>
+          <div className="header-left">
+            <div className="header-icon-card">
+              <UserOutlined className="header-icon" />
+            </div>
+            <h1 className="table-title">Members Management</h1>
+          </div>
 
           <div className="header-actions">
             <Input
@@ -249,7 +252,9 @@ export const MemberTable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

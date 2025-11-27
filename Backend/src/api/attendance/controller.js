@@ -20,13 +20,16 @@ const attendanceHandling = async (req, res) => {
           });
       }
 
+      // Create date-time strings in local timezone format to avoid conversion issues
+      const inDateTime = `${currentDate}T${inTime}`;
+      const outDateTime = `${currentDate}T${outTime}`;
       
       await prisma.attendance.create({
           data: {
               Member_Id: parseInt(memberId),
-              Current_date: new Date(currentDate),
-              In_time: new Date(`${currentDate}T${inTime}`),
-              Out_time: new Date(`${currentDate}T${outTime}`),
+              Current_date: new Date(currentDate + 'T00:00:00'),
+              In_time: new Date(inDateTime),
+              Out_time: new Date(outDateTime),
           },
       });
 
@@ -97,15 +100,19 @@ const attendanceEdit = async (req, res) => {
     const id = req.params.id;
     const body = req.body;
 
+    // Create date-time strings in local timezone format to avoid conversion issues
+    const inDateTime = `${body.Current_date}T${body.In_time}`;
+    const outDateTime = `${body.Current_date}T${body.Out_time}`;
+
     const data = await prisma.attendance.update({
       where: {
         Attendance_ID: parseInt(id),
       },
       data: {
         Member_Id: parseInt(body.Member_Id),
-        Current_date: new Date(body.Current_date),
-        In_time: new Date(`${body.Current_date}T${body.In_time}`),
-        Out_time: new Date(`${body.Current_date}T${body.Out_time}`),
+        Current_date: new Date(body.Current_date + 'T00:00:00'),
+        In_time: new Date(inDateTime),
+        Out_time: new Date(outDateTime),
       },
     });
 
