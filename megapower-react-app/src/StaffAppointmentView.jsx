@@ -235,7 +235,7 @@ const StaffAppointmentView = () => {
       </Sider>
 
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
-        <Header className="info-header">
+        <Header className="info-header" style={{ background: 'white' }}>
           <div className="header-left">
             <div 
               className="trigger-button"
