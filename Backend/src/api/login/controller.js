@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 var ShoutoutClient = require('shoutout-sdk');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 
 
@@ -17,27 +18,40 @@ const userLogin = async (req, res) => {
         const data = await prisma.admin.findFirst({
             select: {
                 User_ID: true,
-                Name: true
+                Name: true,
+                Password: true
             },
             where:{
-                UserName: username,
-                Password: password
+                UserName: username
             }
         });
 
-        if(data!== null){
-        res.status(200).json({
-            code: 200,
-            message: 'Login Success',
-            data
-        })
-    }else{
-        res.status(200).json({
-            code: 400,
-            message: 'Invalid username or password',
-            data: null
-        })
-    }
+        if(data !== null){
+            // Compare the provided password with the hashed password
+            const isMatch = await bcrypt.compare(password, data.Password);
+            
+            if(isMatch){
+                // Remove password from response
+                const { Password, ...userData } = data;
+                res.status(200).json({
+                    code: 200,
+                    message: 'Login Success',
+                    data: userData
+                })
+            }else{
+                res.status(200).json({
+                    code: 400,
+                    message: 'Invalid username or password',
+                    data: null
+                })
+            }
+        }else{
+            res.status(200).json({
+                code: 400,
+                message: 'Invalid username or password',
+                data: null
+            })
+        }
 
     }
     catch(ex){
@@ -53,19 +67,29 @@ const userLogin = async (req, res) => {
 const userRegister = async (req, res) => {
     const {name,  password,contact} = req.body;
     try{
+        console.log('Registration request received:', { name, contact, passwordLength: password?.length });
+        
+        // Hash the password before storing
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
         await prisma.admin.create({
             data: {
                 UserName: contact,
                 Name: name,
-                Password: password,
+                Password: hashedPassword,
                 Contact:contact,
             }
         })
+        
+        console.log('Admin registered successfully');
+        
         res.status(200).json({
             code: 200,
             message: 'User created successfully',
         })
     }catch(ex){
+        console.error('Registration error:', ex.message);
+        console.error('Full error:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
