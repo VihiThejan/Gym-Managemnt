@@ -5,8 +5,11 @@ import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, ShoppingOu
          TagsOutlined, NumberOutlined, FileTextOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditEquipment.css';
+
+const { Content } = Layout;
 
 const { TextArea } = Input;
 
@@ -80,8 +83,11 @@ export const EditEquipment = () => {
     };
 
     return (
-        <MainLayout showSidebar={true} showNavigation={false}>
-            <div className="edit-equipment-page">
+        <Layout className="dashboard-layout" hasSider>
+            <AdminSidebar selectedKey="/Equipmenttable" />
+            <Layout style={{ marginLeft: 260 }}>
+                <Content>
+                    <div className="edit-equipment-page">
                 <div className="edit-equipment-content">
                     <Card className="edit-equipment-card" loading={loading}>
                         <div className="card-header">
@@ -229,7 +235,9 @@ export const EditEquipment = () => {
                         </Form>
                     </Card>
                 </div>
-            </div>
-        </MainLayout>
+                    </div>
+                </Content>
+            </Layout>
+        </Layout>
     );
 };

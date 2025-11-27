@@ -4,8 +4,11 @@ import { SaveOutlined, CloseOutlined, PlusOutlined, TagsOutlined, NumberOutlined
          ShoppingOutlined, FileTextOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Equipment.css';
+
+const { Content } = Layout;
 
 const { TextArea } = Input;
 
@@ -79,8 +82,11 @@ export const Equipment = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="equipment-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Equipmenttable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="equipment-page">
         <div className="equipment-container">
           <Card className="equipment-card">
             {/* Card Header */}
@@ -243,7 +249,9 @@ export const Equipment = () => {
             </Form>
           </Card>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

@@ -15,8 +15,11 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './staff.css';
+
+const { Content } = Layout;
 
 export const Staff = () => {
   const [form] = Form.useForm();
@@ -89,17 +92,22 @@ export const Staff = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="staff-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/staffTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="staff-page">
         <div className="staff-container">
           <Card className="staff-card">
-            <div className="card-header">
-              <div className="header-icon-card">
-                <IdcardOutlined className="header-icon" />
-              </div>
-              <div className="header-text">
-                <h2 className="card-title">Staff Registration</h2>
-                <p className="card-subtitle">Add new staff member to the system</p>
+            <div className="card-header-gradient">
+              <div className="card-header">
+                <div className="header-icon-card">
+                  <IdcardOutlined className="header-icon" />
+                </div>
+                <div className="header-text">
+                  <h2 className="card-title">Staff Registration</h2>
+                  <p className="card-subtitle">Add new staff member to the system</p>
+                </div>
               </div>
             </div>
 
@@ -217,10 +225,10 @@ export const Staff = () => {
                 >
                   <Radio.Group size="large" className="gender-radio">
                     <Radio.Button value="Male">
-                      <ManOutlined /> Male
+                      <ManOutlined /> <span>Male</span>
                     </Radio.Button>
                     <Radio.Button value="Female">
-                      <WomanOutlined /> Female
+                      <WomanOutlined /> <span>Female</span>
                     </Radio.Button>
                   </Radio.Group>
                 </Form.Item>
@@ -357,7 +365,9 @@ export const Staff = () => {
             </div>
           </Card>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

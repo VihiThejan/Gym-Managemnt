@@ -130,7 +130,7 @@ export const Dashboard = () => {
       label: 'Attendance',
     },
     {
-      key: '/payment',
+      key: '/Paymenttable',
       icon: <DollarOutlined />,
       label: 'Payments',
     },

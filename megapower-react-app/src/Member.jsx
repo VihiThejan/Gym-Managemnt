@@ -5,8 +5,11 @@ import { Button, Radio, InputNumber, Select, DatePicker, message, Card, Input, F
 import { UserOutlined, HomeOutlined, CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, GiftOutlined, ColumnHeightOutlined, DashboardOutlined, LockOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Member.css';
+
+const { Content } = Layout;
 
 export const Member = () => {
   const navigate = useNavigate();
@@ -227,8 +230,11 @@ export const Member = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="member-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/MemberTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="member-page">
         <div className="member-container">
           <Card className="member-card">
             <div className="card-header">
@@ -430,7 +436,9 @@ export const Member = () => {
           </Form>
         </Card>
       </div>
-    </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

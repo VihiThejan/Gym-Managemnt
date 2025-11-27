@@ -4,8 +4,11 @@ import { Button, Form, DatePicker, TimePicker, message, Input, Card } from "antd
 import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, UserOutlined, LoginOutlined, LogoutOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditAttendance.css';
+
+const { Content } = Layout;
 
 export const EditAttendance = () => {
   const navigate = useNavigate();
@@ -74,8 +77,11 @@ export const EditAttendance = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="edit-attendance-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Attendancetable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="edit-attendance-page">
         <div className="edit-attendance-content">
           <Card className="edit-attendance-card" loading={loading}>
             <div className="card-header">
@@ -198,7 +204,9 @@ export const EditAttendance = () => {
             </Form>
           </Card>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

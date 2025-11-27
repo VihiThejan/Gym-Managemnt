@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Input, Avatar, Badge, message as antMessage, Select } from "antd";
+import { Button, Input, Avatar, Badge, message as antMessage, Select, Layout } from "antd";
 import { 
   SendOutlined, 
   PaperClipOutlined, 
@@ -10,11 +10,12 @@ import {
 } from "@ant-design/icons";
 import io from "socket.io-client";
 import axios from "axios";
-import MainLayout from "./components/Layout/MainLayout";
+import AdminSidebar from "./components/AdminSidebar";
 import "./Chat.css";
 
 const { TextArea } = Input;
-const { Option } = Select; 
+const { Option } = Select;
+const { Content } = Layout; 
 
 // Only connect to Socket.IO when user is logged in (prevents 404 errors on page load)
 let socket = null;
@@ -248,12 +249,15 @@ function Chat() {
     };
 
     return (
-        <MainLayout showSidebar={true} showNavigation={false}>
-            <div className="chat-page">
-                <div className="chat-container">
-                    {isLoggedIn && currentUser ? (
-                        // Chat Interface
-                        <div className="chat-interface">
+        <Layout className="dashboard-layout" hasSider>
+            <AdminSidebar selectedKey="/adminChat" />
+            <Layout style={{ marginLeft: 260 }}>
+                <Content className="dashboard-content">
+                    <div className="chat-page">
+                        <div className="chat-container">
+                            {isLoggedIn && currentUser ? (
+                                // Chat Interface
+                                <div className="chat-interface">
                             {/* Chat Header */}
                             <div className="chat-header">
                                 <div className="chat-header-content">
@@ -439,11 +443,13 @@ function Chat() {
                                     </p>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
-        </MainLayout>
+                </Content>
+            </Layout>
+        </Layout>
     );
 }
 

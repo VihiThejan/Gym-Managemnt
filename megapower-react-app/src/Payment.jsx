@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, DatePicker, Select, message, Card, Input, Form } from "antd";
+import { Button, DatePicker, Select, message, Card, Input, Form, Layout } from "antd";
 import { 
   DollarOutlined, 
   UserOutlined, 
@@ -9,8 +9,10 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import MainLayout from './components/Layout/MainLayout';
+import AdminSidebar from './components/AdminSidebar';
 import './Payment.css';
+
+const { Content } = Layout;
 
 export const Payment = () => {
   const navigate = useNavigate();
@@ -157,8 +159,11 @@ export const Payment = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="payment-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Paymenttable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
+          <div className="payment-page">
         <div className="payment-header">
           <div className="header-content">
             <div className="header-icon">
@@ -272,7 +277,9 @@ export const Payment = () => {
             </Card>
           </div>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

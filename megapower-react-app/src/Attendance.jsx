@@ -4,8 +4,11 @@ import { ArrowLeftOutlined, ClockCircleOutlined, CalendarOutlined, LoginOutlined
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
-import MainLayout from "./components/Layout/MainLayout";
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import "./Attendance.css";
+
+const { Content } = Layout;
 
 const { Option } = Select;
 
@@ -150,8 +153,11 @@ export const Attendance = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="attendance-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Attendancetable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="attendance-page">
         <div className="attendance-container">
           <div className="attendance-card">
             {/* Card Header */}
@@ -336,7 +342,9 @@ export const Attendance = () => {
             </form>
           </div>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

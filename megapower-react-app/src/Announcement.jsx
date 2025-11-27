@@ -3,8 +3,11 @@ import { DatePicker, message } from 'antd';
 import { SoundOutlined, UserOutlined, MessageOutlined, CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Announcement.css';
+
+const { Content } = Layout;
 
 export const Announcement = () => {
   const [messageText, setMessage] = useState('');
@@ -159,8 +162,11 @@ export const Announcement = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="announcement-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Announcementtable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="announcement-page">
         <div className="announcement-container">
           <div className="announcement-card">
             {/* Card Header */}
@@ -292,10 +298,12 @@ export const Announcement = () => {
                 </button>
               </div>
             </form>
+            </div>
           </div>
         </div>
-        </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

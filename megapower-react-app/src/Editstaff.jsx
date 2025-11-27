@@ -7,8 +7,11 @@ import 'react-phone-input-2/lib/style.css';
 import { Button, Radio, Form, Select, DatePicker, message, Card, Input } from 'antd';
 import { SaveOutlined, CloseOutlined, EditOutlined, UserOutlined, HomeOutlined, 
          CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, IdcardOutlined } from '@ant-design/icons';
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Editstaff.css';
+
+const { Content } = Layout;
 
 export const EditStaff = () => {
     const navigate = useNavigate();
@@ -163,8 +166,11 @@ export const EditStaff = () => {
     };
 
     return (
-        <MainLayout showSidebar={true} showNavigation={false}>
-            <div className="edit-staff-page">
+        <Layout className="dashboard-layout" hasSider>
+            <AdminSidebar selectedKey="/staffTable" />
+            <Layout style={{ marginLeft: 260 }}>
+                <Content>
+                    <div className="edit-staff-page">
                 {/* Form Section */}
                 <div className="edit-staff-content">
                     <Card className="edit-staff-card" loading={loading}>
@@ -320,7 +326,9 @@ export const EditStaff = () => {
                         </Form>
                     </Card>
                 </div>
-            </div>
-        </MainLayout>
+                    </div>
+                </Content>
+            </Layout>
+        </Layout>
     );
 };

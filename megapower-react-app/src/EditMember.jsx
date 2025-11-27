@@ -8,8 +8,11 @@ import { Button, Radio, Select, DatePicker, message, Form, Input, Card } from 'a
 import { SaveOutlined, CloseOutlined, EditOutlined, UserOutlined, HomeOutlined, 
          CalendarOutlined, MailOutlined, PhoneOutlined, GiftOutlined, 
          ColumnHeightOutlined, DashboardOutlined, LockOutlined, ManOutlined } from '@ant-design/icons';
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditMember.css';
+
+const { Content } = Layout;
 
 export const EditMember = () => {
   const navigate = useNavigate();
@@ -144,21 +147,29 @@ export const EditMember = () => {
 
   if (loading) {
     return (
-      <MainLayout showSidebar={true} showNavigation={false}>
-        <div className="edit-member-page">
-          <div className="edit-member-container">
-            <Card className="edit-member-card" loading={true}>
-              <div style={{ padding: '40px' }}>Loading member data...</div>
-            </Card>
-          </div>
-        </div>
-      </MainLayout>
+      <Layout className="dashboard-layout" hasSider>
+        <AdminSidebar selectedKey="/MemberTable" />
+        <Layout style={{ marginLeft: 260 }}>
+          <Content>
+            <div className="edit-member-page">
+              <div className="edit-member-container">
+                <Card className="edit-member-card" loading={true}>
+                  <div style={{ padding: '40px' }}>Loading member data...</div>
+                </Card>
+              </div>
+            </div>
+          </Content>
+        </Layout>
+      </Layout>
     );
   }
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="edit-member-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/MemberTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="edit-member-page">
         <div className="edit-member-container">
           <Card className="edit-member-card">
             <div className="card-header">
@@ -414,7 +425,9 @@ export const EditMember = () => {
             </Form>
           </Card>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

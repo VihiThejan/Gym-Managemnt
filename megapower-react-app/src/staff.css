@@ -39,13 +39,20 @@
    Header Section
    ================================ */
 
+.card-header-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: -2.5rem -2.5rem 2rem -2.5rem;
+    padding: 2rem 2.5rem;
+    border-radius: 20px 20px 0 0;
+}
+
 .card-header {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .header-icon-card {
@@ -54,15 +61,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    backdrop-filter: blur(10px);
     flex-shrink: 0;
 }
 
 .header-icon {
     font-size: 28px;
-    color: #667eea;
+    color: #ffffff;
 }
 
 .header-text {
@@ -72,13 +79,13 @@
 .card-title {
     font-size: 24px;
     font-weight: 700;
-    color: #1a1d3a;
+    color: #ffffff;
     margin: 0 0 4px 0;
 }
 
 .card-subtitle {
     font-size: 14px;
-    color: #666;
+    color: rgba(255, 255, 255, 0.95);
     margin: 0;
 }
 
@@ -154,15 +161,30 @@
 }
 
 /* Gender Radio Buttons */
+.gender-radio {
+    display: flex;
+    gap: 12px;
+}
+
 .gender-radio .ant-radio-button-wrapper {
     height: 48px;
     line-height: 46px;
     padding: 0 24px;
     border-radius: 12px;
     border: 2px solid #e8e8e8;
-    margin-right: 12px;
+    margin-right: 0;
     font-weight: 600;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.gender-radio .ant-radio-button-wrapper span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
 
 .gender-radio .ant-radio-button-wrapper:hover {
@@ -502,11 +524,16 @@
         padding: 20px 15px;
     }
 
+    .card-header-gradient {
+        margin: -20px -15px 20px -15px;
+        padding: 1.5rem 15px;
+    }
+
     .card-header {
         flex-direction: column;
         align-items: flex-start;
-        margin-bottom: 24px;
-        padding-bottom: 20px;
+        margin-bottom: 0;
+        padding-bottom: 0;
         gap: 12px;
     }
 

@@ -14,8 +14,11 @@ import {
   ToolOutlined
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './Scheduletable.css';
+
+const { Content } = Layout;
 
 export const Scheduletable = () => {
   const navigate = useNavigate();
@@ -196,8 +199,11 @@ export const Scheduletable = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="scheduletable-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Scheduletable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="scheduletable-page">
         <div className="page-header">
           <div className="header-content">
             <div className="header-title">
@@ -244,8 +250,10 @@ export const Scheduletable = () => {
             className="schedule-table"
           />
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

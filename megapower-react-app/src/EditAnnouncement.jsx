@@ -4,8 +4,11 @@ import { Button, DatePicker, TimePicker, Input, message, Form, Card, Spin } from
 import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, ClockCircleOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
 import './EditAnnouncement.css';
+
+const { Content } = Layout;
 
 const { TextArea } = Input;
 
@@ -102,8 +105,11 @@ export const EditAnnouncement = () => {
   };
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="edit-announcement-page">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Announcementtable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content>
+          <div className="edit-announcement-page">
         <div className="edit-announcement-content">
           <Card className="edit-announcement-card" bordered={false} loading={loading}>
             <div className="card-header">
@@ -240,7 +246,9 @@ export const EditAnnouncement = () => {
           </Form>
         </Card>
         </div>
-      </div>
-    </MainLayout>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
