@@ -16,7 +16,8 @@ import {
   MenuFoldOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import Logo from './components/Logo';
@@ -102,7 +103,7 @@ const StaffAppointmentView = () => {
 
   const handleLogout = () => {
     message.success('Logged out successfully');
-    navigate('/login');
+    navigate('/');
   };
 
   const columns = [
@@ -231,6 +232,14 @@ const StaffAppointmentView = () => {
               {!collapsed && <span className="menu-label">{label}</span>}
             </div>
           ))}
+          <div className="menu-divider"></div>
+          <div
+            className="menu-item logout-item"
+            onClick={handleLogout}
+          >
+            <span className="menu-icon"><LogoutOutlined /></span>
+            {!collapsed && <span className="menu-label">Logout</span>}
+          </div>
         </div>
       </Sider>
 
