@@ -118,9 +118,10 @@ export const Login = () => {
       }
 
       else if(user === "Staff"){
+          console.log('Staff Login - Username:', mobile, 'Password:', pass);
           axios.post('http://localhost:5000/api/v1/staffmember/login', body)
           .then(async (data) => {
-              console.log(data);
+              console.log('Staff Login Response:', data);
               if (data?.data?.code === 400) {
                   message.error(data?.data?.message);
               } else if (data?.data?.code === 200) {
@@ -129,10 +130,12 @@ export const Login = () => {
                   setTimeout(() => {
                     navigate("/StaffDashboard");
                   }, 1000);
+              } else {
+                  message.error('Login failed. Please try again.');
               }
           })
           .catch(err => {
-              console.error(err.message);
+              console.error('Staff Login Error:', err);
               message.error('Login failed. Please try again.');
           })
           .finally(() => {
@@ -245,7 +248,7 @@ export const Login = () => {
                 Register as Admin
               </Button>
               <span className="link-separator">•</span>
-              <Button type="link" onClick={() => navigate("/staff")} className="register-link">
+              <Button type="link" onClick={() => navigate("/staffSignup")} className="register-link">
                 Staff
               </Button>
               <span className="link-separator">•</span>

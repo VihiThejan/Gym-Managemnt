@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Input, Modal, message, Tag } from "antd";
+import { Layout, Button, Table, Input, Modal, message, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
@@ -12,8 +12,11 @@ import {
   ExclamationCircleOutlined
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from "./components/Layout/MainLayout";
+import AdminSidebar from "./components/AdminSidebar";
 import "./MemberTable.css";
+import "./Dashboard.css";
+
+const { Content } = Layout;
 
 export const MemberTable = () => {
   const navigate = useNavigate();
@@ -198,8 +201,11 @@ export const MemberTable = () => {
   ];
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
-      <div className="member-table-container">
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/MemberTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
+          <div className="member-table-container">
         <div className="table-header">
           <div className="header-left">
             <div className="header-icon-card">
@@ -246,7 +252,9 @@ export const MemberTable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

@@ -12,12 +12,16 @@ import {
   SoundOutlined
 } from "@ant-design/icons";
 import moment from 'moment';
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
+import './Dashboard.css';
 import './Announcementtable.css';
 
 
 
 
+
+const { Content } = Layout;
 
 export const Announcementtable = () => {
   const navigate = useNavigate();
@@ -146,7 +150,10 @@ export const Announcementtable = () => {
   );
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Announcementtable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
       <div className="announcement-table-container">
         {/* Header */}
         <div className="table-header">
@@ -189,6 +196,8 @@ export const Announcementtable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

@@ -9,8 +9,12 @@ import {
   CreditCardOutlined 
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
+import './Dashboard.css';
 import './Paymenttable.css';
+
+const { Content } = Layout;
 
 export const Paymenttable = () => {
   const navigate = useNavigate();
@@ -105,7 +109,10 @@ export const Paymenttable = () => {
   ];
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/payment" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
       <div className="payment-table-container">
         <div className="table-header">
           <div className="header-left">
@@ -148,7 +155,9 @@ export const Paymenttable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

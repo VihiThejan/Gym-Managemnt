@@ -16,6 +16,7 @@ import { MemberDashboard } from "./MemberDashboard";
 import { Admin } from "./Admin";
 
 import { Staff } from "./staff";
+import { StaffSignup } from "./StaffSignup";
 import StaffTable   from "./staffTable";
 import StaffInfoTable from "./StaffInfoTable";
 import { EditStaff } from "./Editstaff";
@@ -49,7 +50,7 @@ import StaffPaymentView from "./StaffPaymentView";
 import StaffAttendanceView from "./StaffAttendanceView";
 import StaffAppointmentView from "./StaffAppointmentView";
 
-import Chat   from "./Chat";
+import Chat from "./Chat";
 import StaffChat from "./StaffChat";
 import {Trainerrate  } from "./Trainerrate";
 import {Trainerratetable  } from "./Trainerratetable";
@@ -61,6 +62,7 @@ import {Feedbacktable  } from "./Feedbacktable";
 import {Appoinment  } from "./Appoinment";
 import {EditAppoinment  } from "./EditAppoinment";
 import {Appoinmenttable  } from "./Appoinmenttable";
+import Reports from "./Reports";
 
 
 
@@ -112,6 +114,7 @@ function App() {
         
         <Route path="/Admin" element={<Admin />} />
         <Route path="/staff" element={<Staff />} />
+        <Route path="/staffSignup" element={<StaffSignup />} />
         <Route path="/Member" element={<Member />} />
         <Route path="/Equipment" element={<Equipment />} />
         <Route path="/Trainerrate" element={<Trainerrate />} />
@@ -123,9 +126,10 @@ function App() {
 
         
         <Route path="/chat" element={<StaffChat />} />
-        <Route path="/Chat" element={<Chat />} />
+        <Route path="/adminChat" element={<Chat />} />
         <Route path="/Announcement" element={<Announcement />} />
         <Route path="/Announcementtable" element={<Announcementtable />} />
+        <Route path="/reports" element={<Reports />} />
         <Route path="/staffAnnouncement" element={<StaffAnnouncementView />} />
         <Route path="/staffPayment" element={<StaffPaymentView />} />
         <Route path="/staffAttendance" element={<StaffAttendanceView />} />

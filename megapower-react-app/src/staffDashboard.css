@@ -94,7 +94,7 @@ html {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.7) !important;
   font-weight: 500;
   font-size: 14px;
 }
@@ -117,7 +117,6 @@ html {
 
 .dashboard-menu .ant-menu-item .anticon {
   font-size: 18px;
-  margin-right: 12px;
   transition: all 0.3s ease;
 }
 
@@ -164,12 +163,13 @@ html {
 
 /* Collapsed Menu Items */
 .dashboard-sider.ant-layout-sider-collapsed .ant-menu-item {
-  padding: 0 calc(50% - 18px) !important;
+  padding-left: calc(50% - 18px) !important;
+  padding-right: calc(50% - 18px) !important;
   text-align: center;
 }
 
 .dashboard-sider.ant-layout-sider-collapsed .ant-menu-item .anticon {
-  margin-right: 0;
+  margin-right: 0 !important;
   font-size: 20px;
 }
 
@@ -1420,6 +1420,105 @@ html {
 
 .dashboard-content::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Info Cards */
+.info-row {
+  margin-bottom: 32px;
+  padding: 0 20px 20px 20px;
+}
+
+.info-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.info-card-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white;
+}
+
+.info-card-pink {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+  color: white;
+}
+
+.info-card-blue {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+  color: white;
+}
+
+.info-card .ant-card-body {
+  padding: 28px;
+}
+
+.info-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.info-card .info-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.info-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+.info-card-content h3 {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.info-card-content p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.info-card-link {
+  color: white !important;
+  font-weight: 600;
+  padding: 0;
+  height: auto;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.info-card-link:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: white !important;
+  transform: translateX(4px);
 }
 
 /* Reduced Motion Support for Accessibility */

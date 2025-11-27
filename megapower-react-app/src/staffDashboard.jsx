@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, theme, Typography, Input, Badge, Avatar, Button, Card, Row, Col, Statistic } from 'antd';
+import { Layout, theme, Typography, Input, Badge, Avatar, Button, Card, Row, Col, Statistic, Menu } from 'antd';
 import { 
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -15,7 +15,7 @@ import {
   ClockCircleOutlined,
   DashboardOutlined
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Logo from './components/Logo';
 import './staffDashboard.css';
@@ -33,14 +33,14 @@ const siderStyle = {
   background: 'linear-gradient(180deg, #1a1f3a 0%, #2d1b4e 100%)',
 };
 
-const navigationItems = [
-  { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/staffDashboard' },
-  { label: 'Staff Info', icon: <TeamOutlined />, key: '2', path: '/staffInfo' },
-  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/staffPayment' },
-  { label: 'Announcement', icon: <NotificationOutlined />, key: '4', path: '/staffAnnouncement' },
-  { label: 'Attendance', icon: <CalendarOutlined />, key: '5', path: '/staffAttendance' },
-  { label: 'Appointment', icon: <PhoneOutlined />, key: '6', path: '/staffAppointment' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
+const getMenuItems = () => [
+  { label: 'Dashboard', icon: <DashboardOutlined />, key: '/staffDashboard' },
+  { label: 'Staff Info', icon: <TeamOutlined />, key: '/staffInfo' },
+  { label: 'Payment', icon: <DollarOutlined />, key: '/staffPayment' },
+  { label: 'Announcement', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
+  { label: 'Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
+  { label: 'Appointment', icon: <PhoneOutlined />, key: '/staffAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '/chat' },
 ];
 
 export const StaffDashboard = () => {
@@ -57,6 +57,7 @@ export const StaffDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     fetchStaffDashboardStats();
@@ -114,29 +115,31 @@ export const StaffDashboard = () => {
         <div className="logo-container">
           <Logo size="small" showText={!collapsed} variant="white" />
         </div>
-        <div className="dashboard-menu">
-          {navigationItems.map(({ label, icon, key, path }) => (
-            <div
-              key={key}
-              className={`menu-item ${path === '/staffDashboard' ? 'active' : ''}`}
-              onClick={() => navigate(path)}
-            >
-              <span className="menu-icon">{icon}</span>
-              {!collapsed && <span className="menu-label">{label}</span>}
-            </div>
-          ))}
-        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={[location.pathname]}
+          items={getMenuItems()}
+          onClick={({ key }) => navigate(key)}
+          className="dashboard-menu"
+          style={{ background: 'transparent', border: 'none' }}
+        />
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="dashboard-header" style={{ padding: '0 24px', background: colorBgContainer }}>
           <div className="header-left">
-            <div 
-              className="trigger-button"
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
-            >
-              {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            </div>
-            <Typography.Title level={4} className="welcome-text">
+              className="trigger-button"
+              style={{
+                fontSize: '16px',
+                width: 40,
+                height: 40,
+              }}
+            />
+            <Typography.Title level={4} className="welcome-text" style={{ margin: 0 }}>
               Staff Dashboard
             </Typography.Title>
           </div>
@@ -273,7 +276,10 @@ export const StaffDashboard = () => {
                     <Col xs={24} sm={12}>
                       <div 
                         className="action-tile action-tile-purple" 
-                        onClick={() => navigate('/Attendance')}
+                        onClick={() => navigate('/staffAttendance')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => e.key === 'Enter' && navigate('/staffAttendance')}
                       >
                         <div className="action-tile-icon">
                           <CalendarOutlined />
@@ -288,7 +294,10 @@ export const StaffDashboard = () => {
                     <Col xs={24} sm={12}>
                       <div 
                         className="action-tile action-tile-pink" 
-                        onClick={() => navigate('/Appoinment')}
+                        onClick={() => navigate('/staffAppointment')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => e.key === 'Enter' && navigate('/staffAppointment')}
                       >
                         <div className="action-tile-icon">
                           <PhoneOutlined />
@@ -303,7 +312,10 @@ export const StaffDashboard = () => {
                     <Col xs={24} sm={12}>
                       <div 
                         className="action-tile action-tile-blue" 
-                        onClick={() => navigate('/Announcement')}
+                        onClick={() => navigate('/staffAnnouncement')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => e.key === 'Enter' && navigate('/staffAnnouncement')}
                       >
                         <div className="action-tile-icon">
                           <NotificationOutlined />
@@ -319,6 +331,9 @@ export const StaffDashboard = () => {
                       <div 
                         className="action-tile action-tile-green" 
                         onClick={() => navigate('/chat')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => e.key === 'Enter' && navigate('/chat')}
                       >
                         <div className="action-tile-icon">
                           <MessageOutlined />
@@ -408,7 +423,7 @@ export const StaffDashboard = () => {
                     <Button 
                       type="text" 
                       icon={<CalendarOutlined />}
-                      onClick={() => navigate('/Attendancetable')}
+                      onClick={() => navigate('/staffAttendance')}
                       className="info-card-link"
                     >
                       View Records
@@ -430,7 +445,7 @@ export const StaffDashboard = () => {
                     <Button 
                       type="text" 
                       icon={<CalendarOutlined />}
-                      onClick={() => navigate('/Appoinmenttable')}
+                      onClick={() => navigate('/staffAppointment')}
                       className="info-card-link"
                     >
                       View Schedule

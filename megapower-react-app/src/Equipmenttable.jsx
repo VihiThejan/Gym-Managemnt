@@ -5,10 +5,14 @@ import axios from "axios";
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, 
          TableOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
+import './Dashboard.css';
 import './Equipmenttable.css';
 
 const { confirm } = Modal;
+
+const { Content } = Layout;
 
 const Equipmenttable = () => {
   const navigate = useNavigate();
@@ -143,7 +147,10 @@ const Equipmenttable = () => {
   ];
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Equipmenttable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
       <div className="equipment-table-container">
         {/* Header Section */}
         <div className="table-header">
@@ -189,7 +196,9 @@ const Equipmenttable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

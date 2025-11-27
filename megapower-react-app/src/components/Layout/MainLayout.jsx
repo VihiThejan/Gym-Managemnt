@@ -65,7 +65,7 @@ const MainLayout = ({ children, showNavigation = true, showSidebar = false }) =>
       label: 'Announcements',
     },
     {
-      key: '/Chat',
+      key: '/adminChat',
       icon: <MessageOutlined />,
       label: 'Chat',
     },

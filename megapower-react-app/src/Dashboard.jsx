@@ -140,7 +140,12 @@ export const Dashboard = () => {
       label: 'Announcements',
     },
     {
-      key: '/Chat',
+      key: '/reports',
+      icon: <BarChartOutlined />,
+      label: 'Reports',
+    },
+    {
+      key: '/adminChat',
       icon: <MessageOutlined />,
       label: 'Chat',
     },

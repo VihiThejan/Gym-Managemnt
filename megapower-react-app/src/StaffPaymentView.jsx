@@ -324,7 +324,7 @@ const StaffPaymentView = () => {
               }
               extra={
                 <Search
-                  placeholder="Search by Payment ID, Member ID, Method, Status..."
+                  placeholder="Search payments..."
                   allowClear
                   enterButton={<SearchOutlined />}
                   size="large"

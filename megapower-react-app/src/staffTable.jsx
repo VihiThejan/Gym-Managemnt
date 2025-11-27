@@ -17,8 +17,12 @@ import {
   SearchOutlined
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from './components/Layout/MainLayout';
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
+import './Dashboard.css';
 import './staffTable.css';
+
+const { Content } = Layout;
 
 const StaffTable = () => {
   const navigate = useNavigate();
@@ -202,7 +206,10 @@ const StaffTable = () => {
   ];
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/staffTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
       <div className="staff-table-container">
         <div className="table-header">
           <div className="header-left">
@@ -247,7 +254,9 @@ const StaffTable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

@@ -14,8 +14,12 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import moment from "moment";
-import MainLayout from "./components/Layout/MainLayout";
+import { Layout } from 'antd';
+import AdminSidebar from './components/AdminSidebar';
+import './Dashboard.css';
 import "./Attendancetable.css";
+
+const { Content } = Layout;
 
 export const Attendancetable = () => {
   const navigate = useNavigate();
@@ -173,7 +177,10 @@ export const Attendancetable = () => {
   ];
 
   return (
-    <MainLayout showSidebar={true} showNavigation={false}>
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/Attendancetable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
       <div className="attendancetable-container">
         {/* Header Section */}
         <div className="table-header">
@@ -218,7 +225,9 @@ export const Attendancetable = () => {
           />
         </div>
       </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

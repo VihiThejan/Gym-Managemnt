@@ -38,10 +38,15 @@ const staffMember = async (req, res) => {
 const staffLogin = async (req, res) => {
     const {username, password} = req.body;
     try{
-        const data = await prisma.staffmember.findFirst({
+        console.log('Staff Login Attempt - Username:', username, 'Password:', password);
+        
+        // First try exact match
+        let data = await prisma.staffmember.findFirst({
             select: {
                 Staff_ID: true,
-                FName: true
+                FName: true,
+                UName: true,
+                Contact_No: true
             },
             where:{
                 UName: username,
@@ -49,22 +54,44 @@ const staffLogin = async (req, res) => {
             }
         });
 
-        if(data!== null){
-        res.status(200).json({
-            code: 200,
-            message: 'Login Success',
-            data
-        })
-    }else{
-        res.status(200).json({
-            code: 400,
-            message: 'Invalid username or password',
-            data: null
-        })
-    }
+        // If not found, try matching Contact_No
+        if(!data){
+            data = await prisma.staffmember.findFirst({
+                select: {
+                    Staff_ID: true,
+                    FName: true,
+                    UName: true,
+                    Contact_No: true
+                },
+                where:{
+                    Contact_No: username,
+                    Password: password
+                }
+            });
+        }
+
+        console.log('Staff Login Result:', data);
+
+        if(data !== null){
+            res.status(200).json({
+                code: 200,
+                message: 'Login Success',
+                data: {
+                    Staff_ID: data.Staff_ID,
+                    FName: data.FName
+                }
+            })
+        }else{
+            res.status(200).json({
+                code: 400,
+                message: 'Invalid username or password',
+                data: null
+            })
+        }
 
     }
     catch(ex){
+        console.error('Staff Login Error:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',

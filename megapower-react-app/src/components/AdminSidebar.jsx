@@ -1,25 +1,24 @@
 import React from 'react';
-import { Layout, Menu, Typography } from 'antd';
-import { 
-  UserOutlined, 
-  ShopOutlined, 
-  DollarOutlined, 
-  TeamOutlined, 
-  CalendarOutlined,
+import { Layout, Menu } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
   AppstoreOutlined,
+  TeamOutlined,
+  UserOutlined,
+  ShopOutlined,
+  CalendarOutlined,
+  DollarOutlined,
   BellOutlined,
   BarChartOutlined,
   MessageOutlined,
-  SettingOutlined,
-  LogoutOutlined
+  SettingOutlined
 } from '@ant-design/icons';
-import { useNavigate, useLocation } from 'react-router-dom';
-import './Sidebar.css';
+import Logo from './Logo';
+import '../Dashboard.css';
 
 const { Sider } = Layout;
-const { Title } = Typography;
 
-export const Sidebar = () => {
+const AdminSidebar = ({ selectedKey }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -60,24 +59,27 @@ export const Sidebar = () => {
       label: 'Announcements',
     },
     {
+      key: '/reports',
+      icon: <BarChartOutlined />,
+      label: 'Reports',
+    },
+    {
       key: '/adminChat',
       icon: <MessageOutlined />,
       label: 'Chat',
     },
+    {
+      key: 'logout',
+      icon: <SettingOutlined />,
+      label: 'Logout',
+      className: 'logout-menu-item',
+    },
   ];
-
-  const handleMenuClick = ({ key }) => {
-    if (key === 'logout') {
-      navigate('/');
-    } else {
-      navigate(key);
-    }
-  };
 
   return (
     <Sider
       breakpoint="lg"
-      collapsedWidth="0"
+      collapsedWidth="80"
       className="dashboard-sider"
       width={260}
       style={{
@@ -87,37 +89,27 @@ export const Sidebar = () => {
         left: 0,
         top: 0,
         bottom: 0,
-        zIndex: 100,
       }}
     >
       <div className="sidebar-logo">
-        <div className="logo-icon">💪</div>
-        <Title level={4} className="logo-text">Mega Power</Title>
+        <Logo size="small" showText={true} variant="white" />
       </div>
       
       <Menu
         mode="inline"
-        selectedKeys={[location.pathname]}
+        selectedKeys={[selectedKey || location.pathname]}
         className="sidebar-menu"
         items={menuItems}
-        onClick={handleMenuClick}
+        onClick={({ key }) => {
+          if (key === 'logout') {
+            navigate('/');
+          } else {
+            navigate(key);
+          }
+        }}
       />
-
-      <div className="sidebar-footer">
-        <Menu
-          mode="inline"
-          className="sidebar-menu logout-menu"
-          items={[
-            {
-              key: 'logout',
-              icon: <LogoutOutlined />,
-              label: 'Logout',
-              className: 'logout-menu-item',
-            }
-          ]}
-          onClick={handleMenuClick}
-        />
-      </div>
     </Sider>
   );
 };
+
+export default AdminSidebar;
