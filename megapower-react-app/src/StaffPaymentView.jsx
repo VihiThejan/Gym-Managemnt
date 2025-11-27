@@ -113,8 +113,7 @@ const StaffPaymentView = () => {
       title: "Payment ID",
       dataIndex: "Payment_ID",
       key: "paymentid",
-      fixed: "left",
-      width: 130,
+      width: 120,
       render: (id) => (
         <Tag color="purple" className="id-tag">
           <WalletOutlined /> {id}
@@ -125,7 +124,7 @@ const StaffPaymentView = () => {
       title: "Member ID",
       dataIndex: "Member_ID",
       key: "memberid",
-      width: 130,
+      width: 120,
       render: (id) => (
         <Tag color="blue" className="member-tag">
           <UserOutlined /> {id}
@@ -179,8 +178,7 @@ const StaffPaymentView = () => {
       title: "Status",
       dataIndex: "Payment_Status",
       key: "status",
-      width: 130,
-      fixed: "right",
+      width: 120,
       render: (status) => {
         const color = status === 'Completed' ? 'success' : 
                      status === 'Pending' ? 'warning' : 'default';
@@ -325,13 +323,7 @@ const StaffPaymentView = () => {
               extra={
                 <Search
                   placeholder="Search payments..."
-                  allowClear
-                  enterButton={<SearchOutlined />}
-                  size="large"
-                  onSearch={handleSearch}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="search-input"
-                  style={{ width: 400 }}
+                  
                 />
               }
             >
