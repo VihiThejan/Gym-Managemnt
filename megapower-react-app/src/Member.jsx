@@ -82,13 +82,13 @@ export const Member = () => {
       console.log(res?.data?.data);
       
       setShowSuccess(true);
-      message.success("Member registered successfully! Redirecting...");
+      message.success("Member registered successfully! Redirecting to login...");
       
       form.resetFields();
       setMobile('');
       
       setTimeout(() => {
-        navigate('/MemberTable');
+        navigate('/');
       }, 2000);
     } catch (error) {
       console.error('Registration error:', error);
