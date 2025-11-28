@@ -140,17 +140,17 @@
 .card-title {
   font-size: 32px;
   font-weight: 700;
-  color: #1a1f36;
+  color: #000000 !important;
   margin: 0 0 8px 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #000000 !important;
+  background-clip: unset !important;
 }
 
 .card-subtitle {
   font-size: 16px;
-  color: #6c757d;
+  color: #000000 !important;
   margin: 0;
 }
 
@@ -468,6 +468,7 @@
 
   .card-title {
     font-size: 22px;
+    color: #000000 !important;
   }
 
   .submit-button,

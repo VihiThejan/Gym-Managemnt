@@ -70,7 +70,7 @@
 .card-header p {
     margin: 0;
     font-size: 1rem;
-    color: #666;
+    color: #000000 !important;
 }
 
 /* ================================
@@ -435,6 +435,7 @@
 
     .card-header p {
         font-size: 0.938rem;
+        color: #000000 !important;
     }
 
     .user-type-section {
@@ -469,6 +470,7 @@
 
     .card-header p {
         font-size: 0.875rem;
+        color: #000000 !important;
     }
 
     .form-label {
@@ -556,6 +558,7 @@
 
     .card-header p {
         font-size: 0.813rem;
+        color: #000000 !important;
     }
 
     .form-label {
