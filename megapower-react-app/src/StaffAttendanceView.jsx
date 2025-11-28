@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic } from "antd";
+import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
@@ -23,6 +23,7 @@ import {
 import moment from "moment";
 import Logo from './components/Logo';
 import './StaffAttendanceView.css';
+import './staffDashboard.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Search } = Input;
@@ -37,14 +38,14 @@ const siderStyle = {
   background: 'linear-gradient(180deg, #1a1f36 0%, #0f1419 100%)',
 };
 
-const navigationItems = [
-  { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/staffDashboard' },
-  { label: 'Staff Info', icon: <TeamOutlined />, key: '2', path: '/staffInfo' },
-  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/staffPayment' },
-  { label: 'Announcement', icon: <NotificationOutlined />, key: '4', path: '/staffAnnouncement' },
-  { label: 'Attendance', icon: <CalendarOutlined />, key: '5', path: '/staffAttendance' },
-  { label: 'Appointment', icon: <PhoneOutlined />, key: '6', path: '/staffAppointment' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
+const getMenuItems = () => [
+  { label: 'Dashboard', icon: <DashboardOutlined />, key: '/staffDashboard' },
+  { label: 'Staff Info', icon: <TeamOutlined />, key: '/staffInfo' },
+  { label: 'Payment', icon: <DollarOutlined />, key: '/staffPayment' },
+  { label: 'Announcement', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
+  { label: 'Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
+  { label: 'Appointment', icon: <PhoneOutlined />, key: '/staffAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '/chat' },
 ];
 
 const StaffAttendanceView = () => {
@@ -226,25 +227,24 @@ const StaffAttendanceView = () => {
         <div className="logo-container">
           <Logo size="small" showText={!collapsed} variant="white" />
         </div>
-        <div className="dashboard-menu">
-          {navigationItems.map(({ label, icon, key, path }) => (
-            <div
-              key={key}
-              className={`menu-item ${path === '/staffAttendance' ? 'active' : ''}`}
-              onClick={() => navigate(path)}
-            >
-              <span className="menu-icon">{icon}</span>
-              {!collapsed && <span className="menu-label">{label}</span>}
-            </div>
-          ))}
-          <div className="menu-divider"></div>
-          <div
-            className="menu-item logout-item"
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={['/staffAttendance']}
+          items={getMenuItems()}
+          onClick={({ key }) => navigate(key)}
+          className="dashboard-menu"
+          style={{ background: 'transparent', border: 'none' }}
+        />
+        <div style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+          <Menu
+            theme="dark"
+            mode="inline"
+            items={[{ label: 'Logout', icon: <LogoutOutlined />, key: 'logout' }]}
             onClick={handleLogout}
-          >
-            <span className="menu-icon"><LogoutOutlined /></span>
-            {!collapsed && <span className="menu-label">Logout</span>}
-          </div>
+            className="dashboard-menu"
+            style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
+          />
         </div>
       </Sider>
 

@@ -13,7 +13,9 @@ import {
   TeamOutlined, 
   CheckCircleOutlined, 
   ClockCircleOutlined,
-  DashboardOutlined
+  DashboardOutlined,
+  UserSwitchOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -124,6 +126,16 @@ export const StaffDashboard = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
+        <div style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+          <Menu
+            theme="dark"
+            mode="inline"
+            items={[{ label: 'Logout', icon: <LogoutOutlined />, key: 'logout' }]}
+            onClick={handleLogout}
+            className="dashboard-menu"
+            style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
+          />
+        </div>
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="dashboard-header" style={{ padding: '0 24px', background: colorBgContainer }}>
@@ -185,10 +197,9 @@ export const StaffDashboard = () => {
                     </div>
                     <div className="stat-details">
                       <Statistic
-                        title={<span className="stat-title">Today's Attendance</span>}
+                        title={<span className="stat-title">Attendance</span>}
                         value={stats.todayAttendance}
                         suffix={<span className="stat-suffix">members</span>}
-                        valueStyle={{ color: 'white', fontWeight: '800', fontSize: '2.5rem' }}
                       />
                       <div className="stat-trend">
                         <span className="trend-positive">↑ 12% from yesterday</span>
@@ -208,7 +219,6 @@ export const StaffDashboard = () => {
                         title={<span className="stat-title">Appointments</span>}
                         value={stats.totalAppointments}
                         suffix={<span className="stat-suffix">scheduled</span>}
-                        valueStyle={{ color: 'white', fontWeight: '800', fontSize: '2.5rem' }}
                       />
                       <div className="stat-trend">
                         <span className="trend-positive">↑ 8% this week</span>
@@ -228,7 +238,6 @@ export const StaffDashboard = () => {
                         title={<span className="stat-title">Pending Tasks</span>}
                         value={stats.pendingTasks}
                         suffix={<span className="stat-suffix">tasks</span>}
-                        valueStyle={{ color: 'white', fontWeight: '800', fontSize: '2.5rem' }}
                       />
                       <div className="stat-trend">
                         <span className="trend-neutral">→ No change</span>
@@ -248,7 +257,6 @@ export const StaffDashboard = () => {
                         title={<span className="stat-title">Completed Sessions</span>}
                         value={stats.completedSessions}
                         suffix={<span className="stat-suffix">sessions</span>}
-                        valueStyle={{ color: 'white', fontWeight: '800', fontSize: '2.5rem' }}
                       />
                       <div className="stat-trend">
                         <span className="trend-positive">↑ 15% this month</span>
@@ -413,7 +421,7 @@ export const StaffDashboard = () => {
                 <Card bordered={false} className="info-card info-card-purple">
                   <div className="info-card-header">
                     <div className="info-icon">
-                      <CheckCircleOutlined />
+                      <UserSwitchOutlined />
                     </div>
                     <div className="info-badge">Today</div>
                   </div>
@@ -435,7 +443,7 @@ export const StaffDashboard = () => {
                 <Card bordered={false} className="info-card info-card-pink">
                   <div className="info-card-header">
                     <div className="info-icon">
-                      <PhoneOutlined />
+                      <ClockCircleOutlined />
                     </div>
                     <div className="info-badge">Upcoming</div>
                   </div>

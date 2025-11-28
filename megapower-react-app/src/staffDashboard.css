@@ -346,7 +346,7 @@ html {
 /* Dashboard Hero Section */
 .dashboard-hero {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 16px 40px;
+  padding: 12px 32px;
   border-radius: 0;
   margin-bottom: 0;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
@@ -391,16 +391,16 @@ html {
 .hero-title {
   margin: 0 !important;
   color: #ffffff !important;
-  font-size: 1.75rem !important;
-  font-weight: 700 !important;
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .hero-subtitle {
   color: rgba(255, 255, 255, 0.95) !important;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* Statistics Cards */
@@ -460,99 +460,113 @@ html {
 }
 
 .stat-card .ant-card-body {
-  padding: 28px;
+  padding: 24px;
   position: relative;
   z-index: 2;
-  min-height: 180px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
 }
 
 .stat-card-content {
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  flex-direction: column;
+  height: 100%;
+  gap: 0;
 }
 
 .stat-icon-wrapper {
   flex-shrink: 0;
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  margin-bottom: 16px;
 }
 
 .stat-details {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .stat-suffix {
-  font-size: 14px;
-  opacity: 0.9;
-  font-weight: 400;
-  margin-left: 8px;
+  font-size: 16px;
+  opacity: 0.85;
+  font-weight: 500;
+  margin-left: 6px;
 }
 
 .stat-trend {
-  margin-top: 8px;
+  margin-top: auto;
+  padding-top: 12px;
 }
 
 .trend-positive,
 .trend-neutral {
-  font-size: 13px;
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.25);
   display: inline-block;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .trend-positive {
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255, 255, 255, 1);
 }
 
 .trend-neutral {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .stat-title {
   color: white !important;
-  font-size: 13px;
-  font-weight: 600;
-  opacity: 0.9;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.85;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  margin-bottom: 12px;
+  margin-bottom: 0;
+  line-height: 1.4;
 }
 
 .stat-icon {
   color: white !important;
-  font-size: 28px;
-  opacity: 0.9;
+  font-size: 26px;
+  opacity: 0.95;
 }
 
 .stat-card .ant-statistic-title {
-  color: rgba(255, 255, 255, 0.95) !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px !important;
 }
 
 .stat-card .ant-statistic-content {
   color: #ffffff !important;
+  margin: 16px 0 !important;
 }
 
 .stat-card .ant-statistic-content-value {
   color: #ffffff !important;
-  font-size: 42px !important;
-  font-weight: 800 !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 48px !important;
+  font-weight: 700 !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  line-height: 1.1 !important;
 }
 
 /* Action Cards */
