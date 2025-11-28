@@ -9,7 +9,8 @@ import {
   message as antMessage, 
   Select,
   Row,
-  Col
+  Col,
+  Menu
 } from "antd";
 import { 
   SendOutlined, 
@@ -33,6 +34,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import Logo from "./components/Logo";
 import "./StaffInfoTable.css";
+import "./staffDashboard.css";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -54,14 +56,14 @@ function StaffChat() {
   const [selectedReceiver, setSelectedReceiver] = useState(null);
   const messagesEndRef = useRef(null);
 
-  const navigationItems = [
-    { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/staffDashboard' },
-    { label: 'Staff Info', icon: <TeamOutlined />, key: '2', path: '/staffInfo' },
-    { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/staffPayment' },
-    { label: 'Announcement', icon: <NotificationOutlined />, key: '4', path: '/staffAnnouncement' },
-    { label: 'Attendance', icon: <CalendarOutlined />, key: '5', path: '/staffAttendance' },
-    { label: 'Appointment', icon: <PhoneOutlined />, key: '6', path: '/staffAppointment' },
-    { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
+  const getMenuItems = () => [
+    { label: 'Dashboard', icon: <DashboardOutlined />, key: '/staffDashboard' },
+    { label: 'Staff Info', icon: <TeamOutlined />, key: '/staffInfo' },
+    { label: 'Payment', icon: <DollarOutlined />, key: '/staffPayment' },
+    { label: 'Announcement', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
+    { label: 'Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
+    { label: 'Appointment', icon: <PhoneOutlined />, key: '/staffAppointment' },
+    { label: 'Chat', icon: <MessageOutlined />, key: '/chat' },
   ];
 
   const scrollToBottom = () => {
@@ -289,7 +291,7 @@ function StaffChat() {
     insetInlineStart: 0,
     top: 0,
     bottom: 0,
-    background: 'linear-gradient(180deg, #1a1f3a 0%, #2d1b4e 100%)',
+    background: 'linear-gradient(180deg, #1a1f36 0%, #0f1419 100%)',
   };
 
   return (
@@ -306,25 +308,24 @@ function StaffChat() {
         <div className="logo-container">
           <Logo size="small" showText={!collapsed} variant="white" />
         </div>
-        <div className="dashboard-menu">
-          {navigationItems.map(({ label, icon, key, path }) => (
-            <div
-              key={key}
-              className={`menu-item ${path === '/chat' ? 'active' : ''}`}
-              onClick={() => navigate(path)}
-            >
-              <span className="menu-icon">{icon}</span>
-              {!collapsed && <span className="menu-label">{label}</span>}
-            </div>
-          ))}
-          <div className="menu-divider"></div>
-          <div
-            className="menu-item logout-item"
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={['/chat']}
+          items={getMenuItems()}
+          onClick={({ key }) => navigate(key)}
+          className="dashboard-menu"
+          style={{ background: 'transparent', border: 'none' }}
+        />
+        <div style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+          <Menu
+            theme="dark"
+            mode="inline"
+            items={[{ label: 'Logout', icon: <LogoutOutlined />, key: 'logout' }]}
             onClick={handleLogout}
-          >
-            <span className="menu-icon"><LogoutOutlined /></span>
-            {!collapsed && <span className="menu-label">Logout</span>}
-          </div>
+            className="dashboard-menu"
+            style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
+          />
         </div>
       </Sider>
 
