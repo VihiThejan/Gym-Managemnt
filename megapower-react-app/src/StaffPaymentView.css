@@ -416,7 +416,7 @@
 
 .staff-payment-table .ant-pagination-item:hover {
   border-color: #667eea;
-  transform: translateY(-2px);
+  transform: tran slateY(-2px);
 }
 
 .staff-payment-table .ant-pagination-item-active {
