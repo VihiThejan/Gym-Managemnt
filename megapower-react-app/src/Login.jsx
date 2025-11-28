@@ -189,6 +189,19 @@ export const Login = () => {
                 containerClass="phone-input-container"
                 inputClass="phone-input-field"
                 buttonClass="phone-input-button"
+                inputStyle={{
+                  width: '100%',
+                  height: '52px',
+                  fontSize: '1rem',
+                  borderRadius: '12px',
+                  border: '2px solid #e8e8e8',
+                  paddingLeft: '58px'
+                }}
+                buttonStyle={{
+                  borderRadius: '12px 0 0 12px',
+                  border: '2px solid #e8e8e8',
+                  borderRight: 'none'
+                }}
               />
               {mobileError && <span className="error-message">{mobileError}</span>}
             </div>
