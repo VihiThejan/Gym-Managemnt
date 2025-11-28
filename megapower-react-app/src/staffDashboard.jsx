@@ -126,7 +126,15 @@ export const StaffDashboard = () => {
         />
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
-        <Header className="dashboard-header" style={{ padding: '0 24px', background: colorBgContainer }}>
+        <Header 
+          className="dashboard-header" 
+          style={{ 
+            padding: '0 24px', 
+            background: colorBgContainer,
+            height: '64px',
+            lineHeight: '64px'
+          }}
+        >
           <div className="header-left">
             <Button
               type="text"
@@ -264,13 +272,36 @@ export const StaffDashboard = () => {
               <Col xs={24} md={16}>
                 <Card 
                   title={
-                    <div className="card-title-wrapper">
-                      <span className="card-title"><CalendarOutlined /> Quick Actions</span>
-                      <span className="card-subtitle">Perform common tasks quickly</span>
+                    <div style={{ color: '#ffffff !important' }}>
+                      <div style={{ 
+                        color: '#ffffff', 
+                        fontSize: '16px', 
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '4px'
+                      }}>
+                        <CalendarOutlined style={{ color: '#ffffff' }} /> 
+                        <span style={{ color: '#ffffff' }}>Quick Actions</span>
+                      </div>
+                      <div style={{ 
+                        color: '#ffffff', 
+                        fontSize: '14px', 
+                        fontWeight: 400,
+                        opacity: 0.9
+                      }}>
+                        Perform common tasks quickly
+                      </div>
                     </div>
                   }
                   bordered={false}
                   className="action-card"
+                  headStyle={{ 
+                    background: '#1e293b', 
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff'
+                  }}
                 >
                   <Row gutter={[16, 16]} className="action-grid">
                     <Col xs={24} sm={12}>
@@ -351,13 +382,36 @@ export const StaffDashboard = () => {
               <Col xs={24} md={8}>
                 <Card 
                   title={
-                    <div className="card-title-wrapper">
-                      <span className="card-title"><ClockCircleOutlined /> Activity Timeline</span>
-                      <span className="card-subtitle">Recent activities</span>
+                    <div>
+                      <div style={{ 
+                        color: '#ffffff', 
+                        fontSize: '16px', 
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '4px'
+                      }}>
+                        <ClockCircleOutlined style={{ color: '#ffffff' }} /> 
+                        <span style={{ color: '#ffffff' }}>Activity Timeline</span>
+                      </div>
+                      <div style={{ 
+                        color: '#ffffff', 
+                        fontSize: '14px', 
+                        fontWeight: 400,
+                        opacity: 0.9
+                      }}>
+                        Recent activities
+                      </div>
                     </div>
                   }
                   bordered={false}
                   className="timeline-card"
+                  headStyle={{ 
+                    background: '#1e293b', 
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff'
+                  }}
                 >
                   <div className="timeline-container">
                     <div className="timeline-item">

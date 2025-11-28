@@ -259,6 +259,13 @@ html {
 }
 
 /* Header */
+.ant-layout-header.dashboard-header {
+  height: 64px !important;
+  line-height: 64px !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+}
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -583,8 +590,13 @@ html {
 
 .action-card .ant-card-head,
 .timeline-card .ant-card-head {
-  background: white;
-  border-bottom: 1px solid #f0f0f0;
+  background: #1e293b !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.action-card .ant-card-head .ant-card-head-title,
+.timeline-card .ant-card-head .ant-card-head-title {
+  color: #ffffff !important;
 }
 
 .card-title-wrapper {
@@ -593,8 +605,22 @@ html {
   gap: 4px;
 }
 
+.card-title-wrapper .card-title {
+  color: #ffffff !important;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title-wrapper .card-title svg,
+.card-title-wrapper .card-title .anticon {
+  color: #ffffff !important;
+}
+
 .card-title {
-  color: #1f2937;
+  color: #ffffff !important;
   font-size: 16px;
   font-weight: 600;
   display: flex;
@@ -603,12 +629,12 @@ html {
 }
 
 .card-subtitle {
-  color: #1f2937;
+  color: #ffffff !important;
   font-size: 14px;
   font-weight: 400;
   display: block;
   margin-top: 4px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 /* Action Tiles */
@@ -1200,6 +1226,8 @@ html {
 
   .dashboard-header {
     padding: 0 16px !important;
+    height: 64px !important;
+    line-height: 64px !important;
   }
 
   .header-right {
