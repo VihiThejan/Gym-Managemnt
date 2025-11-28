@@ -111,7 +111,7 @@ const StaffInfoTable = () => {
 
   const handleLogout = () => {
     message.success('Logged out successfully');
-    navigate('/login');
+    navigate('/');
   };
 
   const columns = [

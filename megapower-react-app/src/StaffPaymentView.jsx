@@ -105,7 +105,7 @@ const StaffPaymentView = () => {
 
   const handleLogout = () => {
     message.success('Logged out successfully');
-    navigate('/login');
+    navigate('/');
   };
 
   const columns = [

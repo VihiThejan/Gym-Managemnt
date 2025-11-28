@@ -1,318 +1,286 @@
 import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { message } from 'antd';  
+import { Button, Form, Input, Card, message } from 'antd';
+import { 
+  UserAddOutlined, 
+  CheckCircleOutlined, 
+  ArrowLeftOutlined,
+  UserOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  LockOutlined,
+  SafetyOutlined,
+  SecurityScanOutlined
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { CheckCircleOutlined, UserAddOutlined } from '@ant-design/icons';
-import MainLayout from './components/Layout/MainLayout';
 import './Admin.css';
 
 export const Admin = () => {
-    const navigate = useNavigate();
-
+    const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
     const [mobile, setMobile] = useState('');
-    const [pass, setPass] = useState('');
-    const [name, setName] = useState('');
+    const [showSuccess, setShowSuccess] = useState(false);
+    const navigate = useNavigate();
     
-    const [passwordError, setPasswordError] = useState('');
-    const [nameError, setNameError] = useState('');
-    const [mobileError, setMobileError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const getPasswordStrength = (password) => {
-        const hasUppercase = /[A-Z]/.test(password);
-        const hasLowercase = /[a-z]/.test(password);
-        const hasNumber = /[0-9]/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        const isLongEnough = password.length >= 6;
-        
-        return {
-            hasUppercase,
-            hasLowercase,
-            hasNumber,
-            hasSpecialChar,
-            isLongEnough
-        };
-    };
-    
-    const validateName = (name) => {
-        const nameRegex = /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/;
-        if (!nameRegex.test(name)) {
-          return 'Full Name must contain first and last name, and each name should start with an uppercase letter.';
+    const validatePassword = (_, value) => {
+        if (!value) {
+            return Promise.reject(new Error('Please enter password'));
         }
-        return '';
-      };
-    
-      const validatePassword = (password) => {
         const minLength = 6;
-        const hasUppercase = /[A-Z]/.test(password);
-        const hasLowercase = /[a-z]/.test(password);
-        const hasNumber = /[0-9]/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    
-        if (password.length < minLength) {
-          return `Password must be at least ${minLength} characters long.`;
+        const hasUppercase = /[A-Z]/.test(value);
+        const hasLowercase = /[a-z]/.test(value);
+        const hasNumber = /[0-9]/.test(value);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+
+        if (value.length < minLength) {
+            return Promise.reject(new Error(`Password must be at least ${minLength} characters long`));
         }
         if (!hasUppercase) {
-          return 'Password must contain at least one uppercase letter.';
+            return Promise.reject(new Error('Password must contain at least one uppercase letter'));
         }
         if (!hasLowercase) {
-          return 'Password must contain at least one lowercase letter.';
+            return Promise.reject(new Error('Password must contain at least one lowercase letter'));
         }
         if (!hasNumber) {
-          return 'Password must contain at least one number.';
+            return Promise.reject(new Error('Password must contain at least one number'));
         }
         if (!hasSpecialChar) {
-          return 'Password must contain at least one special character.';
+            return Promise.reject(new Error('Password must contain at least one special character'));
         }
-    
-        return '';
-      };
-    
-      const validateMobile = (mobile) => {
-        const cleanedMobile = mobile.replace(/\D/g, '');
-      
-        if (cleanedMobile.length < 11) {
-          return 'Invalid mobile number. It should be at least 10 digits long, including the country code.';
-        }
-      
-        return ''; 
-      };
 
-      const validateForm = () => {
-        if (!name ||  !mobile || !pass ) {
-          message.error("Please fill in all required fields.");
-          return false;
-        }
-    
-        const nameErrorMsg = validateName(name);
-        if (nameErrorMsg) {
-          setNameError(nameErrorMsg);
-          return false;
-        } else {
-          setNameError('');
-        }
-    
-        const mobileErrorMsg = validateMobile(mobile);
-        if (mobileErrorMsg) {
-          setMobileError(mobileErrorMsg);
-          return false;
-        } else {
-          setMobileError('');
-        }
-    
-        const passwordErrorMsg = validatePassword(pass);
-        if (passwordErrorMsg) {
-          setPasswordError(passwordErrorMsg);
-          return false;
-        } else {
-          setPasswordError('');
-        }
-    
-        return true;
-      };
+        return Promise.resolve();
+    };
 
-    const handleSubmit = async (e) => {  
-        e.preventDefault();
-        
-        if (!validateForm()) return;
-        
-        setIsSubmitting(true);
+    const handleSubmit = async (values) => {
+        setLoading(true);
 
         const body = {
-            name: name,
-            password: pass,
+            name: values.name,
+            password: values.password,
             contact: mobile,
         };
 
         try {
-            const res = await axios.post('http://localhost:5000/api/v1/auth/register', body);  
+            const res = await axios.post('http://localhost:5000/api/v1/auth/register', body);
             console.log(res?.data?.data);
+            
+            setShowSuccess(true);
+            
             message.success({
                 content: 'Admin registered successfully! Redirecting to login...',
                 icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
                 duration: 3
             });
             
+            form.resetFields();
+            setMobile('');
+            
             setTimeout(() => {
                 navigate('/');
-            }, 1500);
-        } catch (Err) {
-            console.log(Err.message);
-            message.error("Failed to register Admin. Please try again.");
-            setIsSubmitting(false);
+            }, 2000);
+        } catch (error) {
+            console.error('Registration error:', error);
+            const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+            message.error(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleReset = () => {
+    const handleClear = () => {
+        form.resetFields();
         setMobile('');
-        setPass('');
-        setName('');
-        setPasswordError('');
-        setNameError('');
-        setMobileError('');
+        setShowSuccess(false);
     };
 
-    const passwordStrength = getPasswordStrength(pass);
-
     return (
-        <MainLayout>
-            <div className="admin-register-container">
-                <div className="register-card">
-                    <div className="register-card-header">
-                        <div className="register-icon">
-                            <UserAddOutlined />
-                        </div>
-                        <h1 className="register-title">Create Admin Account</h1>
-                        <p className="register-subtitle">Join Mega Power Gym Management System</p>
-                    </div>
+        <div className="admin-signup-page">
+            <div className="admin-signup-background">
+                <div className="gradient-overlay"></div>
+            </div>
+            
+            <div className="admin-signup-container">
+                <Button 
+                    icon={<ArrowLeftOutlined />} 
+                    onClick={() => navigate('/')} 
+                    className="back-button"
+                    type="text"
+                >
+                    Back to Login
+                </Button>
 
-                    <div className="register-card-body">
-                        <form onSubmit={handleSubmit}>
-                            {/* Full Name Field */}
-                            <div className="modern-form-group">
-                                <label htmlFor="name" className="modern-form-label">
-                                    Full Name
-                                </label>
-                                <input
-                                    value={name}
-                                    name="name"
-                                    onChange={(e) => {
-                                        setName(e.target.value);
-                                        if (e.target.value) {
-                                            setNameError(validateName(e.target.value));
-                                        } else {
-                                            setNameError('');
-                                        }
-                                    }}
-                                    onBlur={(e) => {
-                                        if (e.target.value) {
-                                            setNameError(validateName(e.target.value));
-                                        }
-                                    }}
-                                    id="name"
-                                    placeholder="John Doe"
-                                    className={`modern-form-input ${nameError ? 'error' : ''}`}
-                                />
-                                {nameError && <p className="error-message">{nameError}</p>}
+                <div className="signup-content">
+                    <Card className="signup-card">
+                        <div className="card-header">
+                            <div className="header-icon-wrapper">
+                                <UserAddOutlined className="header-icon" />
                             </div>
+                            <h2 className="card-title">Admin Registration</h2>
+                            <p className="card-subtitle">Create your admin account to manage the gym</p>
+                        </div>
 
-                            {/* Mobile Field */}
-                            <div className="modern-form-group">
-                                <label htmlFor="mobile" className="modern-form-label">
-                                    Mobile Number
-                                </label>
+                        {showSuccess && (
+                            <div className="success-message">
+                                <CheckCircleOutlined />
+                                Registration successful! Redirecting to login...
+                            </div>
+                        )}
+
+                        <Form
+                            form={form}
+                            onFinish={handleSubmit}
+                            layout="vertical"
+                            className="signup-form"
+                            requiredMark={false}
+                        >
+                            <Form.Item
+                                name="name"
+                                label={
+                                    <span className="form-label">
+                                        <UserOutlined className="label-icon" />
+                                        Full Name
+                                    </span>
+                                }
+                                rules={[
+                                    { required: true, message: 'Please enter full name' },
+                                    { 
+                                        pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/,
+                                        message: 'Full name must contain first and last name with uppercase starting letters'
+                                    }
+                                ]}
+                            >
+                                <Input
+                                    placeholder="Enter full name (e.g., John Doe)"
+                                    prefix={<UserOutlined />}
+                                    size="large"
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="mobile"
+                                label={
+                                    <span className="form-label">
+                                        <PhoneOutlined className="label-icon" />
+                                        Mobile Number
+                                    </span>
+                                }
+                                rules={[
+                                    { required: true, message: 'Please enter mobile number' },
+                                    {
+                                        validator: (_, value) => {
+                                            const cleanedMobile = mobile.replace(/\D/g, '');
+                                            if (cleanedMobile.length >= 11) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(new Error('Invalid mobile number'));
+                                        }
+                                    }
+                                ]}
+                            >
                                 <PhoneInput
                                     country={'lk'}
                                     value={mobile}
-                                    onChange={(phone) => {
-                                        setMobile(phone);
-                                        if (phone) {
-                                            setMobileError(validateMobile(phone));
-                                        } else {
-                                            setMobileError('');
-                                        }
+                                    onChange={(phone) => setMobile(phone)}
+                                    inputStyle={{
+                                        width: '100%',
+                                        height: '48px',
+                                        fontSize: '1rem',
+                                        borderRadius: '12px',
+                                        border: '2px solid #e8e8e8'
                                     }}
-                                    containerClass={`modern-phone-input ${mobileError ? 'error' : ''}`}
-                                    inputProps={{
-                                        name: 'mobile',
-                                        required: true,
-                                        autoFocus: false
-                                    }}
+                                    containerClass="phone-input-container"
                                 />
-                                {mobileError && <p className="error-message">{mobileError}</p>}
-                            </div>
+                            </Form.Item>
 
-                            {/* Password Field */}
-                            <div className="modern-form-group">
-                                <label htmlFor="password" className="modern-form-label">
-                                    Password
-                                </label>
-                                <input
-                                    value={pass}
-                                    onChange={(e) => {
-                                        setPass(e.target.value);
-                                        if (e.target.value) {
-                                            setPasswordError(validatePassword(e.target.value));
-                                        } else {
-                                            setPasswordError('');
-                                        }
-                                    }}
-                                    type="password"
-                                    placeholder="Enter a strong password"
-                                    id="password"
-                                    name="password"
-                                    className={`modern-form-input ${passwordError ? 'error' : ''}`}
+                            <Form.Item
+                                name="password"
+                                label={
+                                    <span className="form-label">
+                                        <LockOutlined className="label-icon" />
+                                        Password
+                                    </span>
+                                }
+                                rules={[{ validator: validatePassword }]}
+                            >
+                                <Input.Password
+                                    placeholder="Enter password"
+                                    prefix={<LockOutlined />}
+                                    size="large"
                                 />
-                                {passwordError && <p className="error-message">{passwordError}</p>}
-                                
-                                {/* Password Strength Indicator */}
-                                {pass && (
-                                    <div className="password-requirements">
-                                        <div className="password-requirements-title">Password Requirements:</div>
-                                        <div className={`requirement-item ${passwordStrength.isLongEnough ? 'met' : ''}`}>
-                                            At least 6 characters
-                                        </div>
-                                        <div className={`requirement-item ${passwordStrength.hasUppercase ? 'met' : ''}`}>
-                                            One uppercase letter
-                                        </div>
-                                        <div className={`requirement-item ${passwordStrength.hasLowercase ? 'met' : ''}`}>
-                                            One lowercase letter
-                                        </div>
-                                        <div className={`requirement-item ${passwordStrength.hasNumber ? 'met' : ''}`}>
-                                            One number
-                                        </div>
-                                        <div className={`requirement-item ${passwordStrength.hasSpecialChar ? 'met' : ''}`}>
-                                            One special character
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                            </Form.Item>
 
-                            {/* Buttons */}
-                            <div className="button-group">
-                                <button 
-                                    type="submit" 
-                                    className="modern-button modern-button-primary"
-                                    disabled={isSubmitting}
+                            <Form.Item className="form-actions">
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    loading={loading}
+                                    className="submit-button"
+                                    icon={<UserAddOutlined />}
+                                    block
                                 >
-                                    {isSubmitting ? (
-                                        <>⏳ Registering...</>
-                                    ) : (
-                                        <>
-                                            <CheckCircleOutlined /> Create Account
-                                        </>
-                                    )}
-                                </button>
-                                <button 
-                                    type="button" 
-                                    onClick={handleReset} 
-                                    className="modern-button modern-button-secondary"
-                                    disabled={isSubmitting}
+                                    {loading ? 'Creating Account...' : 'Create Admin Account'}
+                                </Button>
+                                <Button
+                                    onClick={handleClear}
+                                    className="clear-button"
+                                    block
                                 >
                                     Clear Form
-                                </button>
-                            </div>
-                        </form>
+                                </Button>
+                            </Form.Item>
 
-                        {/* Login Link */}
-                        <div className="login-link-container">
-                            <span className="login-link-text">Already have an account?</span>
-                            <button 
-                                onClick={() => navigate('/')} 
-                                className="login-link"
-                                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                            >
-                                Login here
-                            </button>
+                            <div className="login-link-wrapper">
+                                <p className="login-text">
+                                    Already have an account? 
+                                    <Button type="link" onClick={() => navigate('/')} className="login-link">
+                                        Login here
+                                    </Button>
+                                </p>
+                            </div>
+                        </Form>
+                    </Card>
+
+                    <Card className="info-card">
+                        <h3>
+                            <SafetyOutlined /> Admin Account Information
+                        </h3>
+                        <div className="info-content">
+                            <div className="info-item">
+                                <UserOutlined className="info-icon" />
+                                <div>
+                                    <h4>Personal Details</h4>
+                                    <p>Provide accurate information for account verification</p>
+                                </div>
+                            </div>
+                            <div className="info-item">
+                                <SafetyOutlined className="info-icon" />
+                                <div>
+                                    <h4>Admin Privileges</h4>
+                                    <p>Full access to gym management system and staff oversight</p>
+                                </div>
+                            </div>
+                            <div className="info-item">
+                                <LockOutlined className="info-icon" />
+                                <div>
+                                    <h4>Secure Password</h4>
+                                    <p>Must include uppercase, lowercase, numbers, and special characters</p>
+                                </div>
+                            </div>
+                            <div className="info-item">
+                                <SecurityScanOutlined className="info-icon" />
+                                <div>
+                                    <h4>Account Security</h4>
+                                    <p>Your account will have administrative control over the entire system</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </Card>
                 </div>
             </div>
-        </MainLayout>
+        </div>
     );
 };
 
-
-
+export default Admin;

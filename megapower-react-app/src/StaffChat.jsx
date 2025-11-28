@@ -25,7 +25,8 @@ import {
   CalendarOutlined,
   PhoneOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
@@ -35,7 +36,7 @@ import "./StaffInfoTable.css";
 
 const { TextArea } = Input;
 const { Option } = Select;
-const { Sider, Content } = Layout;
+const { Sider, Content, Header } = Layout;
 
 // Socket.IO instance
 let socket = null;
@@ -278,7 +279,7 @@ function StaffChat() {
 
   const handleLogout = () => {
     antMessage.success('Logged out successfully');
-    navigate('/login');
+    navigate('/');
   };
 
   const siderStyle = {
@@ -316,12 +317,20 @@ function StaffChat() {
               {!collapsed && <span className="menu-label">{label}</span>}
             </div>
           ))}
+          <div className="menu-divider"></div>
+          <div
+            className="menu-item logout-item"
+            onClick={handleLogout}
+          >
+            <span className="menu-icon"><LogoutOutlined /></span>
+            {!collapsed && <span className="menu-label">Logout</span>}
+          </div>
         </div>
       </Sider>
 
       {/* Main Content */}
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
-        <div className="info-header">
+        <Header className="info-header" style={{ background: 'white' }}>
           <div className="header-left">
             <div 
               className="trigger-button"
@@ -348,7 +357,7 @@ function StaffChat() {
               style={{ cursor: 'pointer' }}
             />
           </div>
-        </div>
+        </Header>
 
         <Content className="info-content">
 

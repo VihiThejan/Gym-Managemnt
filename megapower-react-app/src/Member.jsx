@@ -2,443 +2,474 @@ import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Button, Radio, InputNumber, Select, DatePicker, message, Card, Input, Form } from 'antd';
-import { UserOutlined, HomeOutlined, CalendarOutlined, ManOutlined, MailOutlined, PhoneOutlined, GiftOutlined, ColumnHeightOutlined, DashboardOutlined, LockOutlined, UserAddOutlined } from '@ant-design/icons';
+import { 
+  UserOutlined, 
+  HomeOutlined, 
+  CalendarOutlined, 
+  ManOutlined, 
+  WomanOutlined,
+  MailOutlined, 
+  PhoneOutlined, 
+  GiftOutlined, 
+  ColumnHeightOutlined, 
+  DashboardOutlined, 
+  LockOutlined, 
+  UserAddOutlined,
+  ArrowLeftOutlined,
+  SafetyOutlined,
+  HeartOutlined,
+  TrophyOutlined
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { Layout } from 'antd';
-import AdminSidebar from './components/AdminSidebar';
 import './Member.css';
 
-const { Content } = Layout;
-
 export const Member = () => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [mobile, setMobile] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const [mobile, setMobile] = useState('');
-  const [pass, setPass] = useState('');
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [gender, setGender] = useState('Male');
-  const [email, setEmail] = useState('');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [packages, setPackages] = useState('Gold');
-  const [date, setDate] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [addressError, setAddressError] = useState('');
-  const [mobileError, setMobileError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-
-
-  const validateName = (name) => {
-    const nameRegex = /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/;
-    if (!nameRegex.test(name)) {
-      return 'Full Name must contain first and last name, and each name should start with an uppercase letter.';
+  const validatePassword = (_, value) => {
+    if (!value) {
+      return Promise.reject(new Error('Please enter password'));
     }
-    return '';
-  };
-
-  const validatePassword = (password) => {
     const minLength = 6;
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasLowercase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasUppercase = /[A-Z]/.test(value);
+    const hasLowercase = /[a-z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
 
-    if (password.length < minLength) {
-      return `Password must be at least ${minLength} characters long.`;
+    if (value.length < minLength) {
+      return Promise.reject(new Error(`Password must be at least ${minLength} characters long`));
     }
     if (!hasUppercase) {
-      return 'Password must contain at least one uppercase letter.';
+      return Promise.reject(new Error('Password must contain at least one uppercase letter'));
     }
     if (!hasLowercase) {
-      return 'Password must contain at least one lowercase letter.';
+      return Promise.reject(new Error('Password must contain at least one lowercase letter'));
     }
     if (!hasNumber) {
-      return 'Password must contain at least one number.';
+      return Promise.reject(new Error('Password must contain at least one number'));
     }
     if (!hasSpecialChar) {
-      return 'Password must contain at least one special character.';
+      return Promise.reject(new Error('Password must contain at least one special character'));
     }
 
-    return '';
+    return Promise.resolve();
   };
 
-
-
-
-  const validateAddress = (address) => {
-   
-
-    if (address.length < 10) {
-      return 'Address must be at least 10 characters long.';
-    }
-
-    
-    const addressRegex = /[a-zA-Z]/.test(address) && /\d/.test(address);
-    if (!addressRegex) {
-      return 'Address must contain both letters and numbers.';
-    }
-
-    return '';
-  };
-
-  const validateMobile = (mobile) => {
-    
-    const cleanedMobile = mobile.replace(/\D/g, '');
-  
-    
-    if (cleanedMobile.length < 11) {
-      return 'Invalid mobile number. It should be at least 10 digits long, including the country code.';
-    }
-  
-    return ''; 
-  };
-
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/; 
-    if (!emailRegex.test(email)) {
-      return 'Invalid email format.';
-    }
-    return ''; 
-  };
-  
-  
-  
-  
-  
-
-  const validateForm = () => {
-    if (!name || !address || !email || !mobile || !pass || !date || !height || !weight) {
-      message.error("Please fill in all required fields.");
-      return false;
-    }
-
-    const nameErrorMsg = validateName(name);
-    if (nameErrorMsg) {
-      setNameError(nameErrorMsg);
-      return false;
-    } else {
-      setNameError('');
-    }
-
-    const addressErrorMsg = validateAddress(address);
-    if (addressErrorMsg) {
-      setAddressError(addressErrorMsg);
-      return false;
-    } else {
-      setAddressError('');
-    }
-
-    const mobileErrorMsg = validateMobile(mobile);
-    if (mobileErrorMsg) {
-      setMobileError(mobileErrorMsg);
-      return false;
-    } else {
-      setMobileError('');
-    }
-
-    const emailErrorMsg = validateEmail(email);
-    if (emailErrorMsg) {
-      setEmailError(emailErrorMsg);
-      return false;
-    } else {
-      setEmailError('');
-    }
-
-    const passwordErrorMsg = validatePassword(pass);
-    if (passwordErrorMsg) {
-      setPasswordError(passwordErrorMsg);
-      return false;
-    } else {
-      setPasswordError('');
-    }
-
-    if (height <= 0 || height > 10) {
-      message.error("Height should be between 0 and 10 feet.");
-      return false;
-    }
-
-    if (weight <= 0 || weight > 200) {
-      message.error("Weight should be between 1 and 200 kg.");
-      return false;
-    }
-
-    return true;
-  };
-
-  
   const handleSubmit = async (values) => {
-    if (!validateForm()) return;
+    setLoading(true);
 
-    setSubmitting(true);
-
+    const formattedDate = values.dob ? values.dob.toISOString() : '';
     const body = {
-      fName: name,
-      dob: date,
-      gender: gender,
-      email: email,
-      address: address,
+      fName: values.name,
+      dob: formattedDate,
+      gender: values.gender,
+      email: values.email,
+      address: values.address,
       contact: mobile,
-      package: packages,
-      weight: weight,
-      height: height,
-      password: pass,
+      package: values.package,
+      weight: values.weight,
+      height: values.height,
+      password: values.password,
     };
 
     try {
       const res = await axios.post('http://localhost:5000/api/v1/member/create', body);
       console.log(res?.data?.data);
-      message.success("Member registered successfully.");
+      
+      setShowSuccess(true);
+      message.success("Member registered successfully! Redirecting...");
+      
+      form.resetFields();
+      setMobile('');
       
       setTimeout(() => {
-        navigate('/');
-      }, 1500);
-    } catch (Err) {
-      console.log(Err.message);
-      message.error("Failed to register member.");
+        navigate('/MemberTable');
+      }, 2000);
+    } catch (error) {
+      console.error('Registration error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to register member. Please try again.';
+      message.error(errorMessage);
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
-  
-  const handleReset = () => {
+  const handleClear = () => {
+    form.resetFields();
     setMobile('');
-    setPass('');
-    setName('');
-    setAddress('');
-    setGender('Male');
-    setEmail('');
-    setHeight('');
-    setWeight('');
-    setPackages('Gold');
-    setDate('');
-    setPasswordError('');
-    setNameError('');
-    setAddressError('');
-    setMobileError('');
-    setEmailError('');
-  };
-
-  const onGenderChange = (e) => {
-    setGender(e.target.value);
+    setShowSuccess(false);
   };
 
   return (
-    <Layout className="dashboard-layout" hasSider>
-      <AdminSidebar selectedKey="/MemberTable" />
-      <Layout style={{ marginLeft: 260 }}>
-        <Content>
-          <div className="member-page">
-        <div className="member-container">
-          <Card className="member-card">
+    <div className="member-signup-page">
+      <div className="member-signup-background">
+        <div className="gradient-overlay"></div>
+      </div>
+      
+      <div className="member-signup-container">
+        <Button 
+          icon={<ArrowLeftOutlined />} 
+          onClick={() => navigate('/')} 
+          className="back-button"
+          type="text"
+        >
+          Back to Login
+        </Button>
+
+        <div className="signup-content">
+          <Card className="signup-card">
             <div className="card-header">
-              <div className="header-icon-card">
+              <div className="header-icon-wrapper">
                 <UserAddOutlined className="header-icon" />
               </div>
-              <div>
-                <h1 className="card-title">Member Registration</h1>
-                <p className="card-subtitle">Create your new member account</p>
+              <h2 className="card-title">Member Registration</h2>
+              <p className="card-subtitle">Create a new member account</p>
+            </div>
+
+            {showSuccess && (
+              <div className="success-message">
+                <SafetyOutlined />
+                Member registered successfully! Redirecting...
+              </div>
+            )}
+
+            <Form
+              form={form}
+              onFinish={handleSubmit}
+              layout="vertical"
+              className="signup-form"
+              requiredMark={false}
+              initialValues={{ gender: 'Male', package: 'Gold' }}
+            >
+              <div className="form-row">
+                <Form.Item
+                  name="name"
+                  label={
+                    <span className="form-label">
+                      <UserOutlined className="label-icon" />
+                      Full Name
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: 'Please enter full name' },
+                    { 
+                      pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/,
+                      message: 'Full name must contain first and last name with uppercase starting letters'
+                    }
+                  ]}
+                >
+                  <Input
+                    placeholder="Enter full name (e.g., John Doe)"
+                    prefix={<UserOutlined />}
+                    size="large"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="email"
+                  label={
+                    <span className="form-label">
+                      <MailOutlined className="label-icon" />
+                      Email Address
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: 'Please enter email' },
+                    { type: 'email', message: 'Please enter a valid email' }
+                  ]}
+                >
+                  <Input
+                    placeholder="example@gmail.com"
+                    prefix={<MailOutlined />}
+                    size="large"
+                  />
+                </Form.Item>
+              </div>
+
+              <div className="form-row">
+                <Form.Item
+                  name="address"
+                  label={
+                    <span className="form-label">
+                      <HomeOutlined className="label-icon" />
+                      Address
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: 'Please enter address' },
+                    { min: 10, message: 'Address must be at least 10 characters' },
+                    {
+                      validator: (_, value) => {
+                        if (value && /[a-zA-Z]/.test(value) && /\d/.test(value)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('Address must contain both letters and numbers'));
+                      }
+                    }
+                  ]}
+                >
+                  <Input
+                    placeholder="Enter full address"
+                    prefix={<HomeOutlined />}
+                    size="large"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="dob"
+                  label={
+                    <span className="form-label">
+                      <CalendarOutlined className="label-icon" />
+                      Date of Birth
+                    </span>
+                  }
+                  rules={[{ required: true, message: 'Please select date of birth' }]}
+                >
+                  <DatePicker
+                    placeholder="Select date of birth"
+                    size="large"
+                    style={{ width: '100%' }}
+                    format="YYYY-MM-DD"
+                  />
+                </Form.Item>
+              </div>
+
+              <div className="form-row">
+                <Form.Item
+                  name="gender"
+                  label={
+                    <span className="form-label">
+                      <UserOutlined className="label-icon" />
+                      Gender
+                    </span>
+                  }
+                  rules={[{ required: true, message: 'Please select gender' }]}
+                >
+                  <Radio.Group size="large" className="gender-radio">
+                    <Radio.Button value="Male">
+                      <ManOutlined /> Male
+                    </Radio.Button>
+                    <Radio.Button value="Female">
+                      <WomanOutlined /> Female
+                    </Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+
+                <Form.Item
+                  name="package"
+                  label={
+                    <span className="form-label">
+                      <GiftOutlined className="label-icon" />
+                      Package
+                    </span>
+                  }
+                  rules={[{ required: true, message: 'Please select package' }]}
+                >
+                  <Select
+                    placeholder="Select package"
+                    size="large"
+                    options={[
+                      { value: 'Gold', label: 'Gold (3 months)' },
+                      { value: 'Platinum', label: 'Platinum (6 months - 10% off)' },
+                      { value: 'Diamond', label: 'Diamond (12 months - 10% off + Free Membership)' },
+                    ]}
+                  />
+                </Form.Item>
+              </div>
+
+              <div className="form-row">
+                <Form.Item
+                  name="mobile"
+                  label={
+                    <span className="form-label">
+                      <PhoneOutlined className="label-icon" />
+                      Mobile Number
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: 'Please enter mobile number' },
+                    {
+                      validator: (_, value) => {
+                        const cleanedMobile = mobile.replace(/\D/g, '');
+                        if (cleanedMobile.length >= 11) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('Invalid mobile number'));
+                      }
+                    }
+                  ]}
+                >
+                  <PhoneInput
+                    country={'lk'}
+                    value={mobile}
+                    onChange={(phone) => setMobile(phone)}
+                    inputStyle={{
+                      width: '100%',
+                      height: '48px',
+                      fontSize: '1rem',
+                      borderRadius: '12px',
+                      border: '2px solid #e8e8e8'
+                    }}
+                    containerClass="phone-input-container"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="password"
+                  label={
+                    <span className="form-label">
+                      <LockOutlined className="label-icon" />
+                      Password
+                    </span>
+                  }
+                  rules={[{ validator: validatePassword }]}
+                >
+                  <Input.Password
+                    placeholder="Enter password"
+                    prefix={<LockOutlined />}
+                    size="large"
+                  />
+                </Form.Item>
+              </div>
+
+              <div className="form-row">
+                <Form.Item
+                  name="height"
+                  label={
+                    <span className="form-label">
+                      <ColumnHeightOutlined className="label-icon" />
+                      Height (feet)
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: 'Please enter height' },
+                    {
+                      validator: (_, value) => {
+                        if (value > 0 && value <= 10) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('Height must be between 0 and 10 feet'));
+                      }
+                    }
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    max={10}
+                    step={0.01}
+                    size="large"
+                    style={{ width: '100%' }}
+                    placeholder="0.00"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="weight"
+                  label={
+                    <span className="form-label">
+                      <DashboardOutlined className="label-icon" />
+                      Weight (kg)
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: 'Please enter weight' },
+                    {
+                      validator: (_, value) => {
+                        if (value > 0 && value <= 200) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('Weight must be between 1 and 200 kg'));
+                      }
+                    }
+                  ]}
+                >
+                  <InputNumber
+                    min={1}
+                    max={200}
+                    step={0.1}
+                    precision={2}
+                    size="large"
+                    style={{ width: '100%' }}
+                    placeholder="0"
+                  />
+                </Form.Item>
+              </div>
+
+              <Form.Item className="form-actions">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  className="submit-button"
+                  icon={<UserAddOutlined />}
+                  block
+                >
+                  {loading ? 'Creating Account...' : 'Register Member'}
+                </Button>
+                <Button
+                  onClick={handleClear}
+                  className="clear-button"
+                  block
+                >
+                  Clear Form
+                </Button>
+              </Form.Item>
+
+              <div className="login-link-wrapper">
+                <p className="login-text">
+                  Already have an account? 
+                  <Button type="link" onClick={() => navigate('/')} className="login-link">
+                    Login here
+                  </Button>
+                </p>
+              </div>
+            </Form>
+          </Card>
+
+          <Card className="info-card">
+            <h3>
+              <HeartOutlined /> Member Benefits
+            </h3>
+            <div className="info-content">
+              <div className="info-item">
+                <TrophyOutlined className="info-icon" />
+                <div>
+                  <h4>Premium Packages</h4>
+                  <p>Choose from Gold, Platinum, or Diamond packages with exclusive benefits</p>
+                </div>
+              </div>
+              <div className="info-item">
+                <HeartOutlined className="info-icon" />
+                <div>
+                  <h4>Health Tracking</h4>
+                  <p>Monitor your fitness progress with height and weight tracking</p>
+                </div>
+              </div>
+              <div className="info-item">
+                <UserOutlined className="info-icon" />
+                <div>
+                  <h4>Personal Profile</h4>
+                  <p>Secure member account with personalized fitness journey</p>
+                </div>
+              </div>
+              <div className="info-item">
+                <SafetyOutlined className="info-icon" />
+                <div>
+                  <h4>Secure Access</h4>
+                  <p>Your information is protected with secure password authentication</p>
+                </div>
               </div>
             </div>
-
-          <Form layout="vertical" onFinish={handleSubmit} className="member-form">
-            <Form.Item>
-              <label className="form-label">
-                <UserOutlined className="label-icon" />
-                Full Name
-              </label>
-              <Input
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setNameError(validateName(e.target.value));
-                }}
-                placeholder="Enter full name (First Last)"
-                size="large"
-              />
-              {nameError && <span className="error-message">{nameError}</span>}
-            </Form.Item>
-
-            <Form.Item>
-              <label className="form-label">
-                <HomeOutlined className="label-icon" />
-                Address
-              </label>
-              <Input
-                value={address}
-                onChange={(e) => {
-                  setAddress(e.target.value);
-                  setAddressError(validateAddress(e.target.value));
-                }}
-                placeholder="Enter your address"
-                size="large"
-              />
-              {addressError && <span className="error-message">{addressError}</span>}
-            </Form.Item>
-
-            <Form.Item>
-              <label className="form-label">
-                <CalendarOutlined className="label-icon" />
-                Birthday
-              </label>
-              <DatePicker
-                value={date}
-                onChange={date => setDate(date)}
-                style={{ width: '100%' }}
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <label className="form-label">
-                <ManOutlined className="label-icon" />
-                Gender
-              </label>
-              <Radio.Group onChange={onGenderChange} value={gender} className="gender-radio-group">
-                <Radio value={"Male"}>Male</Radio>
-                <Radio value={"Female"}>Female</Radio>
-              </Radio.Group>
-            </Form.Item>
-
-            <Form.Item>
-              <label className="form-label">
-                <MailOutlined className="label-icon" />
-                Email
-              </label>
-              <Input
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError(validateEmail(e.target.value));
-                }}
-                placeholder="example@gmail.com"
-                size="large"
-                type="email"
-              />
-              {emailError && <span className="error-message">{emailError}</span>}
-            </Form.Item>
-
-            <Form.Item>
-              <label className="form-label">
-                <PhoneOutlined className="label-icon" />
-                Mobile Number
-              </label>
-              <PhoneInput
-                country={'lk'}
-                value={mobile}
-                onChange={(phone) => {
-                  setMobile(phone);
-                  setMobileError(validateMobile(phone));
-                }}
-                containerClass="phone-input-container"
-                inputClass="phone-input-field"
-                buttonClass="phone-input-button"
-              />
-              {mobileError && <span className="error-message">{mobileError}</span>}
-            </Form.Item>
-
-            <Form.Item>
-              <label className="form-label">
-                <GiftOutlined className="label-icon" />
-                Package
-              </label>
-              <Select
-                value={packages}
-                onChange={(value) => setPackages(value)}
-                size="large"
-                options={[
-                  { value: 'Gold ', label: 'Gold (Charge 3 months fee)' },
-                  { value: 'Platinum', label: 'Platinum (Charge 6 months fee get 10% discount)' },
-                  { value: 'Diamond', label: 'Diamond (Charge 12 months fee get 10% discount + Membership free)' },
-                ]}
-              />
-            </Form.Item>
-
-            <div className="two-column-grid">
-              <Form.Item>
-                <label className="form-label">
-                  <ColumnHeightOutlined className="label-icon" />
-                  Height (feet)
-                </label>
-                <InputNumber
-                  value={height}
-                  onChange={value => setHeight(value)}
-                  min={0}
-                  max={10}
-                  step={0.01}
-                  size="large"
-                  style={{ width: '100%' }}
-                  placeholder="0.00"
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <label className="form-label">
-                  <DashboardOutlined className="label-icon" />
-                  Weight (kg)
-                </label>
-                <InputNumber
-                  value={weight}
-                  onChange={value => setWeight(value)}
-                  min={1}
-                  max={200}
-                  step={0.1}
-                  precision={2}
-                  size="large"
-                  style={{ width: '100%' }}
-                  placeholder="0"
-                />
-              </Form.Item>
-            </div>
-
-            <Form.Item>
-              <label className="form-label">
-                <LockOutlined className="label-icon" />
-                Password
-              </label>
-              <Input.Password
-                value={pass}
-                onChange={(e) => {
-                  setPass(e.target.value);
-                  setPasswordError(validatePassword(e.target.value));
-                }}
-                placeholder="Enter password"
-                size="large"
-              />
-              {passwordError && <span className="error-message">{passwordError}</span>}
-            </Form.Item>
-
-            <Form.Item className="form-actions">
-              <Button
-                type="primary"
-                htmlType="submit"
-                size="large"
-                loading={submitting}
-                disabled={submitting}
-                className="submit-button"
-              >
-                {submitting ? 'Registering...' : 'Register'}
-              </Button>
-              <Button
-                onClick={handleReset}
-                size="large"
-                className="cancel-button"
-              >
-                Cancel
-              </Button>
-            </Form.Item>
-          </Form>
-        </Card>
+          </Card>
+        </div>
       </div>
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
+    </div>
   );
 };
+
+export default Member;
