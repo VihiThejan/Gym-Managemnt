@@ -19,6 +19,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Logo from './components/Logo';
 import './MemberDashboard.css';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -32,18 +33,7 @@ const siderStyle = {
   insetInlineStart: 0,
   top: 0,
   bottom: 0,
-};
-
-const logoStyle = {
-  height: '80px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: 'white',
-  fontSize: '18px',
-  fontWeight: 'bold',
-  backgroundColor: '#001529',
-  marginBottom: '16px',
+  background: 'linear-gradient(180deg, #1a1f3a 0%, #2d1b4e 100%)',
 };
 
 const menuItemStyle = {
@@ -54,15 +44,15 @@ const menuItemStyle = {
 };
 
 const items = [
-  { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '1', path: '/dashboard' },
-  { label: 'Member', icon: <UserOutlined />, key: '2', path: '/MemberTable' },
-  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/payment' },
-  { label: 'Announcement', icon: <NotificationOutlined />, key: '4', path: '/Announcementtable' },
-  { label: 'Attendance', icon: <CalendarOutlined />, key: '5', path: '/Attendancetable' },
+  { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '1', path: '/MemberDashboard' },
+  { label: 'My Profile', icon: <UserOutlined />, key: '2', path: '/MemberProfile' },
+  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/MemberPayment' },
+  { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/Announcementtable' },
+  { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/Attendancetable' },
   { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/Appoinmenttable' },
-  { label: 'Feedback', icon: <CommentOutlined />, key: '8', path: '/Feedbacktable' },
+  { label: 'Feedback', icon: <CommentOutlined />, key: '8', path: '/Feedback' },
   { label: 'Chat', icon: <MessageOutlined />, key: '9', path: '/chat' },
-  { label: 'Rates', icon: <StarOutlined />, key: '10', path: '/Trainerratetable' },
+  { label: 'Rate Trainer', icon: <StarOutlined />, key: '10', path: '/Trainerrate' },
 ];
 
 export const MemberDashboard = () => {
@@ -89,7 +79,20 @@ export const MemberDashboard = () => {
       setLoading(true);
       
       // Get current member ID from localStorage or context
-      const memberId = localStorage.getItem('userId');
+      const getLoginData = () => {
+        try {
+          const loginData = localStorage.getItem('login');
+          if (loginData) {
+            const parsedData = JSON.parse(loginData);
+            return parsedData.Member_Id || null;
+          }
+          return null;
+        } catch (error) {
+          return null;
+        }
+      };
+      
+      const memberId = getLoginData();
       
       // Fetch attendance for current member
       const attendanceRes = await axios.get('http://localhost:5000/api/v1/attendance/list');
@@ -161,16 +164,11 @@ export const MemberDashboard = () => {
         collapsed={collapsed}
         onCollapse={(collapsed) => setCollapsed(collapsed)}
         width={250}
-        style={{ ...siderStyle, backgroundColor: '#001529' }}
+        style={siderStyle}
         className="dashboard-sider"
       >
-        <div style={logoStyle} className="dashboard-logo">
-          <img 
-            src="" 
-            alt="" 
-            style={{ marginRight: '8px', borderRadius: '50%' }} 
-          />
-          {!collapsed && <Text style={{ color: '#FFF9B0', fontSize: '20px' }}>Mega Power</Text>}
+        <div className="logo-container">
+          <Logo size="small" showText={!collapsed} variant="white" />
         </div>
         <Menu
           theme="dark"
@@ -188,18 +186,6 @@ export const MemberDashboard = () => {
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="dashboard-content-layout">
         <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} className="dashboard-header">
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Button 
-              type="text" 
-              icon={<ArrowLeftOutlined />} 
-              onClick={handleGoBack} 
-              className="back-button-header"
-            >
-              Back
-            </Button>
-          </div>
-
           
           <div className="welcome-text">
             Welcome to Mega Power
