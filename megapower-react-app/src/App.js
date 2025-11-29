@@ -24,6 +24,8 @@ import { EditStaff } from "./Editstaff";
 import {Member  } from "./Member";
 import {MemberTable  } from "./MemberTable";
 import {EditMember  } from "./EditMember";
+import {MemberProfile  } from "./MemberProfile";
+import {MemberPayment  } from "./MemberPayment";
 
 import {Equipment  } from "./Equipment";
 import {EditEquipment  } from "./EditEquipment";
@@ -110,6 +112,8 @@ function App() {
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/StaffDashboard" element={<StaffDashboard />} />
         <Route path="/MemberDashboard" element={<MemberDashboard />} />
+        <Route path="/MemberProfile" element={<MemberProfile />} />
+        <Route path="/MemberPayment" element={<MemberPayment />} />
         
         
         <Route path="/Admin" element={<Admin />} />
