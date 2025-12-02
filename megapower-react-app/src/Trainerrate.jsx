@@ -55,9 +55,7 @@ const items = [
 export const Trainerrate = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [members, setMembers] = useState([]);
   const [staff, setStaff] = useState([]);
-  const [loadingMembers, setLoadingMembers] = useState(false);
   const [loadingStaff, setLoadingStaff] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
@@ -70,22 +68,21 @@ export const Trainerrate = () => {
   };
 
   useEffect(() => {
-    fetchMembers();
+    // Auto-populate member ID from logged-in user
+    const loginData = localStorage.getItem('login');
+    if (loginData) {
+      try {
+        const user = JSON.parse(loginData);
+        if (user.Member_Id) {
+          form.setFieldsValue({ memberId: user.Member_Id });
+        }
+      } catch (error) {
+        console.error('Error parsing login data:', error);
+      }
+    }
+    
     fetchStaff();
   }, []);
-
-  const fetchMembers = async () => {
-    try {
-      setLoadingMembers(true);
-      const res = await axios.get('http://localhost:5000/api/v1/member/list');
-      setMembers(res?.data?.data || []);
-    } catch (error) {
-      console.error('Error fetching members:', error);
-      message.error('Failed to load members');
-    } finally {
-      setLoadingMembers(false);
-    }
-  };
 
   const fetchStaff = async () => {
     try {
@@ -111,10 +108,8 @@ export const Trainerrate = () => {
       };
 
       await axios.post('http://localhost:5000/api/v1/trainerrate/create', body);
-      message.success("Trainer rating submitted successfully!");
-      setTimeout(() => {
-        navigate('/Trainerratetable');
-      }, 1000);
+      // Navigate to success page immediately
+      navigate('/RatingSubmitted');
     } catch (error) {
       console.error('Error submitting rating:', error);
       message.error("Failed to submit trainer rating.");
@@ -168,77 +163,60 @@ export const Trainerrate = () => {
         <Content className="trainerrate-main-content">
           <div className="trainerrate-content">
             <Card className="trainerrate-card">
-            <div className="card-header">
-              <div className="header-icon">
-                <StarOutlined />
-              </div>
-              <h1 className="header-title">Rate Trainer</h1>
-              <p className="header-subtitle">Share your feedback and rate trainer performance</p>
-            </div>
-
             <Form
               form={form}
               onFinish={handleSubmit}
               layout="vertical"
               className="trainerrate-form"
             >
-              <div className="form-row">
-                <Form.Item
-                  label="Select Member"
-                  name="memberId"
-                  rules={[{ required: true, message: 'Please select a member' }]}
-                  className="form-item"
-                >
-                  <Select
-                    placeholder="Choose member"
-                    size="large"
-                    showSearch
-                    loading={loadingMembers}
-                    filterOption={(input, option) =>
-                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                    }
-                    suffixIcon={<UserOutlined />}
-                  >
-                    {members.map((member) => {
-                      const memberId = member.Member_Id || member.Member_ID || member.member_id || member.id;
-                      const memberName = member.FName || member.Name || member.name || member.MemberName || 'Unknown';
-                      return (
-                        <Select.Option key={memberId} value={memberId} label={`${memberId} - ${memberName}`}>
-                          {memberId} - {memberName}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </Form.Item>
-
-                <Form.Item
-                  label="Select Staff/Trainer"
-                  name="staffId"
-                  rules={[{ required: true, message: 'Please select a staff member' }]}
-                  className="form-item"
-                >
-                  <Select
-                    placeholder="Choose staff/trainer"
-                    size="large"
-                    showSearch
-                    loading={loadingStaff}
-                    filterOption={(input, option) =>
-                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                    }
-                    suffixIcon={<TeamOutlined />}
-                  >
-                    {staff.map((staffMember) => {
-                      const staffId = staffMember.Staff_ID || staffMember.Staff_Id || staffMember.staff_id || staffMember.id;
-                      const staffName = staffMember.FName || staffMember.Name || staffMember.name || staffMember.StaffName || 'Unknown';
-                      return (
-                        <Select.Option key={staffId} value={staffId} label={`${staffId} - ${staffName}`}>
-                          {staffId} - {staffName}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </Form.Item>
+              <div className="form-header">
+                <h2 className="form-title">
+                  <StarOutlined className="title-icon" />
+                  Rate Your Trainer
+                </h2>
+                <p className="form-description">Share your feedback to help us improve our training services</p>
               </div>
+
+              <Form.Item
+                label="Select Trainer"
+                name="staffId"
+                rules={[{ required: true, message: 'Please select a trainer' }]}
+                className="form-item"
+              >
+                <Select
+                  placeholder="Choose your trainer"
+                  size="large"
+                  showSearch
+                  loading={loadingStaff}
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  suffixIcon={<TeamOutlined />}
+                >
+                  {staff.map((staffMember) => {
+                    const staffId = staffMember.Staff_ID || staffMember.Staff_Id || staffMember.staff_id || staffMember.id;
+                    const staffName = `${staffMember.FName || ''} ${staffMember.LName || ''}`.trim() || staffMember.Name || staffMember.name || staffMember.StaffName || 'Unknown';
+                    const position = staffMember.Position || 'Trainer';
+                    return (
+                      <Select.Option key={staffId} value={staffId} label={`${staffName} - ${position}`}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <TeamOutlined style={{ color: '#667eea' }} />
+                          <span><strong>{staffName}</strong> - {position}</span>
+                        </div>
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+
+              {/* Member ID is auto-populated from logged-in user */}
+              <Form.Item
+                name="memberId"
+                rules={[{ required: true, message: 'Member ID is required' }]}
+                hidden
+              >
+                <Input type="hidden" />
+              </Form.Item>
 
               <Form.Item
                 label="Rating"
