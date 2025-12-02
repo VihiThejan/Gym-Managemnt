@@ -26,6 +26,8 @@ import {MemberTable  } from "./MemberTable";
 import {EditMember  } from "./EditMember";
 import {MemberProfile  } from "./MemberProfile";
 import {MemberPayment  } from "./MemberPayment";
+import {MemberAnnouncements  } from "./MemberAnnouncements";
+import {MemberAttendance  } from "./MemberAttendance";
 
 import {Equipment  } from "./Equipment";
 import {EditEquipment  } from "./EditEquipment";
@@ -114,6 +116,7 @@ function App() {
         <Route path="/MemberDashboard" element={<MemberDashboard />} />
         <Route path="/MemberProfile" element={<MemberProfile />} />
         <Route path="/MemberPayment" element={<MemberPayment />} />
+        <Route path="/MemberAnnouncements" element={<MemberAnnouncements />} />
         
         
         <Route path="/Admin" element={<Admin />} />
@@ -158,6 +161,9 @@ function App() {
         <Route path="/Attendance/:id" element={<EditAttendance/>} />
         <Route path="/Feedback/:id" element={<EditFeedback/>} />
         <Route path="/Schedule/:id" element={<EditSchedule/>} />
+        
+        <Route path="/MemberAnnouncements" element={<MemberAnnouncements />} />
+        <Route path="/MemberAttendance" element={<MemberAttendance />} />
 
 
 
