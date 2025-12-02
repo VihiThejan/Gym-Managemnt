@@ -1,19 +1,56 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form, Rate, Input, message, Card, Select } from "antd";
+import { Layout, Menu, Button, Form, Rate, Input, message, Card, Select } from "antd";
 import { 
   StarOutlined, 
   UserOutlined, 
   TeamOutlined, 
   CommentOutlined,
   CheckCircleOutlined,
-  TrophyOutlined
+  TrophyOutlined,
+  DashboardOutlined,
+  DollarOutlined,
+  NotificationOutlined,
+  CalendarOutlined,
+  MessageOutlined,
+  ScheduleOutlined,
+  MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import MainLayout from './components/Layout/MainLayout';
+import Logo from './components/Logo';
 import './Trainerrate.css';
 
+const { Header, Content, Sider } = Layout;
+
 const { TextArea } = Input;
+
+const siderStyle = {
+  overflow: 'auto',
+  height: '100vh',
+  position: 'fixed',
+  insetInlineStart: 0,
+  top: 0,
+  bottom: 0,
+  background: 'linear-gradient(180deg, #1a1f3a 0%, #2d1b4e 100%)',
+};
+
+const menuItemStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  gap: '8px',
+};
+
+const items = [
+  { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/MemberDashboard' },
+  { label: 'My Profile', icon: <UserOutlined />, key: '2', path: '/MemberProfile' },
+  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/MemberPayment' },
+  { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/MemberAnnouncements' },
+  { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/MemberAttendance' },
+  { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/MemberAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '8', path: '/chat' },
+  { label: 'Rate Trainer', icon: <StarOutlined />, key: '9', path: '/Trainerrate' },
+];
 
 export const Trainerrate = () => {
   const [form] = Form.useForm();
@@ -22,7 +59,15 @@ export const Trainerrate = () => {
   const [staff, setStaff] = useState([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [loadingStaff, setLoadingStaff] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+
+  const handleMenuClick = ({ key }) => {
+    const selectedItem = items.find(item => item.key === key);
+    if (selectedItem) {
+      navigate(selectedItem.path);
+    }
+  };
 
   useEffect(() => {
     fetchMembers();
@@ -83,10 +128,46 @@ export const Trainerrate = () => {
   };
 
   return (
-    <MainLayout>
-      <div className="trainerrate-container">
-        <div className="trainerrate-content">
-          <Card className="trainerrate-card">
+    <Layout hasSider className="trainerrate-layout">
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(collapsed) => setCollapsed(collapsed)}
+        width={250}
+        style={siderStyle}
+        className="dashboard-sider"
+      >
+        <div className="logo-container">
+          <Logo size="small" showText={!collapsed} variant="white" />
+        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          defaultSelectedKeys={['9']}
+          onClick={handleMenuClick}
+          className="dashboard-menu"
+        >
+          {items.map(({ label, icon, key }) => (
+            <Menu.Item key={key} style={menuItemStyle} icon={icon}>
+              {label}
+            </Menu.Item>
+          ))}
+        </Menu>
+      </Sider>
+
+      <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }}>
+        <Header className="trainerrate-header">
+          <div className="header-content-wrapper">
+            <h2 style={{ margin: 0, color: 'white', fontSize: '28px', fontWeight: '700' }}>
+              <StarOutlined style={{ marginRight: 12 }} />
+              Rate Trainer
+            </h2>
+          </div>
+        </Header>
+
+        <Content className="trainerrate-main-content">
+          <div className="trainerrate-content">
+            <Card className="trainerrate-card">
             <div className="card-header">
               <div className="header-icon">
                 <StarOutlined />
@@ -243,7 +324,8 @@ export const Trainerrate = () => {
             </div>
           </Card>
         </div>
-      </div>
-    </MainLayout>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };

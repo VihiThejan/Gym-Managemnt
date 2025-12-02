@@ -49,10 +49,9 @@ const items = [
   { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/MemberPayment' },
   { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/MemberAnnouncements' },
   { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/MemberAttendance' },
-  { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/Appoinmenttable' },
-  { label: 'Feedback', icon: <CommentOutlined />, key: '8', path: '/Feedback' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '9', path: '/chat' },
-  { label: 'Rate Trainer', icon: <StarOutlined />, key: '10', path: '/Trainerrate' },
+  { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/MemberAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '8', path: '/chat' },
+  { label: 'Rate Trainer', icon: <StarOutlined />, key: '9', path: '/Trainerrate' },
 ];
 
 export const MemberDashboard = () => {
@@ -277,7 +276,7 @@ export const MemberDashboard = () => {
                   className="action-card"
                 >
                   <div className="action-buttons-container">
-                    <Button type="primary" icon={<ScheduleOutlined />} onClick={() => navigate('/Appoinmenttable')} block className="action-button">
+                    <Button type="primary" icon={<ScheduleOutlined />} onClick={() => navigate('/MemberAppointment')} block className="action-button">
                       View My Appointments
                     </Button>
                     <Button type="primary" icon={<CalendarOutlined />} onClick={() => navigate('/Scheduletable')} block className="action-button">

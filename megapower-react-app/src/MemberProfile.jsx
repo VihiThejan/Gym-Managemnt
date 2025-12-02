@@ -29,10 +29,9 @@ const items = [
   { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/MemberPayment' },
   { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/MemberAnnouncements' },
   { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/MemberAttendance' },
-  { label: 'Appointments', icon: <ScheduleOutlined />, key: '6', path: '/Appoinmenttable' },
-  { label: 'Feedback', icon: <CommentOutlined />, key: '7', path: '/Feedback' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '8', path: '/chat' },
-  { label: 'Rate Trainer', icon: <StarOutlined />, key: '9', path: '/Trainerrate' },
+  { label: 'Appointments', icon: <ScheduleOutlined />, key: '6', path: '/MemberAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
+  { label: 'Rate Trainer', icon: <StarOutlined />, key: '8', path: '/Trainerrate' },
 ];
 
 export const MemberProfile = () => {

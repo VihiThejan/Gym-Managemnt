@@ -28,6 +28,8 @@ import {MemberProfile  } from "./MemberProfile";
 import {MemberPayment  } from "./MemberPayment";
 import {MemberAnnouncements  } from "./MemberAnnouncements";
 import {MemberAttendance  } from "./MemberAttendance";
+import MemberAppointment from "./MemberAppointment";
+import {MemberChat  } from "./MemberChat";
 
 import {Equipment  } from "./Equipment";
 import {EditEquipment  } from "./EditEquipment";
@@ -132,7 +134,8 @@ function App() {
         <Route path="/Paymenttable" element={<Paymenttable />} />
 
         
-        <Route path="/chat" element={<StaffChat />} />
+        <Route path="/chat" element={<MemberChat />} />
+        <Route path="/staffChat" element={<StaffChat />} />
         <Route path="/adminChat" element={<Chat />} />
         <Route path="/Announcement" element={<Announcement />} />
         <Route path="/Announcementtable" element={<Announcementtable />} />
@@ -164,6 +167,7 @@ function App() {
         
         <Route path="/MemberAnnouncements" element={<MemberAnnouncements />} />
         <Route path="/MemberAttendance" element={<MemberAttendance />} />
+        <Route path="/MemberAppointment" element={<MemberAppointment />} />
 
 
 
