@@ -61,6 +61,7 @@ import StaffChat from "./StaffChat";
 import {Trainerrate  } from "./Trainerrate";
 import {Trainerratetable  } from "./Trainerratetable";
 import {RatingSubmitted  } from "./RatingSubmitted";
+import {WorkoutTracker  } from "./WorkoutTracker";
 
 import {Feedback  } from "./Feedback";
 import {EditFeedback  } from "./EditFeedback";
@@ -129,6 +130,7 @@ function App() {
         <Route path="/Equipment" element={<Equipment />} />
         <Route path="/Trainerrate" element={<Trainerrate />} />
         <Route path="/RatingSubmitted" element={<RatingSubmitted />} />
+        <Route path="/WorkoutTracker" element={<WorkoutTracker />} />
         
         <Route path="/Schedule" element={<Schedule />} />
         <Route path="/Attendance" element={<Attendance />} />

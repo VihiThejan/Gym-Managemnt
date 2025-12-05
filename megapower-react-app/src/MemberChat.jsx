@@ -13,6 +13,7 @@ import {
   PaperClipOutlined,
   CloseCircleOutlined,
   DownloadOutlined,
+  TrophyOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -52,6 +53,7 @@ const items = [
   { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/MemberAppointment' },
   { label: 'Chat', icon: <MessageOutlined />, key: '8', path: '/chat' },
   { label: 'Rate Trainer', icon: <StarOutlined />, key: '9', path: '/Trainerrate' },
+  { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '10', path: '/WorkoutTracker' },
 ];
 
 export const MemberChat = () => {

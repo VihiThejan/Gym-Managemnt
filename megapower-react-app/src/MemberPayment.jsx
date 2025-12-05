@@ -13,7 +13,8 @@ import {
   CloseCircleOutlined, GiftOutlined, MenuUnfoldOutlined, MenuFoldOutlined,
   LogoutOutlined, DashboardOutlined, NotificationOutlined, MessageOutlined,
   StarOutlined, ScheduleOutlined, CommentOutlined, HistoryOutlined,
-  BankOutlined, WalletOutlined, SafetyOutlined, InfoCircleOutlined
+  BankOutlined, WalletOutlined, SafetyOutlined, InfoCircleOutlined,
+  TrophyOutlined
 } from '@ant-design/icons';
 import Logo from './components/Logo';
 import './MemberPayment.css';
@@ -32,6 +33,7 @@ const items = [
   { label: 'Appointments', icon: <ScheduleOutlined />, key: '6', path: '/MemberAppointment' },
   { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
   { label: 'Rate Trainer', icon: <StarOutlined />, key: '8', path: '/Trainerrate' },
+  { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '9', path: '/WorkoutTracker' },
 ];
 
 const packageOptions = [

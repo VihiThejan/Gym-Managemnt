@@ -14,7 +14,8 @@ import {
   ScheduleOutlined,
   CommentOutlined,
   MessageOutlined,
-  StarOutlined
+  StarOutlined,
+  TrophyOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -34,6 +35,7 @@ const items = [
   { label: 'Appointments', icon: <ScheduleOutlined />, key: '6', path: '/MemberAppointment' },
   { label: 'Chat', icon: <MessageOutlined />, key: '7', path: '/chat' },
   { label: 'Rate Trainer', icon: <StarOutlined />, key: '8', path: '/Trainerrate' },
+  { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '9', path: '/WorkoutTracker' },
 ];
 
 export const MemberAnnouncements = () => {
