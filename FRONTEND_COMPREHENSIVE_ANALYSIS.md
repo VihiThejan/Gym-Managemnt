@@ -51,7 +51,7 @@ src/
 │   └── Chat.jsx              # Real-time messaging
 │
 └── Assets
-    └── image/Login.jpg       # Background image
+    └── image/Login.png       # Background image
 
 **Total: 36+ React components**
 ```
