@@ -71,6 +71,7 @@ import {Appoinment  } from "./Appoinment";
 import {EditAppoinment  } from "./EditAppoinment";
 import {Appoinmenttable  } from "./Appoinmenttable";
 import Reports from "./Reports";
+import Chatbot from "./components/Chatbot";
 
 
 
@@ -179,6 +180,8 @@ function App() {
    
   </Router>
   
+  {/* AI Chatbot - Available on all pages */}
+  <Chatbot />
   
   </div>
 
