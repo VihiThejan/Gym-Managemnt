@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Button, Radio, InputNumber, Select, DatePicker, message, Input, Form } from 'antd';
@@ -14,8 +14,6 @@ import {
   ColumnHeightOutlined, 
   DashboardOutlined, 
   LockOutlined, 
-  UserAddOutlined,
-  ArrowLeftOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -80,7 +78,7 @@ export const Member = () => {
       console.log(res?.data?.data);
       
       setShowSuccess(true);
-      message.success("Member registered successfully! Redirecting to login...");
+      message.success("Member registered successfully!");
       
       form.resetFields();
       setMobile('');
@@ -98,391 +96,184 @@ export const Member = () => {
   };
 
   return (
-    <div className="member-page">
-      {/* Animated Background */}
-      <div className="member-background">
+    <div className="member-signup-page">
+      <div className="member-signup-background">
         <div className="shape shape-1"></div>
         <div className="shape shape-2"></div>
         <div className="shape shape-3"></div>
       </div>
 
-      {/* Back Button */}
-      <Button 
-        icon={<ArrowLeftOutlined />} 
-        onClick={() => navigate('/')} 
-        className="back-button"
-      >
-        Back to Login
-      </Button>
-
-      {/* Main Container */}
-      <div className="member-container">
-        {/* Left Side - Branding */}
-        <div className="member-brand">
-          <div className="brand-icon">🏋️</div>
-          <h1 className="brand-title">Member Registration</h1>
-          <p className="brand-tagline">Start Your Fitness Journey Today</p>
-          
-          <div className="features-list">
-            <div className="feature-item">
-              <div className="feature-icon">
-                <CheckCircleOutlined />
-              </div>
-              <div className="feature-text">
-                <h3>Premium Packages</h3>
-                <p>Gold, Platinum & Diamond membership plans</p>
-              </div>
+      <div className="member-signup-container">
+        <div className="signup-card">
+          <div className="signup-left">
+            <div className="brand-section">
+              <div className="member-icon">🏋️</div>
+              <h1 className="brand-title">Member Registration</h1>
+              <p className="brand-tagline">Join the Mega Power Gym Management Team</p>
             </div>
-            
-            <div className="feature-item">
-              <div className="feature-icon">
-                <CheckCircleOutlined />
+            <div className="features-list">
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Full System Access</span>
               </div>
-              <div className="feature-text">
-                <h3>Health Tracking</h3>
-                <p>Monitor your fitness progress and goals</p>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Manage Staff & Members</span>
               </div>
-            </div>
-            
-            <div className="feature-item">
-              <div className="feature-icon">
-                <CheckCircleOutlined />
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Financial Control</span>
               </div>
-              <div className="feature-text">
-                <h3>Professional Trainers</h3>
-                <p>Expert guidance for your fitness journey</p>
-              </div>
-            </div>
-            
-            <div className="feature-item">
-              <div className="feature-icon">
-                <CheckCircleOutlined />
-              </div>
-              <div className="feature-text">
-                <h3>Modern Facilities</h3>
-                <p>State-of-the-art equipment and amenities</p>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Analytics & Reports</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Side - Registration Form */}
-        <div className="member-form-wrapper">
-          <div className="form-header">
-            <h2>Create Member Account</h2>
-            <p>Enter your information to join our gym</p>
-          </div>
+          <div className="signup-right">
+            <div className="form-wrapper">
+              <div className="form-header">
+                <h2>Create Member Account</h2>
+                <p>Fill in your details to join our gym</p>
+              </div>
 
-          {/* Success Alert */}
-          {showSuccess && (
-            <div className="success-alert">
-              <CheckCircleOutlined />
-              <span>Member registered successfully! Redirecting to login...</span>
-            </div>
-          )}
+              {showSuccess && (
+                <div className="success-alert">
+                  <CheckCircleOutlined />
+                  <span>Member registered successfully! Redirecting to login...</span>
+                </div>
+              )}
 
-          <Form
-            form={form}
-            onFinish={handleSubmit}
-            layout="vertical"
-            className="member-form"
-            requiredMark={false}
-            initialValues={{ gender: 'Male', package: 'Gold' }}
-          >
-              <div className="form-row">
+              <Form
+                form={form}
+                onFinish={handleSubmit}
+                layout="vertical"
+                className="signup-form"
+                requiredMark={false}
+                initialValues={{ gender: 'Male', package: 'Gold' }}
+              >
                 <Form.Item
                   name="name"
-                  label={
-                    <span className="form-label">
-                      <UserOutlined className="label-icon" />
-                      Full Name
-                    </span>
-                  }
+                  label={<span className="input-label"><UserOutlined />Full Name</span>}
                   rules={[
                     { required: true, message: 'Please enter full name' },
-                    { 
-                      pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/,
-                      message: 'Full name must contain first and last name with uppercase starting letters'
-                    }
+                    { pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/, message: 'Full name must contain first and last name with uppercase starting letters' }
                   ]}
                 >
-                  <Input
-                    placeholder="Enter full name (e.g., John Doe)"
-                    prefix={<UserOutlined />}
-                    size="large"
-                  />
+                  <Input placeholder="Enter full name (e.g., John Doe)" className="form-input" />
                 </Form.Item>
 
                 <Form.Item
                   name="email"
-                  label={
-                    <span className="form-label">
-                      <MailOutlined className="label-icon" />
-                      Email Address
-                    </span>
-                  }
+                  label={<span className="input-label"><MailOutlined />Email</span>}
                   rules={[
                     { required: true, message: 'Please enter email' },
                     { type: 'email', message: 'Please enter a valid email' }
                   ]}
                 >
-                  <Input
-                    placeholder="example@gmail.com"
-                    prefix={<MailOutlined />}
-                    size="large"
-                  />
+                  <Input placeholder="example@gmail.com" className="form-input" />
                 </Form.Item>
-              </div>
 
-              <div className="form-row">
                 <Form.Item
-                  name="address"
-                  label={
-                    <span className="form-label">
-                      <HomeOutlined className="label-icon" />
-                      Address
-                    </span>
-                  }
+                  name="mobile"
+                  label={<span className="input-label"><PhoneOutlined />Mobile Number</span>}
                   rules={[
-                    { required: true, message: 'Please enter address' },
-                    { min: 10, message: 'Address must be at least 10 characters' },
-                    {
-                      validator: (_, value) => {
-                        if (value && /[a-zA-Z]/.test(value) && /\d/.test(value)) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Address must contain both letters and numbers'));
+                    { required: true, message: 'Please enter mobile number' },
+                    { validator: (_, value) => {
+                        const cleanedMobile = mobile.replace(/\D/g, '');
+                        return cleanedMobile.length >= 11 ? Promise.resolve() : Promise.reject(new Error('Invalid mobile number'));
                       }
                     }
                   ]}
                 >
-                  <Input
-                    placeholder="Enter full address"
-                    prefix={<HomeOutlined />}
-                    size="large"
-                  />
+                  <div className="phone-input-container">
+                    <PhoneInput country={'lk'} value={mobile} onChange={(phone) => setMobile(phone)} containerClass="react-tel-input" />
+                  </div>
+                </Form.Item>
+
+                <Form.Item
+                  name="address"
+                  label={<span className="input-label"><HomeOutlined />Address</span>}
+                  rules={[
+                    { required: true, message: 'Please enter address' },
+                    { min: 10, message: 'Address must be at least 10 characters' }
+                  ]}
+                >
+                  <Input placeholder="Enter full address" className="form-input" />
                 </Form.Item>
 
                 <Form.Item
                   name="dob"
-                  label={
-                    <span className="form-label">
-                      <CalendarOutlined className="label-icon" />
-                      Date of Birth
-                    </span>
-                  }
+                  label={<span className="input-label"><CalendarOutlined />Date of Birth</span>}
                   rules={[{ required: true, message: 'Please select date of birth' }]}
                 >
-                  <DatePicker
-                    placeholder="Select date of birth"
-                    size="large"
-                    style={{ width: '100%' }}
-                    format="YYYY-MM-DD"
-                  />
+                  <DatePicker placeholder="Select date of birth" className="form-input" style={{ width: '100%' }} format="YYYY-MM-DD" />
                 </Form.Item>
-              </div>
 
-              <div className="form-row">
                 <Form.Item
                   name="gender"
-                  label={
-                    <span className="form-label">
-                      <UserOutlined className="label-icon" />
-                      Gender
-                    </span>
-                  }
+                  label={<span className="input-label"><UserOutlined />Gender</span>}
                   rules={[{ required: true, message: 'Please select gender' }]}
                 >
-                  <Radio.Group size="large" className="gender-radio">
-                    <Radio.Button value="Male">
-                      <ManOutlined /> Male
-                    </Radio.Button>
-                    <Radio.Button value="Female">
-                      <WomanOutlined /> Female
-                    </Radio.Button>
+                  <Radio.Group className="gender-radio">
+                    <Radio.Button value="Male"><ManOutlined /> Male</Radio.Button>
+                    <Radio.Button value="Female"><WomanOutlined /> Female</Radio.Button>
                   </Radio.Group>
                 </Form.Item>
 
                 <Form.Item
                   name="package"
-                  label={
-                    <span className="form-label">
-                      <GiftOutlined className="label-icon" />
-                      Package
-                    </span>
-                  }
+                  label={<span className="input-label"><GiftOutlined />Membership Package</span>}
                   rules={[{ required: true, message: 'Please select package' }]}
                 >
-                  <Select
-                    placeholder="Select package"
-                    size="large"
-                    options={[
-                      { value: 'Gold', label: 'Gold (3 months)' },
-                      { value: 'Platinum', label: 'Platinum (6 months - 10% off)' },
-                      { value: 'Diamond', label: 'Diamond (12 months - 10% off + Free Membership)' },
-                    ]}
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="form-row">
-                <Form.Item
-                  name="mobile"
-                  label={
-                    <span className="form-label">
-                      <PhoneOutlined className="label-icon" />
-                      Mobile Number
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: 'Please enter mobile number' },
-                    {
-                      validator: (_, value) => {
-                        const cleanedMobile = mobile.replace(/\D/g, '');
-                        if (cleanedMobile.length >= 11) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Invalid mobile number'));
-                      }
-                    }
-                  ]}
-                >
-                  <PhoneInput
-                    country={'lk'}
-                    value={mobile}
-                    onChange={(phone) => setMobile(phone)}
-                    inputStyle={{
-                      width: '100%',
-                      height: '48px',
-                      fontSize: '1rem',
-                      borderRadius: '12px',
-                      border: '2px solid #e8e8e8'
-                    }}
-                    containerClass="phone-input-container"
-                  />
+                  <Select placeholder="Select package" className="form-input" options={[{ value: 'Gold', label: 'Gold' }, { value: 'Platinum', label: 'Platinum' }, { value: 'Diamond', label: 'Diamond' }]} />
                 </Form.Item>
 
-                <Form.Item
-                  name="password"
-                  label={
-                    <span className="form-label">
-                      <LockOutlined className="label-icon" />
-                      Password
-                    </span>
-                  }
-                  rules={[{ validator: validatePassword }]}
-                >
-                  <Input.Password
-                    placeholder="Enter password"
-                    prefix={<LockOutlined />}
-                    size="large"
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="form-row">
                 <Form.Item
                   name="height"
-                  label={
-                    <span className="form-label">
-                      <ColumnHeightOutlined className="label-icon" />
-                      Height (feet)
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: 'Please enter height' },
-                    {
-                      validator: (_, value) => {
-                        if (value > 0 && value <= 10) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Height must be between 0 and 10 feet'));
-                      }
-                    }
-                  ]}
+                  label={<span className="input-label"><ColumnHeightOutlined />Height (cm)</span>}
+                  rules={[{ required: true, message: 'Please enter height' }]}
                 >
-                  <InputNumber
-                    min={0}
-                    max={10}
-                    step={0.01}
-                    size="large"
-                    style={{ width: '100%' }}
-                    placeholder="0.00"
-                  />
+                  <InputNumber placeholder="Enter height in cm" className="form-input" style={{ width: '100%' }} min={100} max={250} />
                 </Form.Item>
 
                 <Form.Item
                   name="weight"
-                  label={
-                    <span className="form-label">
-                      <DashboardOutlined className="label-icon" />
-                      Weight (kg)
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: 'Please enter weight' },
-                    {
-                      validator: (_, value) => {
-                        if (value > 0 && value <= 200) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Weight must be between 1 and 200 kg'));
-                      }
-                    }
-                  ]}
+                  label={<span className="input-label"><DashboardOutlined />Weight (kg)</span>}
+                  rules={[{ required: true, message: 'Please enter weight' }]}
                 >
-                  <InputNumber
-                    min={1}
-                    max={200}
-                    step={0.1}
-                    precision={2}
-                    size="large"
-                    style={{ width: '100%' }}
-                    placeholder="0"
-                  />
+                  <InputNumber placeholder="Enter weight in kg" className="form-input" style={{ width: '100%' }} min={30} max={300} />
                 </Form.Item>
-              </div>
 
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  className="register-button"
-                  icon={<UserAddOutlined />}
-                  block
+                <Form.Item
+                  name="password"
+                  label={<span className="input-label"><LockOutlined />Password</span>}
+                  rules={[{ validator: validatePassword }]}
                 >
-                  {loading ? 'Creating Account...' : 'Create Member Account'}
-                </Button>
-              </Form.Item>
-          </Form>
+                  <Input.Password placeholder="Enter password" className="password-input" />
+                </Form.Item>
 
-          {/* Password Requirements */}
-          <div className="password-hint">
-            <LockOutlined /> Password must contain uppercase, lowercase, number, and special character (min 6 chars)
+                <div className="password-requirements">
+                  <LockOutlined />
+                  <span>Must include uppercase, lowercase, number, and special character</span>
+                </div>
+
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" loading={loading} className="register-button" block>
+                    {loading ? 'Creating Account...' : 'Create Member Account'}
+                  </Button>
+                </Form.Item>
+
+                <div className="login-section">
+                  <div className="divider"><span>Already have an account?</span></div>
+                  <Button onClick={() => navigate('/')} className="login-btn" block>Sign In to Member Panel</Button>
+                </div>
+              </Form>
+            </div>
           </div>
-
-          {/* Package Info */}
-          <div className="package-info">
-            <GiftOutlined /> <strong>Packages:</strong> Gold (3 months), Platinum (6 months - 10% off), Diamond (12 months - 10% off + Free Membership)
-          </div>
-
-          {/* Login Section */}
-          <div className="divider">
-            <span>Already have an account?</span>
-          </div>
-
-          <Button 
-            onClick={() => navigate('/')} 
-            className="login-button"
-            block
-          >
-            Login to Member Account
-          </Button>
         </div>
       </div>
     </div>
   );
 };
-
-export default Member;

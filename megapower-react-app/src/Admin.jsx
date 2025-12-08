@@ -105,15 +105,6 @@ export const Admin = () => {
             </div>
 
             <div className="admin-signup-container">
-                {/* Back Button */}
-                <Button 
-                    icon={<ArrowLeftOutlined />} 
-                    onClick={() => navigate('/')} 
-                    className="back-button"
-                >
-                    Back to Login
-                </Button>
-
                 <div className="signup-card">
                     {/* Left Side - Branding */}
                     <div className="signup-left">
