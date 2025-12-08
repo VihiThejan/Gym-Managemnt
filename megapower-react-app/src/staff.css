@@ -1,714 +1,600 @@
-/* ================================
-   Staff Registration Page - Modern UI/UX
-   ================================ */
+/* Staff Registration Page Styles */
 
 .staff-page {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-    padding: 32px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
 }
 
+/* Animated Background Shapes */
+.staff-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  animation: float 20s infinite ease-in-out;
+}
+
+.shape-1 {
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.1);
+  top: -250px;
+  left: -250px;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.15);
+  bottom: -200px;
+  right: -200px;
+  animation-delay: 7s;
+}
+
+.shape-3 {
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 14s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* Back Button */
+.back-button {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: none;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  transform: translateX(-5px);
+}
+
+/* Main Container */
 .staff-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 2rem;
-    animation: fadeInUp 0.6s ease-out;
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  animation: slideIn 0.6s ease-out;
 }
 
-/* ================================
-   Card Styles
-   ================================ */
-
-.staff-card,
-.info-card {
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: none;
-    background: white;
-    height: fit-content;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.staff-card .ant-card-body,
-.info-card .ant-card-body {
-    padding: 2.5rem;
+/* Left Side - Branding */
+.staff-brand {
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
-/* ================================
-   Header Section
-   ================================ */
-
-.card-header-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    margin: -2.5rem -2.5rem 2rem -2.5rem;
-    padding: 2rem 2.5rem;
-    border-radius: 20px 20px 0 0;
+.staff-brand::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: rotate 30s linear infinite;
 }
 
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.header-icon-card {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    flex-shrink: 0;
+.brand-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  animation: bounce 2s infinite;
 }
 
-.header-icon {
-    font-size: 28px;
-    color: #ffffff;
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.header-text {
-    flex: 1;
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
 }
 
-.card-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #ffffff;
-    margin: 0 0 4px 0;
+.brand-tagline {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 1;
 }
 
-.card-subtitle {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.95);
-    margin: 0;
+/* Features List */
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* ================================
-   Form Elements
-   ================================ */
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  animation: fadeInLeft 0.6s ease-out backwards;
+}
 
-.staff-form {
-    margin-top: 0;
+.feature-item:nth-child(1) { animation-delay: 0.2s; }
+.feature-item:nth-child(2) { animation-delay: 0.4s; }
+.feature-item:nth-child(3) { animation-delay: 0.6s; }
+.feature-item:nth-child(4) { animation-delay: 0.8s; }
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+}
+
+.feature-text h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: white;
+}
+
+.feature-text p {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.9;
+  color: white;
+}
+
+/* Right Side - Form Wrapper */
+.staff-form-wrapper {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: white;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.form-header p {
+  color: #718096;
+  font-size: 1rem;
+}
+
+/* Success Alert */
+.success-alert {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-alert .anticon {
+  font-size: 1.5rem;
 }
 
 .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.staff-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.95rem;
 }
 
 .form-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .label-icon {
-    font-size: 18px;
-    color: #667eea;
+  color: #667eea;
 }
 
-/* Input Fields */
 .staff-form .ant-input,
-.staff-form .ant-select-selector,
+.staff-form .ant-input-password,
 .staff-form .ant-picker,
-.staff-form .ant-input-password {
-    border-radius: 12px;
-    border: 2px solid #e8e8e8;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    height: 48px;
-}
-
-.staff-form .ant-input-password input {
-    height: 44px;
-}
-
 .staff-form .ant-select-selector {
-    padding: 0 16px !important;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  padding: 0.75rem;
+  height: 48px;
+  font-size: 1rem;
+  background: #f7fafc;
+  transition: all 0.3s ease;
 }
 
 .staff-form .ant-input:hover,
-.staff-form .ant-select:hover .ant-select-selector,
+.staff-form .ant-input-password:hover,
 .staff-form .ant-picker:hover,
-.staff-form .ant-input-password:hover {
-    border-color: #667eea;
+.staff-form .ant-select-selector:hover {
+  border-color: #cbd5e0;
+  background: white;
 }
 
 .staff-form .ant-input:focus,
-.staff-form .ant-select-focused .ant-select-selector,
+.staff-form .ant-input-password:focus,
 .staff-form .ant-picker-focused,
-.staff-form .ant-input-password-focused {
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
-}
-
-/* Prefix Icons */
-.staff-form .ant-input-prefix {
-    color: #667eea;
-    font-size: 18px;
-    margin-right: 12px;
+.staff-form .ant-select-focused .ant-select-selector {
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* Gender Radio Buttons */
 .gender-radio {
-    display: flex;
-    gap: 12px;
+  width: 100%;
 }
 
 .gender-radio .ant-radio-button-wrapper {
-    height: 48px;
-    line-height: 46px;
-    padding: 0 24px;
-    border-radius: 12px;
-    border: 2px solid #e8e8e8;
-    margin-right: 0;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
+  flex: 1;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  height: 48px;
+  line-height: 44px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.gender-radio .ant-radio-button-wrapper span {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
+.gender-radio .ant-radio-button-wrapper:first-child {
+  border-radius: 12px 0 0 12px;
 }
 
-.gender-radio .ant-radio-button-wrapper:hover {
-    border-color: #667eea;
-    color: #667eea;
+.gender-radio .ant-radio-button-wrapper:last-child {
+  border-radius: 0 12px 12px 0;
 }
 
 .gender-radio .ant-radio-button-wrapper-checked {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: transparent;
-    color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.gender-radio .ant-radio-button-wrapper:hover {
+  color: #667eea;
 }
 
 .gender-radio .ant-radio-button-wrapper-checked:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    color: white;
-}
-
-.gender-radio .ant-radio-button-wrapper .anticon {
-    margin-right: 8px;
-    font-size: 18px;
+  color: white;
 }
 
 /* Phone Input */
-.phone-input-container {
-    width: 100%;
-}
-
 .phone-input-container .react-tel-input .form-control {
-    width: 100% !important;
-    height: 48px !important;
-    font-size: 1rem !important;
-    border-radius: 12px !important;
-    border: 2px solid #e8e8e8 !important;
-    transition: all 0.3s ease !important;
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  padding-left: 48px;
+  font-size: 1rem;
+  background: #f7fafc;
+  transition: all 0.3s ease;
 }
 
 .phone-input-container .react-tel-input .form-control:hover {
-    border-color: #667eea !important;
+  border-color: #cbd5e0;
+  background: white;
 }
 
 .phone-input-container .react-tel-input .form-control:focus {
-    border-color: #667eea !important;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Validation */
-.staff-form .ant-form-item-has-error .ant-input,
-.staff-form .ant-form-item-has-error .ant-select-selector,
-.staff-form .ant-form-item-has-error .ant-picker,
-.staff-form .ant-form-item-has-error .ant-input-password {
-    border-color: #ff4d4f;
+/* Register Button */
+.register-button {
+  height: 50px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white !important;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
 }
 
-.staff-form .ant-form-item-has-error .ant-input:focus,
-.staff-form .ant-form-item-has-error .ant-select-focused .ant-select-selector,
-.staff-form .ant-form-item-has-error .ant-picker-focused,
-.staff-form .ant-form-item-has-error .ant-input-password-focused {
-    border-color: #ff4d4f;
-    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
+.register-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: white !important;
 }
 
-.staff-form .ant-form-item-explain-error {
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
+.register-button:active {
+  transform: translateY(0);
 }
 
-/* ================================
-   Form Actions
-   ================================ */
-
-.form-actions {
-    margin-top: 2rem;
-    margin-bottom: 0;
+/* Password Hint */
+.password-hint {
+  background: #f7fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #718096;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 3px solid #667eea;
 }
 
-.form-actions .ant-form-item-control-input-content {
-    display: flex;
-    gap: 1rem;
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #a0aec0;
+  font-size: 0.9rem;
 }
 
-.submit-button {
-    flex: 2;
-    height: 52px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-    transition: all 0.3s ease;
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.submit-button:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+.divider span {
+  padding: 0 1rem;
 }
 
-.submit-button:active {
-    transform: translateY(0);
+/* Login Button */
+.login-button {
+  height: 48px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #667eea;
+  background: white;
+  transition: all 0.3s ease;
 }
 
-.submit-button .anticon {
-    font-size: 20px;
+.login-button:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: #f7fafc;
 }
 
-.cancel-button {
-    flex: 1;
-    height: 52px;
-    border-radius: 12px;
-    background: #fff;
-    border: 2px solid #e8e8e8;
-    color: #666;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.cancel-button:hover {
-    border-color: #667eea;
-    color: #667eea;
-    background: rgba(102, 126, 234, 0.05);
-}
-
-/* ================================
-   Information Card
-   ================================ */
-
-.info-card h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1a1d3a;
-    margin: 0 0 1.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.info-card h3 .anticon {
-    font-size: 28px;
-    color: #667eea;
-}
-
-.info-content {
-    display: flex;
+/* Responsive Design */
+@media (max-width: 968px) {
+  .staff-container {
     flex-direction: column;
-    gap: 1.5rem;
-}
+  }
 
-.info-item {
-    display: flex;
+  .staff-brand {
+    padding: 2rem;
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .features-list {
     gap: 1rem;
-    padding: 1.25rem;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-    border-radius: 12px;
-    transition: all 0.3s ease;
+  }
+
+  .staff-form-wrapper {
+    padding: 2rem;
+  }
+
+  .back-button {
+    top: 1rem;
+    left: 1rem;
+  }
 }
 
-.info-item:hover {
-    transform: translateX(8px);
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
-}
+@media (max-width: 640px) {
+  .staff-page {
+    padding: 1rem;
+  }
 
-.info-icon {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: white;
-}
+  .staff-brand {
+    padding: 1.5rem;
+  }
 
-.info-item h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1a1d3a;
-    margin: 0 0 0.5rem 0;
-}
+  .brand-icon {
+    font-size: 3rem;
+  }
 
-.info-item p {
-    font-size: 0.95rem;
-    color: #666;
-    margin: 0;
-    line-height: 1.5;
-}
+  .brand-title {
+    font-size: 1.75rem;
+  }
 
-/* ================================
-   Animations
-   ================================ */
+  .brand-tagline {
+    font-size: 1rem;
+  }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+  .staff-form-wrapper {
+    padding: 1.5rem;
+  }
 
-/* ================================
-   Responsive Design
-   ================================ */
+  .form-header h2 {
+    font-size: 1.5rem;
+  }
 
-@media (max-width: 1200px) {
-    .staff-container {
-        grid-template-columns: 1fr;
-    }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 
-    .info-card {
-        order: 2;
-    }
-}
-
-@media (max-width: 768px) {
-    .staff-page {
-        padding: 20px 15px;
-    }
-
-    .staff-card .ant-card-body,
-    .info-card .ant-card-body {
-        padding: 24px 20px;
-    }
-
-    .card-header {
-        margin-bottom: 24px;
-        padding-bottom: 20px;
-    }
-
-    .header-icon-card {
-        width: 56px;
-        height: 56px;
-    }
-
-    .header-icon {
-        font-size: 24px;
-    }
-
-    .card-title {
-        font-size: 20px;
-    }
-
-    .card-subtitle {
-        font-size: 13px;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .form-label {
-        font-size: 0.95rem;
-    }
-
-    .label-icon {
-        font-size: 16px;
-    }
-
-    .staff-form .ant-input,
-    .staff-form .ant-select-selector,
-    .staff-form .ant-picker,
-    .staff-form .ant-input-password {
-        height: 44px;
-        font-size: 0.95rem;
-    }
-
-    .staff-form .ant-input-password input {
-        height: 40px;
-    }
-
-    .gender-radio .ant-radio-button-wrapper {
-        height: 44px;
-        line-height: 42px;
-        padding: 0 20px;
-    }
-
-    .phone-input-container .react-tel-input .form-control {
-        height: 44px !important;
-    }
-
-    .form-actions .ant-form-item-control-input-content {
-        flex-direction: column;
-    }
-
-    .submit-button,
-    .cancel-button {
-        width: 100%;
-        height: 48px;
-        font-size: 1rem;
-    }
-
-    .info-card h3 {
-        font-size: 1.35rem;
-    }
-
-    .info-item {
-        padding: 1rem;
-    }
-
-    .info-icon {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        font-size: 22px;
-    }
-
-    .info-item h4 {
-        font-size: 1rem;
-    }
-
-    .info-item p {
-        font-size: 0.9rem;
-    }
+  .back-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 576px) {
-    .staff-page {
-        padding: 15px 10px;
-    }
+  .staff-page {
+    padding: 0.75rem;
+  }
 
-    .staff-card,
-    .info-card {
-        border-radius: 16px;
-    }
+  .staff-brand {
+    padding: 1.25rem;
+  }
 
-    .staff-card .ant-card-body,
-    .info-card .ant-card-body {
-        padding: 20px 15px;
-    }
+  .brand-icon {
+    font-size: 2.5rem;
+  }
 
-    .card-header-gradient {
-        margin: -20px -15px 20px -15px;
-        padding: 1.5rem 15px;
-    }
+  .brand-title {
+    font-size: 1.5rem;
+  }
 
-    .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 0;
-        padding-bottom: 0;
-        gap: 12px;
-    }
+  .brand-tagline {
+    font-size: 0.9rem;
+  }
 
-    .header-icon-card {
-        width: 56px;
-        height: 56px;
-    }
+  .feature-text h3 {
+    font-size: 0.95rem;
+  }
 
-    .header-icon {
-        font-size: 24px;
-    }
+  .feature-text p {
+    font-size: 0.8rem;
+  }
 
-    .card-title {
-        font-size: 20px;
-    }
+  .staff-form-wrapper {
+    padding: 1.25rem;
+  }
 
-    .card-subtitle {
-        font-size: 13px;
-    }
+  .form-header h2 {
+    font-size: 1.35rem;
+  }
 
-    .form-label {
-        font-size: 0.9rem;
-    }
-
-    .label-icon {
-        font-size: 15px;
-    }
-
-    .staff-form .ant-input,
-    .staff-form .ant-select-selector,
-    .staff-form .ant-picker,
-    .staff-form .ant-input-password {
-        height: 42px;
-        font-size: 0.9rem;
-        border-radius: 10px;
-    }
-
-    .staff-form .ant-input-password input {
-        height: 38px;
-    }
-
-    .staff-form .ant-input-prefix {
-        font-size: 16px;
-    }
-
-    .gender-radio .ant-radio-button-wrapper {
-        height: 42px;
-        line-height: 40px;
-        padding: 0 16px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-    }
-
-    .gender-radio .ant-radio-button-wrapper .anticon {
-        font-size: 16px;
-    }
-
-    .phone-input-container .react-tel-input .form-control {
-        height: 42px !important;
-        font-size: 0.9rem !important;
-        border-radius: 10px !important;
-    }
-
-    .form-actions {
-        margin-top: 1.5rem;
-    }
-
-    .submit-button,
-    .cancel-button {
-        height: 44px;
-        font-size: 0.95rem;
-        border-radius: 10px;
-    }
-
-    .submit-button .anticon {
-        font-size: 18px;
-    }
-
-    .info-card h3 {
-        font-size: 1.25rem;
-    }
-
-    .info-card h3 .anticon {
-        font-size: 24px;
-    }
-
-    .info-content {
-        gap: 1.25rem;
-    }
-
-    .info-item {
-        padding: 0.875rem;
-        border-radius: 10px;
-    }
-
-    .info-icon {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        font-size: 20px;
-        border-radius: 10px;
-    }
-
-    .info-item h4 {
-        font-size: 0.95rem;
-    }
-
-    .info-item p {
-        font-size: 0.85rem;
-    }
-}
-
-/* ================================
-   Accessibility
-   ================================ */
-
-.staff-form .ant-input:focus-visible,
-.staff-form .ant-select-selector:focus-visible,
-.staff-form .ant-picker:focus-visible,
-.staff-form .ant-input-password:focus-visible,
-.submit-button:focus-visible,
-.cancel-button:focus-visible {
-    outline: 2px solid #667eea;
-    outline-offset: 2px;
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-    .submit-button,
-    .cancel-button {
-        border: 2px solid currentColor;
-    }
-
-    .info-item {
-        border: 2px solid #000;
-    }
-}
-
-/* ================================
-   Print Styles
-   ================================ */
-
-@media print {
-    .staff-page {
-        background: white;
-        padding: 0;
-    }
-
-    .staff-container {
-        grid-template-columns: 1fr;
-    }
-
-    .staff-card,
-    .info-card {
-        box-shadow: none;
-        border: 1px solid #ccc;
-    }
-
-    .submit-button,
-    .cancel-button {
-        display: none;
-    }
-
-    .info-card {
-        page-break-before: always;
-    }
+  .form-header p {
+    font-size: 0.85rem;
+  }
 }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Radio, Form, Select, DatePicker, message, Card, Input } from 'antd';
+import { Button, Form, Select, DatePicker, message, Input, Radio } from 'antd';
 import { 
   UserOutlined, 
   EnvironmentOutlined, 
@@ -11,20 +11,19 @@ import {
   LockOutlined, 
   IdcardOutlined,
   ManOutlined,
-  WomanOutlined
+  WomanOutlined,
+  ArrowLeftOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { Layout } from 'antd';
-import AdminSidebar from './components/AdminSidebar';
 import './staff.css';
-
-const { Content } = Layout;
 
 export const Staff = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [mobile, setMobile] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
 
   const validatePassword = (_, value) => {
@@ -74,10 +73,16 @@ export const Staff = () => {
     try {
       const res = await axios.post('http://localhost:5000/api/v1/staffmember/create', body);
       console.log(res?.data?.data);
+      
+      setShowSuccess(true);
       message.success("Staff member registered successfully!");
+      
+      form.resetFields();
+      setMobile('');
+      
       setTimeout(() => {
-        navigate('/staffTable');
-      }, 1000);
+        navigate('/');
+      }, 2000);
     } catch (error) {
       console.log(error.message);
       message.error("Failed to register staff member. Please try again.");
@@ -86,39 +91,98 @@ export const Staff = () => {
     }
   };
 
-  const handleClear = () => {
-    form.resetFields();
-    setMobile('');
-  };
-
   return (
-    <Layout className="dashboard-layout" hasSider>
-      <AdminSidebar selectedKey="/staffTable" />
-      <Layout style={{ marginLeft: 260 }}>
-        <Content>
-          <div className="staff-page">
-        <div className="staff-container">
-          <Card className="staff-card">
-            <div className="card-header-gradient">
-              <div className="card-header">
-                <div className="header-icon-card">
-                  <IdcardOutlined className="header-icon" />
-                </div>
-                <div className="header-text">
-                  <h2 className="card-title">Staff Registration</h2>
-                  <p className="card-subtitle">Add new staff member to the system</p>
-                </div>
+    <div className="staff-page">
+      {/* Animated Background */}
+      <div className="staff-background">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
+      </div>
+
+      {/* Back Button */}
+      <Button 
+        icon={<ArrowLeftOutlined />} 
+        onClick={() => navigate('/')} 
+        className="back-button"
+      >
+        Back to Login
+      </Button>
+
+      {/* Main Container */}
+      <div className="staff-container">
+        {/* Left Side - Branding */}
+        <div className="staff-brand">
+          <div className="brand-icon">👨‍💼</div>
+          <h1 className="brand-title">Staff Registration</h1>
+          <p className="brand-tagline">Join Our Professional Team</p>
+          
+          <div className="features-list">
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
+              </div>
+              <div className="feature-text">
+                <h3>Professional Development</h3>
+                <p>Grow your career with training opportunities</p>
               </div>
             </div>
+            
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
+              </div>
+              <div className="feature-text">
+                <h3>Secure Access System</h3>
+                <p>Protected staff portal with role-based access</p>
+              </div>
+            </div>
+            
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
+              </div>
+              <div className="feature-text">
+                <h3>Team Collaboration</h3>
+                <p>Work together to achieve gym success</p>
+              </div>
+            </div>
+            
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
+              </div>
+              <div className="feature-text">
+                <h3>Flexible Job Roles</h3>
+                <p>Trainer or Cashier positions available</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <Form
-              form={form}
-              onFinish={handleSubmit}
-              layout="vertical"
-              className="staff-form"
-              requiredMark={false}
-              initialValues={{ gender: 'Male', jobRole: 'Trainer' }}
-            >
+        {/* Right Side - Registration Form */}
+        <div className="staff-form-wrapper">
+          <div className="form-header">
+            <h2>Create Staff Account</h2>
+            <p>Enter your information to join our team</p>
+          </div>
+
+          {/* Success Alert */}
+          {showSuccess && (
+            <div className="success-alert">
+              <CheckCircleOutlined />
+              <span>Staff member registered successfully! Redirecting to login...</span>
+            </div>
+          )}
+
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+            layout="vertical"
+            className="staff-form"
+            requiredMark={false}
+            initialValues={{ gender: 'Male', jobRole: 'Trainer' }}
+          >
               <div className="form-row">
                 <Form.Item
                   name="name"
@@ -309,65 +373,39 @@ export const Staff = () => {
                 </Form.Item>
               </div>
 
-              <Form.Item className="form-actions">
+              <Form.Item>
                 <Button
                   type="primary"
                   htmlType="submit"
                   loading={loading}
-                  className="submit-button"
+                  className="register-button"
                   icon={<IdcardOutlined />}
+                  block
                 >
-                  {loading ? 'Registering...' : 'Register Staff'}
-                </Button>
-                <Button
-                  onClick={handleClear}
-                  className="cancel-button"
-                >
-                  Clear Form
+                  {loading ? 'Creating Account...' : 'Create Staff Account'}
                 </Button>
               </Form.Item>
-            </Form>
-          </Card>
+          </Form>
 
-          <Card className="info-card">
-            <h3>
-              <IdcardOutlined /> Staff Registration Information
-            </h3>
-            <div className="info-content">
-              <div className="info-item">
-                <UserOutlined className="info-icon" />
-                <div>
-                  <h4>Personal Details</h4>
-                  <p>Enter accurate personal information for staff identification</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <IdcardOutlined className="info-icon" />
-                <div>
-                  <h4>Job Role</h4>
-                  <p>Assign appropriate role: Trainer or Cashier</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <LockOutlined className="info-icon" />
-                <div>
-                  <h4>Secure Password</h4>
-                  <p>Create a strong password with uppercase, lowercase, numbers, and special characters</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <PhoneOutlined className="info-icon" />
-                <div>
-                  <h4>Contact Information</h4>
-                  <p>Provide valid email and mobile number for communication</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
+          {/* Password Requirements */}
+          <div className="password-hint">
+            <LockOutlined /> Password must contain uppercase, lowercase, number, and special character (min 6 chars)
           </div>
-        </Content>
-      </Layout>
-    </Layout>
+
+          {/* Login Section */}
+          <div className="divider">
+            <span>Already have an account?</span>
+          </div>
+
+          <Button 
+            onClick={() => navigate('/')} 
+            className="login-button"
+            block
+          >
+            Login to Staff Account
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };

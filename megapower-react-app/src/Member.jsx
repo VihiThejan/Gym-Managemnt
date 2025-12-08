@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Radio, InputNumber, Select, DatePicker, message, Card, Input, Form } from 'antd';
+import { Button, Radio, InputNumber, Select, DatePicker, message, Input, Form } from 'antd';
 import { 
   UserOutlined, 
   HomeOutlined, 
@@ -16,9 +16,7 @@ import {
   LockOutlined, 
   UserAddOutlined,
   ArrowLeftOutlined,
-  SafetyOutlined,
-  HeartOutlined,
-  TrophyOutlined
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -99,53 +97,98 @@ export const Member = () => {
     }
   };
 
-  const handleClear = () => {
-    form.resetFields();
-    setMobile('');
-    setShowSuccess(false);
-  };
-
   return (
-    <div className="member-signup-page">
-      <div className="member-signup-background">
-        <div className="gradient-overlay"></div>
+    <div className="member-page">
+      {/* Animated Background */}
+      <div className="member-background">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
       </div>
-      
-      <div className="member-signup-container">
-        <Button 
-          icon={<ArrowLeftOutlined />} 
-          onClick={() => navigate('/')} 
-          className="back-button"
-          type="text"
-        >
-          Back to Login
-        </Button>
 
-        <div className="signup-content">
-          <Card className="signup-card">
-            <div className="card-header">
-              <div className="header-icon-wrapper">
-                <UserAddOutlined className="header-icon" />
+      {/* Back Button */}
+      <Button 
+        icon={<ArrowLeftOutlined />} 
+        onClick={() => navigate('/')} 
+        className="back-button"
+      >
+        Back to Login
+      </Button>
+
+      {/* Main Container */}
+      <div className="member-container">
+        {/* Left Side - Branding */}
+        <div className="member-brand">
+          <div className="brand-icon">🏋️</div>
+          <h1 className="brand-title">Member Registration</h1>
+          <p className="brand-tagline">Start Your Fitness Journey Today</p>
+          
+          <div className="features-list">
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
               </div>
-              <h2 className="card-title">Member Registration</h2>
-              <p className="card-subtitle">Create a new member account</p>
+              <div className="feature-text">
+                <h3>Premium Packages</h3>
+                <p>Gold, Platinum & Diamond membership plans</p>
+              </div>
             </div>
-
-            {showSuccess && (
-              <div className="success-message">
-                <SafetyOutlined />
-                Member registered successfully! Redirecting...
+            
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
               </div>
-            )}
+              <div className="feature-text">
+                <h3>Health Tracking</h3>
+                <p>Monitor your fitness progress and goals</p>
+              </div>
+            </div>
+            
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
+              </div>
+              <div className="feature-text">
+                <h3>Professional Trainers</h3>
+                <p>Expert guidance for your fitness journey</p>
+              </div>
+            </div>
+            
+            <div className="feature-item">
+              <div className="feature-icon">
+                <CheckCircleOutlined />
+              </div>
+              <div className="feature-text">
+                <h3>Modern Facilities</h3>
+                <p>State-of-the-art equipment and amenities</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <Form
-              form={form}
-              onFinish={handleSubmit}
-              layout="vertical"
-              className="signup-form"
-              requiredMark={false}
-              initialValues={{ gender: 'Male', package: 'Gold' }}
-            >
+        {/* Right Side - Registration Form */}
+        <div className="member-form-wrapper">
+          <div className="form-header">
+            <h2>Create Member Account</h2>
+            <p>Enter your information to join our gym</p>
+          </div>
+
+          {/* Success Alert */}
+          {showSuccess && (
+            <div className="success-alert">
+              <CheckCircleOutlined />
+              <span>Member registered successfully! Redirecting to login...</span>
+            </div>
+          )}
+
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+            layout="vertical"
+            className="member-form"
+            requiredMark={false}
+            initialValues={{ gender: 'Male', package: 'Gold' }}
+          >
               <div className="form-row">
                 <Form.Item
                   name="name"
@@ -400,72 +443,42 @@ export const Member = () => {
                 </Form.Item>
               </div>
 
-              <Form.Item className="form-actions">
+              <Form.Item>
                 <Button
                   type="primary"
                   htmlType="submit"
                   loading={loading}
-                  className="submit-button"
+                  className="register-button"
                   icon={<UserAddOutlined />}
                   block
                 >
-                  {loading ? 'Creating Account...' : 'Register Member'}
-                </Button>
-                <Button
-                  onClick={handleClear}
-                  className="clear-button"
-                  block
-                >
-                  Clear Form
+                  {loading ? 'Creating Account...' : 'Create Member Account'}
                 </Button>
               </Form.Item>
+          </Form>
 
-              <div className="login-link-wrapper">
-                <p className="login-text">
-                  Already have an account? 
-                  <Button type="link" onClick={() => navigate('/')} className="login-link">
-                    Login here
-                  </Button>
-                </p>
-              </div>
-            </Form>
-          </Card>
+          {/* Password Requirements */}
+          <div className="password-hint">
+            <LockOutlined /> Password must contain uppercase, lowercase, number, and special character (min 6 chars)
+          </div>
 
-          <Card className="info-card">
-            <h3>
-              <HeartOutlined /> Member Benefits
-            </h3>
-            <div className="info-content">
-              <div className="info-item">
-                <TrophyOutlined className="info-icon" />
-                <div>
-                  <h4>Premium Packages</h4>
-                  <p>Choose from Gold, Platinum, or Diamond packages with exclusive benefits</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <HeartOutlined className="info-icon" />
-                <div>
-                  <h4>Health Tracking</h4>
-                  <p>Monitor your fitness progress with height and weight tracking</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <UserOutlined className="info-icon" />
-                <div>
-                  <h4>Personal Profile</h4>
-                  <p>Secure member account with personalized fitness journey</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <SafetyOutlined className="info-icon" />
-                <div>
-                  <h4>Secure Access</h4>
-                  <p>Your information is protected with secure password authentication</p>
-                </div>
-              </div>
-            </div>
-          </Card>
+          {/* Package Info */}
+          <div className="package-info">
+            <GiftOutlined /> <strong>Packages:</strong> Gold (3 months), Platinum (6 months - 10% off), Diamond (12 months - 10% off + Free Membership)
+          </div>
+
+          {/* Login Section */}
+          <div className="divider">
+            <span>Already have an account?</span>
+          </div>
+
+          <Button 
+            onClick={() => navigate('/')} 
+            className="login-button"
+            block
+          >
+            Login to Member Account
+          </Button>
         </div>
       </div>
     </div>
