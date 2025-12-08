@@ -173,7 +173,7 @@ export const MemberDashboard = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          selectedKeys={['1']}
           onClick={handleMenuClick}
           className="dashboard-menu"
         >
@@ -183,6 +183,22 @@ export const MemberDashboard = () => {
             </Menu.Item>
           ))}
         </Menu>
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            width: '100%',
+            padding: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'rgba(102, 126, 234, 0.1)'
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <MenuUnfoldOutlined style={{ fontSize: '20px', color: 'white', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.3s' }} />
+        </div>
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="dashboard-content-layout">
         <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} className="dashboard-header">

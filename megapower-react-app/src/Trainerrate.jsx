@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Button, Form, Rate, Input, message, Card, Select } from "antd";
+import { Layout, Menu, Button, Form, Rate, Input, message, Card, Select, Table, Tag, Space, Divider } from "antd";
 import { 
   StarOutlined, 
   UserOutlined, 
@@ -14,6 +14,9 @@ import {
   MessageOutlined,
   ScheduleOutlined,
   MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  EyeOutlined,
+  StarFilled,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -59,6 +62,8 @@ export const Trainerrate = () => {
   const [staff, setStaff] = useState([]);
   const [loadingStaff, setLoadingStaff] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [ratings, setRatings] = useState([]);
+  const [loadingRatings, setLoadingRatings] = useState(false);
   const navigate = useNavigate();
 
   const handleMenuClick = ({ key }) => {
@@ -83,6 +88,7 @@ export const Trainerrate = () => {
     }
     
     fetchStaff();
+    fetchRatings();
   }, []);
 
   const fetchStaff = async () => {
@@ -98,6 +104,40 @@ export const Trainerrate = () => {
     }
   };
 
+  const fetchRatings = async () => {
+    try {
+      setLoadingRatings(true);
+      const res = await axios.get('http://localhost:5000/api/v1/trainerrate/list');
+      const ratingsData = res?.data?.data || [];
+      
+      // Fetch staff details to map names
+      const staffRes = await axios.get('http://localhost:5000/api/v1/staffmember/list');
+      const staffData = staffRes?.data?.data || [];
+      
+      // Map ratings with staff names
+      const ratingsWithNames = ratingsData.map(rating => {
+        const staffMember = staffData.find(s => 
+          (s.Staff_ID || s.Staff_Id || s.staff_id || s.id) === rating.Staff_ID
+        );
+        const staffName = staffMember 
+          ? `${staffMember.FName || ''} ${staffMember.LName || ''}`.trim() || staffMember.Name || 'Unknown Trainer'
+          : 'Unknown Trainer';
+        
+        return {
+          ...rating,
+          trainerName: staffName,
+        };
+      });
+      
+      setRatings(ratingsWithNames);
+    } catch (error) {
+      console.error('Error fetching ratings:', error);
+      message.error('Failed to load ratings');
+    } finally {
+      setLoadingRatings(false);
+    }
+  };
+
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
@@ -109,8 +149,20 @@ export const Trainerrate = () => {
       };
 
       await axios.post('http://localhost:5000/api/v1/trainerrate/create', body);
-      // Navigate to success page immediately
-      navigate('/RatingSubmitted');
+      message.success('Rating submitted successfully!');
+      form.resetFields();
+      
+      // Auto-populate member ID again after reset
+      const loginData = localStorage.getItem('login');
+      if (loginData) {
+        const user = JSON.parse(loginData);
+        if (user.Member_Id) {
+          form.setFieldsValue({ memberId: user.Member_Id });
+        }
+      }
+      
+      // Refresh ratings list
+      fetchRatings();
     } catch (error) {
       console.error('Error submitting rating:', error);
       message.error("Failed to submit trainer rating.");
@@ -121,7 +173,63 @@ export const Trainerrate = () => {
 
   const handleClear = () => {
     form.resetFields();
+    // Auto-populate member ID again after clear
+    const loginData = localStorage.getItem('login');
+    if (loginData) {
+      const user = JSON.parse(loginData);
+      if (user.Member_Id) {
+        form.setFieldsValue({ memberId: user.Member_Id });
+      }
+    }
   };
+
+  const columns = [
+    {
+      title: 'Rating ID',
+      dataIndex: 'Rating_ID',
+      key: 'Rating_ID',
+      width: 100,
+      sorter: (a, b) => a.Rating_ID - b.Rating_ID,
+    },
+    {
+      title: 'Trainer Name',
+      dataIndex: 'trainerName',
+      key: 'trainerName',
+      render: (name) => (
+        <Space>
+          <TeamOutlined style={{ color: '#667eea' }} />
+          <strong>{name}</strong>
+        </Space>
+      ),
+    },
+    {
+      title: 'Member ID',
+      dataIndex: 'Member_Id',
+      key: 'Member_Id',
+      width: 120,
+    },
+    {
+      title: 'Rating',
+      dataIndex: 'Rating',
+      key: 'Rating',
+      width: 180,
+      render: (rating) => (
+        <Rate disabled value={rating} style={{ fontSize: 16 }} />
+      ),
+      sorter: (a, b) => a.Rating - b.Rating,
+    },
+    {
+      title: 'Comment',
+      dataIndex: 'Comment',
+      key: 'Comment',
+      ellipsis: true,
+      render: (comment) => (
+        <div style={{ maxWidth: 300 }}>
+          {comment}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <Layout hasSider className="trainerrate-layout">
@@ -139,7 +247,7 @@ export const Trainerrate = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['9']}
+          selectedKeys={['9']}
           onClick={handleMenuClick}
           className="dashboard-menu"
         >
@@ -149,6 +257,22 @@ export const Trainerrate = () => {
             </Menu.Item>
           ))}
         </Menu>
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            width: '100%',
+            padding: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'rgba(102, 126, 234, 0.1)'
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <MenuFoldOutlined style={{ fontSize: '20px', color: 'white' }} />
+        </div>
       </Sider>
 
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }}>
@@ -163,7 +287,7 @@ export const Trainerrate = () => {
 
         <Content className="trainerrate-main-content">
           <div className="trainerrate-content">
-            <Card className="trainerrate-card">
+            <Card className="trainerrate-card" style={{ marginBottom: 24 }}>
             <Form
               form={form}
               onFinish={handleSubmit}
@@ -266,41 +390,37 @@ export const Trainerrate = () => {
             </Form>
           </Card>
 
-          <Card className="info-card">
-            <div className="info-header">
-              <TrophyOutlined className="info-icon" />
-              <h3>Rating Guidelines</h3>
-            </div>
-            <div className="info-content">
-              <div className="info-item">
-                <StarOutlined className="item-icon" />
-                <div>
-                  <h4>Be Honest</h4>
-                  <p>Provide honest feedback to help trainers improve</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <UserOutlined className="item-icon" />
-                <div>
-                  <h4>Be Specific</h4>
-                  <p>Mention specific aspects of training that stood out</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <TeamOutlined className="item-icon" />
-                <div>
-                  <h4>Be Constructive</h4>
-                  <p>Focus on constructive feedback for improvement</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <CommentOutlined className="item-icon" />
-                <div>
-                  <h4>Be Detailed</h4>
-                  <p>Include details about your training experience</p>
-                </div>
-              </div>
-            </div>
+          <Divider>
+            <Space>
+              <StarFilled style={{ color: '#ffd700', fontSize: 20 }} />
+              <span style={{ fontSize: 18, fontWeight: 600, color: '#667eea' }}>All Trainer Ratings</span>
+              <StarFilled style={{ color: '#ffd700', fontSize: 20 }} />
+            </Space>
+          </Divider>
+
+          <Card 
+            className="ratings-table-card"
+            title={
+              <Space>
+                <EyeOutlined style={{ fontSize: 20, color: '#667eea' }} />
+                <span style={{ fontSize: 18, fontWeight: 600 }}>Submitted Ratings</span>
+                <Tag color="purple">{ratings.length} Total</Tag>
+              </Space>
+            }
+          >
+            <Table
+              columns={columns}
+              dataSource={ratings}
+              rowKey="Rating_ID"
+              loading={loadingRatings}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} ratings`,
+              }}
+              scroll={{ x: 800 }}
+              className="ratings-table"
+            />
           </Card>
         </div>
         </Content>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Card, Button, Modal, Form, Input, Select, DatePicker, Table, Statistic, Row, Col, Tabs, message, Tag, Progress } from 'antd';
 import {
   MenuUnfoldOutlined,
+  MenuFoldOutlined,
   UserOutlined,
   DollarOutlined,
   NotificationOutlined,
@@ -374,7 +375,7 @@ export const WorkoutTracker = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['10']}
+          selectedKeys={['10']}
           onClick={handleMenuClick}
           className="dashboard-menu"
         >
@@ -384,6 +385,22 @@ export const WorkoutTracker = () => {
             </Menu.Item>
           ))}
         </Menu>
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            width: '100%',
+            padding: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'rgba(102, 126, 234, 0.1)'
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <MenuFoldOutlined style={{ fontSize: '20px', color: 'white' }} />
+        </div>
       </Sider>
 
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }}>
@@ -392,10 +409,10 @@ export const WorkoutTracker = () => {
             <div className="header-title">
               <TrophyOutlined className="header-icon" />
               <div>
-                <h1 style={{ color: 'white', margin: 0, fontSize: '28px', fontWeight: 'bold' }}>
+                <h1 style={{ color: 'white', margin: 0, fontSize: '24px', fontWeight: 'bold', lineHeight: '1.2' }}>
                   Workout Tracker
                 </h1>
-                <p style={{ color: 'rgba(255,255,255,0.8)', margin: 0, fontSize: '14px' }}>
+                <p style={{ color: 'rgba(255,255,255,0.8)', margin: '4px 0 0 0', fontSize: '13px' }}>
                   Track your progress and crush your goals
                 </p>
               </div>

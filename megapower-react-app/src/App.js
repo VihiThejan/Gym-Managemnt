@@ -19,6 +19,7 @@ import { Staff } from "./staff";
 import StaffTable   from "./staffTable";
 import StaffInfoTable from "./StaffInfoTable";
 import { EditStaff } from "./Editstaff";
+import { StaffProfile } from "./StaffProfile";
 
 import {Member  } from "./Member";
 import {MemberTable  } from "./MemberTable";
@@ -117,6 +118,9 @@ function App() {
         <Route path="/Resetpw" element={<Reset />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/StaffDashboard" element={<StaffDashboard />} />
+        <Route path="/staffDashboard" element={<StaffDashboard />} />
+        <Route path="/StaffProfile" element={<StaffProfile />} />
+        <Route path="/staffProfile" element={<StaffProfile />} />
         <Route path="/MemberDashboard" element={<MemberDashboard />} />
         <Route path="/MemberProfile" element={<MemberProfile />} />
         <Route path="/MemberPayment" element={<MemberPayment />} />

@@ -19,6 +19,7 @@ import {
   RocketOutlined,
   ArrowLeftOutlined,
   MenuUnfoldOutlined,
+  MenuFoldOutlined,
   DollarOutlined,
   NotificationOutlined,
   CommentOutlined,
@@ -510,7 +511,7 @@ const MemberAppointment = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['7']}
+          selectedKeys={['7']}
           onClick={handleMenuClick}
           className="dashboard-menu"
         >
@@ -520,6 +521,22 @@ const MemberAppointment = () => {
             </Menu.Item>
           ))}
         </Menu>
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            width: '100%',
+            padding: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'rgba(102, 126, 234, 0.1)'
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <MenuFoldOutlined style={{ fontSize: '20px', color: 'white' }} />
+        </div>
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="dashboard-content-layout">
       <Header className="member-appointment-header">
