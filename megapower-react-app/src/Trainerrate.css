@@ -57,12 +57,10 @@
 }
 
 .trainerrate-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 32px;
-  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Main Card */
@@ -693,6 +691,7 @@
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
   overflow: hidden;
   animation: slideUp 0.6s ease-out;
+  width: 100%;
 }
 
 .ratings-table-card .ant-card-head {
@@ -708,6 +707,7 @@
 
 .ratings-table {
   margin-top: 8px;
+  width: 100%;
 }
 
 .ratings-table .ant-table-thead > tr > th {
@@ -715,6 +715,8 @@
   color: #667eea;
   font-weight: 600;
   border-bottom: 2px solid #667eea;
+  font-size: 15px;
+  padding: 16px;
 }
 
 .ratings-table .ant-table-tbody > tr:hover {
@@ -746,4 +748,39 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Reply Button */
+.reply-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.reply-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+}
+
+.reply-button:active {
+  transform: translateY(0);
+}
+
+/* Reply Modal Styling */
+.ant-modal-header {
+  border-bottom: 2px solid #f0f0f0;
+  padding: 20px 24px;
+}
+
+.ant-modal-body {
+  padding: 24px;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 16px 24px;
 }

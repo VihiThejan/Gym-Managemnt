@@ -111,18 +111,44 @@ const memberLogin = async (req, res) => {
 const memberDelete = async (req, res) => {
     try{
         const id = req.params.id
+        const memberId = parseInt(id);
+        
+        // Delete related records first to avoid foreign key constraint violations
+        // Delete appointments
+        await prisma.appointment.deleteMany({
+            where: {
+                Member_Id: memberId
+            }
+        });
+        
+        // Delete attendance records
+        await prisma.attendance.deleteMany({
+            where: {
+                Member_Id: memberId
+            }
+        });
+        
+        // Delete trainer ratings
+        await prisma.trainerrate.deleteMany({
+            where: {
+                Member_Id: memberId
+            }
+        });
+        
+        // Now delete the member
         const data = await prisma.member.delete({
             where: {
-                Member_Id: parseInt(id)
+                Member_Id: memberId
             },
            
         })
         res.status(200).json({
             code: 200,
-            message: 'Member Delete successfully',
+            message: 'Member deleted successfully',
             data
         })
     }catch(ex){
+        console.error('Error deleting member:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',

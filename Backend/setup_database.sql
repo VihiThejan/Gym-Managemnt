@@ -253,13 +253,19 @@ CREATE TABLE `trainerrate` (
   `Member_Id` INT NOT NULL,
   `Rating` INT NOT NULL CHECK (`Rating` >= 1 AND `Rating` <= 5),
   `Comment` TEXT,
+  `Reply` TEXT,
+  `Reply_Date` DATETIME,
+  `Reply_By_Staff_ID` INT,
   `Date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Rating_ID`),
   INDEX `idx_staff_id` (`Staff_ID`),
   INDEX `idx_member_id` (`Member_Id`),
+  INDEX `idx_reply_by` (`Reply_By_Staff_ID`),
   CONSTRAINT `fk_trainerrate_staff` FOREIGN KEY (`Staff_ID`) REFERENCES `staffmember` (`Staff_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_trainerrate_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_trainerrate_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_trainerrate_reply_staff` FOREIGN KEY (`Reply_By_Staff_ID`) REFERENCES `staffmember` (`Staff_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================

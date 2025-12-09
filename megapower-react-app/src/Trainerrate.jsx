@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Button, Form, Rate, Input, message, Card, Select, Table, Tag, Space, Divider } from "antd";
+import { Layout, Menu, Rate, message, Card, Table, Tag, Space, Button, Modal, Input } from "antd";
 import { 
   StarOutlined, 
   UserOutlined, 
-  TeamOutlined, 
-  CommentOutlined,
-  CheckCircleOutlined,
+  TeamOutlined,
   TrophyOutlined,
   DashboardOutlined,
   DollarOutlined,
@@ -13,19 +11,19 @@ import {
   CalendarOutlined,
   MessageOutlined,
   ScheduleOutlined,
-  MenuUnfoldOutlined,
   MenuFoldOutlined,
-  EyeOutlined,
   StarFilled,
+  CommentOutlined,
+  SendOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import Logo from './components/Logo';
 import './Trainerrate.css';
 
-const { Header, Content, Sider } = Layout;
-
 const { TextArea } = Input;
+
+const { Header, Content, Sider } = Layout;
 
 const siderStyle = {
   overflow: 'auto',
@@ -57,13 +55,13 @@ const items = [
 ];
 
 export const Trainerrate = () => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [staff, setStaff] = useState([]);
-  const [loadingStaff, setLoadingStaff] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [ratings, setRatings] = useState([]);
   const [loadingRatings, setLoadingRatings] = useState(false);
+  const [replyModalVisible, setReplyModalVisible] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [replyLoading, setReplyLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleMenuClick = ({ key }) => {
@@ -74,34 +72,45 @@ export const Trainerrate = () => {
   };
 
   useEffect(() => {
-    // Auto-populate member ID from logged-in user
-    const loginData = localStorage.getItem('login');
-    if (loginData) {
-      try {
-        const user = JSON.parse(loginData);
-        if (user.Member_Id) {
-          form.setFieldsValue({ memberId: user.Member_Id });
-        }
-      } catch (error) {
-        console.error('Error parsing login data:', error);
-      }
-    }
-    
-    fetchStaff();
     fetchRatings();
   }, []);
 
-  const fetchStaff = async () => {
-    try {
-      setLoadingStaff(true);
-      const res = await axios.get('http://localhost:5000/api/v1/staffmember/list');
-      setStaff(res?.data?.data || []);
-    } catch (error) {
-      console.error('Error fetching staff:', error);
-      message.error('Failed to load staff');
-    } finally {
-      setLoadingStaff(false);
+  const handleReplyClick = (record) => {
+    setSelectedRating(record);
+    setReplyModalVisible(true);
+    setReplyText('');
+  };
+
+  const handleReplySubmit = async () => {
+    if (!replyText.trim()) {
+      message.warning('Please enter a reply message');
+      return;
     }
+
+    try {
+      setReplyLoading(true);
+      // You can implement the reply API endpoint here
+      // await axios.post('http://localhost:5000/api/v1/trainerrate/reply', {
+      //   ratingId: selectedRating.Rating_ID,
+      //   reply: replyText
+      // });
+      
+      message.success('Reply sent successfully!');
+      setReplyModalVisible(false);
+      setReplyText('');
+      setSelectedRating(null);
+    } catch (error) {
+      console.error('Error sending reply:', error);
+      message.error('Failed to send reply');
+    } finally {
+      setReplyLoading(false);
+    }
+  };
+
+  const handleReplyCancel = () => {
+    setReplyModalVisible(false);
+    setReplyText('');
+    setSelectedRating(null);
   };
 
   const fetchRatings = async () => {
@@ -135,51 +144,6 @@ export const Trainerrate = () => {
       message.error('Failed to load ratings');
     } finally {
       setLoadingRatings(false);
-    }
-  };
-
-  const handleSubmit = async (values) => {
-    try {
-      setLoading(true);
-      const body = {
-        staffId: values.staffId,
-        memberId: values.memberId,
-        rating: values.rating,
-        comment: values.comment,
-      };
-
-      await axios.post('http://localhost:5000/api/v1/trainerrate/create', body);
-      message.success('Rating submitted successfully!');
-      form.resetFields();
-      
-      // Auto-populate member ID again after reset
-      const loginData = localStorage.getItem('login');
-      if (loginData) {
-        const user = JSON.parse(loginData);
-        if (user.Member_Id) {
-          form.setFieldsValue({ memberId: user.Member_Id });
-        }
-      }
-      
-      // Refresh ratings list
-      fetchRatings();
-    } catch (error) {
-      console.error('Error submitting rating:', error);
-      message.error("Failed to submit trainer rating.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleClear = () => {
-    form.resetFields();
-    // Auto-populate member ID again after clear
-    const loginData = localStorage.getItem('login');
-    if (loginData) {
-      const user = JSON.parse(loginData);
-      if (user.Member_Id) {
-        form.setFieldsValue({ memberId: user.Member_Id });
-      }
     }
   };
 
@@ -224,9 +188,26 @@ export const Trainerrate = () => {
       key: 'Comment',
       ellipsis: true,
       render: (comment) => (
-        <div style={{ maxWidth: 300 }}>
+        <div style={{ maxWidth: 400 }}>
           {comment}
         </div>
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: 120,
+      fixed: 'right',
+      render: (_, record) => (
+        <Button
+          type="primary"
+          icon={<CommentOutlined />}
+          onClick={() => handleReplyClick(record)}
+          className="reply-button"
+          size="middle"
+        >
+          Reply
+        </Button>
       ),
     },
   ];
@@ -287,144 +268,94 @@ export const Trainerrate = () => {
 
         <Content className="trainerrate-main-content">
           <div className="trainerrate-content">
-            <Card className="trainerrate-card" style={{ marginBottom: 24 }}>
-            <Form
-              form={form}
-              onFinish={handleSubmit}
-              layout="vertical"
-              className="trainerrate-form"
+            <Card 
+              className="ratings-table-card"
+              title={
+                <Space>
+                  <StarFilled style={{ fontSize: 24, color: '#ffd700' }} />
+                  <span style={{ fontSize: 20, fontWeight: 700 }}>Trainer Ratings</span>
+                  <Tag color="purple" style={{ fontSize: 14, padding: '4px 12px' }}>{ratings.length} Total</Tag>
+                </Space>
+              }
             >
-              <div className="form-header">
-                <h2 className="form-title">
-                  <StarOutlined className="title-icon" />
-                  Rate Your Trainer
-                </h2>
-                <p className="form-description">Share your feedback to help us improve our training services</p>
-              </div>
-
-              <Form.Item
-                label="Select Trainer"
-                name="staffId"
-                rules={[{ required: true, message: 'Please select a trainer' }]}
-                className="form-item"
-              >
-                <Select
-                  placeholder="Choose your trainer"
-                  size="large"
-                  showSearch
-                  loading={loadingStaff}
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                  suffixIcon={<TeamOutlined />}
-                >
-                  {staff.map((staffMember) => {
-                    const staffId = staffMember.Staff_ID || staffMember.Staff_Id || staffMember.staff_id || staffMember.id;
-                    const staffName = `${staffMember.FName || ''} ${staffMember.LName || ''}`.trim() || staffMember.Name || staffMember.name || staffMember.StaffName || 'Unknown';
-                    const position = staffMember.Position || 'Trainer';
-                    return (
-                      <Select.Option key={staffId} value={staffId} label={`${staffName} - ${position}`}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <TeamOutlined style={{ color: '#667eea' }} />
-                          <span><strong>{staffName}</strong> - {position}</span>
-                        </div>
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-
-              {/* Member ID is auto-populated from logged-in user */}
-              <Form.Item
-                name="memberId"
-                rules={[{ required: true, message: 'Member ID is required' }]}
-                hidden
-              >
-                <Input type="hidden" />
-              </Form.Item>
-
-              <Form.Item
-                label="Rating"
-                name="rating"
-                rules={[{ required: true, message: 'Please provide a rating' }]}
-                className="rating-item"
-              >
-                <Rate className="custom-rate" />
-              </Form.Item>
-
-              <Form.Item
-                label="Comment"
-                name="comment"
-                rules={[
-                  { required: true, message: 'Please provide a comment' },
-                  { min: 10, message: 'Comment must be at least 10 characters' }
-                ]}
-                className="form-item"
-              >
-                <TextArea
-                  rows={5}
-                  placeholder="Share your experience and feedback about the trainer..."
-                  prefix={<CommentOutlined />}
-                  maxLength={500}
-                  showCount
-                />
-              </Form.Item>
-
-              <Form.Item className="form-actions">
-                <Button 
-                  type="primary" 
-                  htmlType="submit" 
-                  icon={<CheckCircleOutlined />}
-                  loading={loading}
-                  className="submit-button"
-                >
-                  Submit Rating
-                </Button>
-                <Button 
-                  onClick={handleClear}
-                  className="clear-button"
-                >
-                  Clear
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
-
-          <Divider>
-            <Space>
-              <StarFilled style={{ color: '#ffd700', fontSize: 20 }} />
-              <span style={{ fontSize: 18, fontWeight: 600, color: '#667eea' }}>All Trainer Ratings</span>
-              <StarFilled style={{ color: '#ffd700', fontSize: 20 }} />
-            </Space>
-          </Divider>
-
-          <Card 
-            className="ratings-table-card"
-            title={
-              <Space>
-                <EyeOutlined style={{ fontSize: 20, color: '#667eea' }} />
-                <span style={{ fontSize: 18, fontWeight: 600 }}>Submitted Ratings</span>
-                <Tag color="purple">{ratings.length} Total</Tag>
-              </Space>
-            }
-          >
-            <Table
-              columns={columns}
-              dataSource={ratings}
-              rowKey="Rating_ID"
-              loading={loadingRatings}
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} ratings`,
-              }}
-              scroll={{ x: 800 }}
-              className="ratings-table"
-            />
-          </Card>
-        </div>
+              <Table
+                columns={columns}
+                dataSource={ratings}
+                rowKey="Rating_ID"
+                loading={loadingRatings}
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showTotal: (total) => `Total ${total} ratings`,
+                  pageSizeOptions: ['10', '20', '50', '100'],
+                }}
+                scroll={{ x: 1200 }}
+                className="ratings-table"
+              />
+            </Card>
+          </div>
         </Content>
       </Layout>
+
+      {/* Reply Modal */}
+      <Modal
+        title={
+          <Space>
+            <CommentOutlined style={{ color: '#667eea', fontSize: 20 }} />
+            <span style={{ fontSize: 18, fontWeight: 600 }}>Reply to Rating</span>
+          </Space>
+        }
+        open={replyModalVisible}
+        onOk={handleReplySubmit}
+        onCancel={handleReplyCancel}
+        confirmLoading={replyLoading}
+        okText="Send Reply"
+        cancelText="Cancel"
+        width={600}
+        okButtonProps={{
+          icon: <SendOutlined />,
+          style: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none' }
+        }}
+      >
+        {selectedRating && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ background: '#f5f5f5', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <div>
+                  <strong>Trainer:</strong> <Tag color="blue">{selectedRating.trainerName}</Tag>
+                </div>
+                <div>
+                  <strong>Member ID:</strong> <Tag>{selectedRating.Member_Id}</Tag>
+                </div>
+                <div>
+                  <strong>Rating:</strong> <Rate disabled value={selectedRating.Rating} style={{ fontSize: 14 }} />
+                </div>
+                <div>
+                  <strong>Comment:</strong>
+                  <div style={{ marginTop: 8, padding: 12, background: 'white', borderRadius: 6, border: '1px solid #e0e0e0' }}>
+                    {selectedRating.Comment}
+                  </div>
+                </div>
+              </Space>
+            </div>
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#333' }}>
+                Your Reply:
+              </label>
+              <TextArea
+                rows={5}
+                placeholder="Type your reply here..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                maxLength={500}
+                showCount
+                style={{ borderRadius: 8 }}
+              />
+            </div>
+          </div>
+        )}
+      </Modal>
     </Layout>
   );
 };

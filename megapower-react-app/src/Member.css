@@ -664,3 +664,211 @@
     transform: scale(1);
   }
 }
+
+/* ==========================================
+   Admin Member Form Styles
+   ========================================== */
+.member-form-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-header-section {
+  margin-bottom: 24px;
+}
+
+.back-button {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  transform: translateX(-4px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.header-icon-large {
+  font-size: 48px;
+  color: white;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+}
+
+.page-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.member-form-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.member-form-card .form-wrapper {
+  padding: 24px;
+}
+
+.member-form .ant-form-item {
+  margin-bottom: 20px;
+}
+
+.member-form .input-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.member-form .form-input,
+.member-form .password-input {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.member-form .form-input:hover,
+.member-form .password-input:hover {
+  border-color: #667eea;
+}
+
+.member-form .form-input:focus,
+.member-form .password-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.member-form .gender-radio {
+  width: 100%;
+}
+
+.member-form .gender-radio .ant-radio-button-wrapper {
+  flex: 1;
+  text-align: center;
+  border-radius: 8px;
+  margin-right: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.member-form .gender-radio .ant-radio-button-wrapper-checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+}
+
+.member-form .form-actions {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+}
+
+.member-form .submit-button {
+  flex: 2;
+  height: 44px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.member-form .submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.member-form .cancel-button {
+  flex: 1;
+  height: 44px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.member-form .cancel-button:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.success-alert {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.phone-input-container .react-tel-input {
+  width: 100%;
+}
+
+.phone-input-container .react-tel-input .form-control {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.phone-input-container .react-tel-input .form-control:hover {
+  border-color: #667eea;
+}
+
+.phone-input-container .react-tel-input .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.password-requirements {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+  color: #666;
+  font-size: 13px;
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
