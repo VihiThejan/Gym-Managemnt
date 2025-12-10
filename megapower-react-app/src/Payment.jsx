@@ -1,161 +1,98 @@
 import React, { useState, useEffect } from "react";
-import { Button, DatePicker, Select, message, Card, Input, Form, Layout } from "antd";
+import { Button, DatePicker, Select, message, Input, Form, Layout, Card, InputNumber } from "antd";
 import { 
   DollarOutlined, 
   UserOutlined, 
   GiftOutlined, 
   CalendarOutlined,
-  CreditCardOutlined 
+  CreditCardOutlined,
+  ArrowLeftOutlined,
+  SaveOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 import AdminSidebar from './components/AdminSidebar';
 import './Payment.css';
+import './Dashboard.css';
 
 const { Content } = Layout;
 
 export const Payment = () => {
+  const [form] = Form.useForm();
   const navigate = useNavigate();
-
-  const [id, setId] = useState("");
-  const [packageId, setPackageId] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState([]);
-  const [loadingMembers, setLoadingMembers] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // Fetch member list
   useEffect(() => {
     fetchMembers();
   }, []);
 
   const fetchMembers = async () => {
     try {
-      setLoadingMembers(true);
       const response = await axios.get("http://localhost:5000/api/v1/member/list");
       const memberData = response?.data?.data || [];
       
-      // Format members for Select dropdown
       const formattedMembers = memberData.map(member => ({
         value: member.Member_Id,
-        label: `${member.FName} (ID: ${member.Member_Id})`,
-        email: member.Email,
-        contact: member.Contact
+        label: `${member.FName} - ID: ${member.Member_Id}`,
+        package: member.Package
       }));
       
       setMembers(formattedMembers);
     } catch (error) {
       console.error('Error fetching members:', error);
       message.error("Failed to load members list");
-    } finally {
-      setLoadingMembers(false);
-    }
-  };
-
-  // Ensure PayHere is available
-  useEffect(() => {
-    if (!window.payhere) {
-      console.error("PayHere script not loaded!");
-    }
-  }, []);
-
-  const handlePayHerePayment = () => {
-    if (!window.payhere) {
-      message.error("Payment gateway is not available. Please try again later.");
-      return;
-    }
-
-    const payment = {
-      sandbox: true, // Change to false in production
-      merchant_id: "1229586", // Replace with your PayHere Merchant ID
-      return_url: "http://localhost:3000/payment-success", // Success redirect
-      cancel_url: "http://localhost:3000/payment-cancel", // Cancel redirect
-      notify_url: "http://localhost:5000/api/v1/payment/notify", // Backend webhook
-
-      order_id: `ORDER_${new Date().getTime()}`, // Unique order ID
-      items: "Gym Membership", // Description
-      amount: amount, // Payment amount
-      currency: "LKR", // Currency
-      first_name: "John",
-      last_name: "Doe",
-      email: "janithchanuka68@gmail.com",
-      phone: "0710451944",
-      address: "Colombo",
-      city: "Colombo",
-      country: "Sri Lanka",
-    };
-
-    window.payhere.onCompleted = function (orderId) {
-      console.log("Payment completed. OrderID:", orderId);
-      message.success("Payment Successful!");
-      navigate("/Paymenttable");
-    };
-
-    window.payhere.onDismissed = function () {
-      console.log("Payment dismissed");
-      message.warning("Payment was canceled.");
-    };
-
-    window.payhere.onError = function (error) {
-      console.log("Payment error:", error);
-      message.error("Payment failed.");
-    };
-
-    window.payhere.startPayment(payment);
-  };
-
-  const validateForm = () => {
-    if (!id || !packageId || !amount || !date) {
-      message.error("Please fill in all required fields.");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
-
-    setSubmitting(true);
-
-    const formattedDate = date ? date.toISOString() : "";
-
-    const body = {
-      memberId: id,
-      packageId: packageId,
-      amount: amount,
-      date: formattedDate,
-    };
-
-    console.log("Sending payload:", body);
-
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/v1/payment/create",
-        body
-      );
-      console.log(res?.data?.data);
-      message.success("Payment registered successfully.");
-      handlePayHerePayment();
-    } catch (Err) {
-      console.log(Err.message);
-      message.error("Failed to register Payment.");
-    } finally {
-      setSubmitting(false);
     }
   };
 
   const packageOptions = [
-    { value: "1", label: "Basic - Rs. 5,000/month" },
-    { value: "2", label: "Standard - Rs. 8,000/month" },
-    { value: "3", label: "Premium - Rs. 12,000/month" },
+    { value: 1, label: "Basic - Rs. 5,000/month", amount: 5000 },
+    { value: 2, label: "Standard - Rs. 8,000/month", amount: 8000 },
+    { value: 3, label: "Premium - Rs. 25,000/month", amount: 25000 }
   ];
 
-  const handleReset = () => {
-    setId("");
-    setPackageId("");
-    setAmount("");
-    setDate(null);
+  const handlePackageChange = (value) => {
+    const selectedPackage = packageOptions.find(pkg => pkg.value === value);
+    if (selectedPackage) {
+      form.setFieldsValue({ amount: selectedPackage.amount });
+    }
+  };
+
+  const handleSubmit = async (values) => {
+    setLoading(true);
+
+    const formattedDate = values.date ? values.date.toISOString() : new Date().toISOString();
+
+    const body = {
+      memberId: values.memberId,
+      packageId: values.packageId,
+      amount: values.amount,
+      date: formattedDate,
+    };
+
+    try {
+      await axios.post("http://localhost:5000/api/v1/payment/create", body);
+      
+      setShowSuccess(true);
+      message.success("Payment added successfully!");
+      
+      setTimeout(() => {
+        navigate("/Paymenttable");
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      message.error("Failed to add payment. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    navigate("/Paymenttable");
   };
 
   return (
@@ -163,123 +100,145 @@ export const Payment = () => {
       <AdminSidebar selectedKey="/Paymenttable" />
       <Layout style={{ marginLeft: 260 }}>
         <Content className="dashboard-content">
-          <div className="payment-page">
-        <div className="payment-header">
-          <div className="header-content">
-            <div className="header-icon">
-              <CreditCardOutlined />
+          <div className="payment-form-container">
+            {showSuccess && (
+              <div className="success-alert">
+                <CheckCircleOutlined /> Payment added successfully!
+              </div>
+            )}
+            
+            <div className="form-header-section">
+              <Button 
+                icon={<ArrowLeftOutlined />} 
+                onClick={handleCancel}
+                className="back-button"
+              >
+                Back
+              </Button>
+              <div className="header-title-section">
+                <CreditCardOutlined className="header-icon" />
+                <h1>Add New Payment</h1>
+              </div>
             </div>
-            <div className="header-text">
-              <h1>Process Payment</h1>
-              <p>Complete your membership payment</p>
-            </div>
-          </div>
-        </div>
 
-        <div className="payment-content">
-          <Card className="payment-card">
-            <Form onFinish={handleSubmit} layout="vertical">
-              <Form.Item>
-                <label className="form-label">
-                  <UserOutlined className="label-icon" />
-                  Select Member
-                </label>
-                <Select
-                  placeholder="Select a member"
-                  value={id}
-                  onChange={(value) => setId(value)}
-                  options={members}
-                  size="large"
-                  showSearch
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            <Card className="payment-form-card">
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSubmit}
+                className="payment-form"
+                initialValues={{
+                  date: moment()
+                }}
+              >
+                <Form.Item
+                  label={
+                    <span className="input-label">
+                      <UserOutlined /> Member
+                    </span>
                   }
-                  loading={loadingMembers}
-                  className="member-select"
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <label className="form-label">
-                  <GiftOutlined className="label-icon" />
-                  Membership Package
-                </label>
-                <Select
-                  placeholder="Select membership package"
-                  value={packageId}
-                  onChange={(value) => setPackageId(value)}
-                  options={packageOptions}
-                  size="large"
-                  className="package-select"
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <label className="form-label">
-                  <DollarOutlined className="label-icon" />
-                  Amount (LKR)
-                </label>
-                <Input
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
-                  size="large"
-                  prefix="Rs."
-                  type="number"
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <label className="form-label">
-                  <CalendarOutlined className="label-icon" />
-                  Payment Date
-                </label>
-                <DatePicker
-                  onChange={(date) => setDate(date)}
-                  style={{ width: '100%' }}
-                  size="large"
-                  placeholder="Select payment date"
-                />
-              </Form.Item>
-
-              <Form.Item className="form-actions">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  loading={submitting}
-                  disabled={submitting}
-                  icon={<CreditCardOutlined />}
-                  className="submit-button"
+                  name="memberId"
+                  rules={[{ required: true, message: 'Please select a member' }]}
                 >
-                  {submitting ? 'Processing...' : 'Submit & Pay'}
-                </Button>
-                <Button
-                  onClick={handleReset}
-                  size="large"
-                  className="cancel-button"
-                >
-                  Cancel
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
+                  <Select
+                    placeholder="Select member"
+                    showSearch
+                    optionFilterProp="label"
+                    options={members}
+                    size="large"
+                    className="form-input"
+                  />
+                </Form.Item>
 
-          <div className="payment-info">
-            <Card className="info-card">
-              <h3>Payment Information</h3>
-              <ul>
-                <li>💳 Secure payment gateway powered by PayHere</li>
-                <li>✅ Your payment details are encrypted and secure</li>
-                <li>📧 Receipt will be sent to your registered email</li>
-                <li>🔄 Membership activates immediately after payment</li>
-              </ul>
+                <Form.Item
+                  label={
+                    <span className="input-label">
+                      <GiftOutlined /> Package
+                    </span>
+                  }
+                  name="packageId"
+                  rules={[{ required: true, message: 'Please select a package' }]}
+                >
+                  <Select
+                    placeholder="Select package"
+                    options={packageOptions}
+                    onChange={handlePackageChange}
+                    size="large"
+                    className="form-input"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <span className="input-label">
+                      <DollarOutlined /> Amount (Rs.)
+                    </span>
+                  }
+                  name="amount"
+                  rules={[
+                    { required: true, message: 'Please enter amount' },
+                    { 
+                      type: 'number', 
+                      min: 1000, 
+                      message: 'Amount must be at least Rs. 1,000' 
+                    }
+                  ]}
+                >
+                  <InputNumber
+                    placeholder="Enter amount"
+                    style={{ width: '100%' }}
+                    size="large"
+                    className="form-input"
+                    min={1000}
+                    max={100000}
+                    formatter={value => `Rs. ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    parser={value => value.replace(/Rs\.\s?|(,*)/g, '')}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <span className="input-label">
+                      <CalendarOutlined /> Payment Date
+                    </span>
+                  }
+                  name="date"
+                  rules={[{ required: true, message: 'Please select payment date' }]}
+                >
+                  <DatePicker
+                    style={{ width: '100%' }}
+                    size="large"
+                    format="YYYY-MM-DD"
+                    className="form-input"
+                  />
+                </Form.Item>
+
+                <Form.Item className="form-actions">
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<SaveOutlined />}
+                    loading={loading}
+                    size="large"
+                    className="submit-button"
+                  >
+                    Save Payment
+                  </Button>
+                  <Button
+                    onClick={handleCancel}
+                    size="large"
+                    className="cancel-button"
+                  >
+                    Cancel
+                  </Button>
+                </Form.Item>
+              </Form>
             </Card>
-          </div>
-        </div>
           </div>
         </Content>
       </Layout>
     </Layout>
   );
 };
+
+export default Payment;
