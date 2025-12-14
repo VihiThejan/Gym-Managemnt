@@ -30,6 +30,7 @@ import {MemberAnnouncements  } from "./MemberAnnouncements";
 import {MemberAttendance  } from "./MemberAttendance";
 import MemberAppointment from "./MemberAppointment";
 import {MemberChat  } from "./MemberChat";
+import {MemberRegister  } from "./MemberRegister";
 
 import {Equipment  } from "./Equipment";
 import {EditEquipment  } from "./EditEquipment";
@@ -112,10 +113,12 @@ function App() {
 
     
         <Route path="/" element={<Login />} />
+        <Route path="/Login" element={<Login />} />
         
         <Route path="/Forgotpw" element={<ForgotPassword  />} />
         
         <Route path="/Resetpw" element={<Reset />} />
+        <Route path="/MemberRegister" element={<MemberRegister />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/StaffDashboard" element={<StaffDashboard />} />
         <Route path="/staffDashboard" element={<StaffDashboard />} />

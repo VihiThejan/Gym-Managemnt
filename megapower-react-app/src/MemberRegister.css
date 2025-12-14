@@ -1,0 +1,729 @@
+/* ================================
+   Member Registration Page - Modern UI/UX
+   ================================ */
+
+.member-register-page {
+    min-height: 100vh;
+    max-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ================================
+   Container
+   ================================ */
+
+.register-container {
+    width: 100%;
+    max-width: 900px;
+    max-height: 95vh;
+    overflow-y: auto;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ================================
+   Back Button
+   ================================ */
+
+.back-to-login-btn {
+    color: white !important;
+    font-size: 0.938rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    padding: 6px 12px;
+    height: auto;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.back-to-login-btn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    transform: translateX(-4px);
+}
+
+/* ================================
+   Card
+   ================================ */
+
+.register-card {
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: none;
+    overflow: hidden;
+}
+
+.register-card .ant-card-body {
+    padding: 1.5rem;
+}
+
+/* ================================
+   Header
+   ================================ */
+
+.register-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.gym-logo {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.register-header h1 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.register-header p {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.938rem;
+    color: #666;
+}
+
+.register-progress {
+    margin-top: 0.5rem;
+}
+
+/* ================================
+   Steps
+   ================================ */
+
+.register-steps {
+    margin-bottom: 1.25rem;
+}
+
+.register-steps .ant-steps-item-process .ant-steps-item-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+}
+
+.register-steps .ant-steps-item-finish .ant-steps-item-icon {
+    border-color: #52c41a;
+}
+
+.register-steps .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
+    color: #52c41a;
+}
+
+/* ================================
+   Step Content
+   ================================ */
+
+.step-content {
+    min-height: 280px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+}
+
+.step-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.step-title .anticon {
+    color: #667eea;
+    font-size: 1.5rem;
+}
+
+.step-description {
+    font-size: 0.938rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+/* ================================
+   Form Inputs
+   ================================ */
+
+.register-form .ant-input,
+.register-form .ant-input-password,
+.register-form .ant-select-selector,
+.register-form .ant-picker {
+    border-radius: 8px !important;
+    border: 2px solid #e8e8e8 !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.938rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.register-form .ant-input:hover,
+.register-form .ant-input-password:hover .ant-input,
+.register-form .ant-select:hover .ant-select-selector,
+.register-form .ant-picker:hover {
+    border-color: #667eea !important;
+}
+
+.register-form .ant-input:focus,
+.register-form .ant-input-password:focus .ant-input,
+.register-form .ant-select-focused .ant-select-selector,
+.register-form .ant-picker-focused {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
+
+.register-form .ant-input-affix-wrapper {
+    padding: 0.35rem 0.75rem !important;
+    border-radius: 8px !important;
+}
+
+.register-form .ant-form-item {
+    margin-bottom: 0.75rem;
+}
+
+.register-form .ant-input-prefix,
+.register-form .ant-input-suffix {
+    color: #667eea;
+    font-size: 1.125rem;
+}
+
+/* ================================
+   Phone Input
+   ================================ */
+
+.phone-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.phone-prefix-icon {
+    position: absolute;
+    left: 1rem;
+    z-index: 10;
+    color: #667eea;
+    font-size: 1.125rem;
+}
+
+.register-phone-container .react-tel-input {
+    width: 100%;
+}
+
+.register-phone-container .react-tel-input .form-control {
+    width: 100% !important;
+    height: 40px !important;
+    border-radius: 8px !important;
+    border: 2px solid #e8e8e8 !important;
+    font-size: 0.938rem !important;
+    padding-left: 58px !important;
+    transition: all 0.3s ease !important;
+}
+
+.register-phone-container .react-tel-input .form-control:hover,
+.register-phone-container .react-tel-input .form-control:focus {
+    border-color: #667eea !important;
+}
+
+.register-phone-container .react-tel-input .flag-dropdown {
+    border: 2px solid #e8e8e8 !important;
+    border-right: none !important;
+    border-radius: 10px 0 0 10px !important;
+    background: white !important;
+}
+
+/* ================================
+   Package Selection
+   ================================ */
+
+.package-label {
+    display: block;
+    font-size: 0.938rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.package-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.package-card {
+    border-radius: 10px !important;
+    border: 2px solid #e8e8e8 !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
+    text-align: center;
+}
+
+.package-card .ant-card-body {
+    padding: 0.75rem !important;
+}
+
+.package-card:hover {
+    border-color: #667eea !important;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2) !important;
+}
+
+.package-card.selected {
+    border-color: #667eea !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3) !important;
+}
+
+.package-icon {
+    font-size: 1.75rem;
+    color: #667eea;
+    margin-bottom: 0.35rem;
+}
+
+.package-card.selected .package-icon {
+    color: #764ba2;
+}
+
+.package-name {
+    font-size: 0.938rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.package-price {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.package-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.package-features li {
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.package-features li .anticon {
+    color: #52c41a;
+    font-size: 0.813rem;
+}
+
+/* ================================
+   Password Requirements
+   ================================ */
+
+.password-requirements {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-left: 3px solid #667eea;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.password-requirements p {
+    margin: 0 0 0.35rem 0;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.938rem;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 1rem;
+    color: #666;
+}
+
+.password-requirements li {
+    margin-bottom: 0.15rem;
+    font-size: 0.813rem;
+}
+
+/* ================================
+   Success Content
+   ================================ */
+
+.success-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-icon {
+    font-size: 3.5rem;
+    color: #52c41a;
+    margin-bottom: 0.75rem;
+    animation: scaleIn 0.6s ease-out;
+}
+
+.success-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.35rem;
+}
+
+.success-description {
+    font-size: 0.938rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.summary-card {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 0.75rem;
+}
+
+.summary-card h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.75rem;
+    text-align: center;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.summary-value {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.875rem;
+}
+
+.terms-notice {
+    font-size: 0.75rem;
+    color: #999;
+    text-align: center;
+    max-width: 500px;
+}
+
+/* ================================
+   Form Actions
+   ================================ */
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.prev-btn,
+.next-btn,
+.submit-btn {
+    flex: 1;
+    height: 42px !important;
+    border-radius: 8px !important;
+    font-size: 0.938rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.prev-btn {
+    background: #f5f5f5 !important;
+    border: 2px solid #e8e8e8 !important;
+    color: #666 !important;
+}
+
+.prev-btn:hover {
+    background: #e8e8e8 !important;
+    border-color: #d9d9d9 !important;
+    color: #333 !important;
+}
+
+.next-btn,
+.submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+}
+
+.next-btn:hover,
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4) !important;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #52c41a 0%, #3da830 100%) !important;
+}
+
+.submit-btn:hover {
+    box-shadow: 0 8px 24px rgba(82, 196, 26, 0.4) !important;
+}
+
+/* ================================
+   Animations
+   ================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    .member-register-page {
+        padding: 1.5rem 1rem;
+    }
+
+    .register-card .ant-card-body {
+        padding: 2rem;
+    }
+
+    .register-header h1 {
+        font-size: 1.875rem;
+    }
+
+    .gym-logo {
+        font-size: 3rem;
+    }
+
+    .step-content {
+        min-height: 350px;
+    }
+
+    .step-title {
+        font-size: 1.25rem;
+    }
+
+    .package-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .register-steps {
+        margin-bottom: 2rem;
+    }
+
+    .register-steps .ant-steps-item-title {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Mobile (576px and below) */
+@media (max-width: 576px) {
+    .member-register-page {
+        padding: 1rem;
+    }
+
+    .register-card .ant-card-body {
+        padding: 1.5rem;
+    }
+
+    .register-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .register-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .register-header p {
+        font-size: 1rem;
+    }
+
+    .gym-logo {
+        font-size: 2.5rem;
+    }
+
+    .step-content {
+        min-height: 300px;
+    }
+
+    .step-title {
+        font-size: 1.125rem;
+    }
+
+    .step-description {
+        font-size: 0.938rem;
+    }
+
+    .register-steps .ant-steps-item-title {
+        display: none !important;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .prev-btn,
+    .next-btn,
+    .submit-btn {
+        width: 100%;
+    }
+
+    .summary-card {
+        padding: 1.25rem;
+    }
+
+    .package-card {
+        padding: 1rem !important;
+    }
+
+    .package-icon {
+        font-size: 2rem;
+    }
+
+    .package-name {
+        font-size: 1rem;
+    }
+
+    .package-price {
+        font-size: 0.938rem;
+    }
+
+    .back-to-login-btn {
+        font-size: 0.875rem;
+        padding: 6px 12px;
+    }
+}
+
+/* Small Mobile (400px and below) */
+@media (max-width: 400px) {
+    .register-card .ant-card-body {
+        padding: 1.25rem;
+    }
+
+    .register-header h1 {
+        font-size: 1.375rem;
+    }
+
+    .gym-logo {
+        font-size: 2rem;
+    }
+
+    .step-title {
+        font-size: 1rem;
+    }
+
+    .register-form .ant-input,
+    .register-form .ant-input-password,
+    .register-form .ant-select-selector,
+    .register-form .ant-picker {
+        font-size: 0.938rem !important;
+    }
+
+    .success-icon {
+        font-size: 4rem;
+    }
+
+    .success-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* ================================
+   Accessibility
+   ================================ */
+
+/* Focus visible for keyboard navigation */
+.register-form .ant-input:focus-visible,
+.register-form .ant-select-selector:focus-visible,
+.register-form .ant-picker:focus-visible,
+.prev-btn:focus-visible,
+.next-btn:focus-visible,
+.submit-btn:focus-visible {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .register-form .ant-input,
+    .register-form .ant-select-selector,
+    .register-form .ant-picker {
+        border-width: 3px !important;
+    }
+
+    .package-card {
+        border-width: 3px !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .register-container,
+    .gym-logo,
+    .success-icon,
+    .next-btn:hover,
+    .submit-btn:hover,
+    .package-card:hover {
+        animation: none;
+        transition: none;
+        transform: none;
+    }
+}

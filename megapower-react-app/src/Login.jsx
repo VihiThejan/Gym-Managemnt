@@ -313,7 +313,7 @@ export const Login = () => {
                   {user === 'Member' && (
                     <Button 
                       className="register-btn" 
-                      onClick={() => navigate("/Member")}
+                      onClick={() => navigate("/MemberRegister")}
                     >
                       Register as Member
                     </Button>
