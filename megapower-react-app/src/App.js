@@ -16,16 +16,21 @@ import { MemberDashboard } from "./MemberDashboard";
 import { Admin } from "./Admin";
 
 import { Staff } from "./staff";
-import { StaffSignup } from "./StaffSignup";
 import StaffTable   from "./staffTable";
 import StaffInfoTable from "./StaffInfoTable";
 import { EditStaff } from "./Editstaff";
+import { StaffProfile } from "./StaffProfile";
 
 import {Member  } from "./Member";
 import {MemberTable  } from "./MemberTable";
 import {EditMember  } from "./EditMember";
 import {MemberProfile  } from "./MemberProfile";
 import {MemberPayment  } from "./MemberPayment";
+import {MemberAnnouncements  } from "./MemberAnnouncements";
+import {MemberAttendance  } from "./MemberAttendance";
+import MemberAppointment from "./MemberAppointment";
+import {MemberChat  } from "./MemberChat";
+import {MemberRegister  } from "./MemberRegister";
 
 import {Equipment  } from "./Equipment";
 import {EditEquipment  } from "./EditEquipment";
@@ -56,6 +61,8 @@ import Chat from "./Chat";
 import StaffChat from "./StaffChat";
 import {Trainerrate  } from "./Trainerrate";
 import {Trainerratetable  } from "./Trainerratetable";
+import {RatingSubmitted  } from "./RatingSubmitted";
+import {WorkoutTracker  } from "./WorkoutTracker";
 
 import {Feedback  } from "./Feedback";
 import {EditFeedback  } from "./EditFeedback";
@@ -65,6 +72,7 @@ import {Appoinment  } from "./Appoinment";
 import {EditAppoinment  } from "./EditAppoinment";
 import {Appoinmenttable  } from "./Appoinmenttable";
 import Reports from "./Reports";
+import Chatbot from "./components/Chatbot";
 
 
 
@@ -105,23 +113,31 @@ function App() {
 
     
         <Route path="/" element={<Login />} />
+        <Route path="/Login" element={<Login />} />
         
         <Route path="/Forgotpw" element={<ForgotPassword  />} />
         
         <Route path="/Resetpw" element={<Reset />} />
+        <Route path="/MemberRegister" element={<MemberRegister />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/StaffDashboard" element={<StaffDashboard />} />
+        <Route path="/staffDashboard" element={<StaffDashboard />} />
+        <Route path="/StaffProfile" element={<StaffProfile />} />
+        <Route path="/staffProfile" element={<StaffProfile />} />
         <Route path="/MemberDashboard" element={<MemberDashboard />} />
         <Route path="/MemberProfile" element={<MemberProfile />} />
         <Route path="/MemberPayment" element={<MemberPayment />} />
+        <Route path="/MemberAnnouncements" element={<MemberAnnouncements />} />
         
         
         <Route path="/Admin" element={<Admin />} />
         <Route path="/staff" element={<Staff />} />
-        <Route path="/staffSignup" element={<StaffSignup />} />
+        <Route path="/staffSignup" element={<Staff />} />
         <Route path="/Member" element={<Member />} />
         <Route path="/Equipment" element={<Equipment />} />
         <Route path="/Trainerrate" element={<Trainerrate />} />
+        <Route path="/RatingSubmitted" element={<RatingSubmitted />} />
+        <Route path="/WorkoutTracker" element={<WorkoutTracker />} />
         
         <Route path="/Schedule" element={<Schedule />} />
         <Route path="/Attendance" element={<Attendance />} />
@@ -129,7 +145,8 @@ function App() {
         <Route path="/Paymenttable" element={<Paymenttable />} />
 
         
-        <Route path="/chat" element={<StaffChat />} />
+        <Route path="/chat" element={<MemberChat />} />
+        <Route path="/staffChat" element={<StaffChat />} />
         <Route path="/adminChat" element={<Chat />} />
         <Route path="/Announcement" element={<Announcement />} />
         <Route path="/Announcementtable" element={<Announcementtable />} />
@@ -158,6 +175,10 @@ function App() {
         <Route path="/Attendance/:id" element={<EditAttendance/>} />
         <Route path="/Feedback/:id" element={<EditFeedback/>} />
         <Route path="/Schedule/:id" element={<EditSchedule/>} />
+        
+        <Route path="/MemberAnnouncements" element={<MemberAnnouncements />} />
+        <Route path="/MemberAttendance" element={<MemberAttendance />} />
+        <Route path="/MemberAppointment" element={<MemberAppointment />} />
 
 
 
@@ -165,6 +186,8 @@ function App() {
    
   </Router>
   
+  {/* AI Chatbot - Available on all pages */}
+  <Chatbot />
   
   </div>
 

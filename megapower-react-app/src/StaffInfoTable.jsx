@@ -20,7 +20,10 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   BellOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  ScheduleOutlined,
+  StarOutlined,
+  TrophyOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import Logo from './components/Logo';
@@ -37,17 +40,19 @@ const siderStyle = {
   insetInlineStart: 0,
   top: 0,
   bottom: 0,
-  background: 'linear-gradient(180deg, #1a1f36 0%, #0f1419 100%)',
+  background: 'linear-gradient(180deg, #1a1f3a 0%, #2d1b4e 100%)',
 };
 
 const getMenuItems = () => [
-  { label: 'Dashboard', icon: <DashboardOutlined />, key: '/staffDashboard' },
-  { label: 'Staff Info', icon: <TeamOutlined />, key: '/staffInfo' },
+  { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '/staffDashboard' },
+  { label: 'My Profile', icon: <UserOutlined />, key: '/staffProfile' },
   { label: 'Payment', icon: <DollarOutlined />, key: '/staffPayment' },
-  { label: 'Announcement', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
-  { label: 'Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
-  { label: 'Appointment', icon: <PhoneOutlined />, key: '/staffAppointment' },
+  { label: 'Announcements', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
+  { label: 'My Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
+  { label: 'Appointments', icon: <ScheduleOutlined />, key: '/staffAppointment' },
   { label: 'Chat', icon: <MessageOutlined />, key: '/chat' },
+  { label: 'Rate Trainer', icon: <StarOutlined />, key: '/Trainerrate' },
+  { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '/WorkoutTracker' },
 ];
 
 const StaffInfoTable = () => {
@@ -263,15 +268,21 @@ const StaffInfoTable = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div style={{ position: 'absolute', bottom: 0, width: '100%' }}>
-          <Menu
-            theme="dark"
-            mode="inline"
-            items={[{ label: 'Logout', icon: <LogoutOutlined />, key: 'logout' }]}
-            onClick={handleLogout}
-            className="dashboard-menu"
-            style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
-          />
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            width: '100%',
+            padding: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'rgba(102, 126, 234, 0.1)'
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <MenuFoldOutlined style={{ fontSize: '20px', color: 'white' }} />
         </div>
       </Sider>
 

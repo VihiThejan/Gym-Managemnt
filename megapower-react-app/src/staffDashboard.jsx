@@ -15,7 +15,10 @@ import {
   ClockCircleOutlined,
   DashboardOutlined,
   UserSwitchOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  ScheduleOutlined,
+  StarOutlined,
+  TrophyOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -36,13 +39,15 @@ const siderStyle = {
 };
 
 const getMenuItems = () => [
-  { label: 'Dashboard', icon: <DashboardOutlined />, key: '/staffDashboard' },
-  { label: 'Staff Info', icon: <TeamOutlined />, key: '/staffInfo' },
+  { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '/staffDashboard' },
+  { label: 'My Profile', icon: <UserOutlined />, key: '/staffProfile' },
   { label: 'Payment', icon: <DollarOutlined />, key: '/staffPayment' },
-  { label: 'Announcement', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
-  { label: 'Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
-  { label: 'Appointment', icon: <PhoneOutlined />, key: '/staffAppointment' },
+  { label: 'Announcements', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
+  { label: 'My Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
+  { label: 'Appointments', icon: <ScheduleOutlined />, key: '/staffAppointment' },
   { label: 'Chat', icon: <MessageOutlined />, key: '/chat' },
+  { label: 'Rate Trainer', icon: <StarOutlined />, key: '/Trainerrate' },
+  { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '/WorkoutTracker' },
 ];
 
 export const StaffDashboard = () => {
@@ -126,15 +131,21 @@ export const StaffDashboard = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div style={{ position: 'absolute', bottom: 0, width: '100%' }}>
-          <Menu
-            theme="dark"
-            mode="inline"
-            items={[{ label: 'Logout', icon: <LogoutOutlined />, key: 'logout' }]}
-            onClick={handleLogout}
-            className="dashboard-menu"
-            style={{ background: 'transparent', border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
-          />
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            width: '100%',
+            padding: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'rgba(102, 126, 234, 0.1)'
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <MenuFoldOutlined style={{ fontSize: '20px', color: 'white' }} />
         </div>
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">

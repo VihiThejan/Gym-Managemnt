@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Radio, InputNumber, Select, DatePicker, message, Card, Input, Form } from 'antd';
+import { Button, Radio, InputNumber, Select, DatePicker, message, Input, Form, Layout, Card } from 'antd';
 import { 
   UserOutlined, 
   HomeOutlined, 
@@ -14,49 +14,90 @@ import {
   ColumnHeightOutlined, 
   DashboardOutlined, 
   LockOutlined, 
-  UserAddOutlined,
+  CheckCircleOutlined,
   ArrowLeftOutlined,
-  SafetyOutlined,
-  HeartOutlined,
-  TrophyOutlined
+  SaveOutlined,
+  UserAddOutlined
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from "axios";
+import moment from "moment";
+import AdminSidebar from "./components/AdminSidebar";
 import './Member.css';
+import './Dashboard.css';
+
+const { Content } = Layout;
 
 export const Member = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [mobile, setMobile] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) {
+      setIsEditMode(true);
+      fetchMemberData(id);
+    }
+  }, [id]);
+
+  const fetchMemberData = async (memberId) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:5000/api/v1/member/get/${memberId}`);
+      const memberData = response?.data?.data;
+      
+      if (memberData) {
+        form.setFieldsValue({
+          name: memberData.FName,
+          email: memberData.Email,
+          address: memberData.Address,
+          dob: memberData.DOB ? moment(memberData.DOB) : null,
+          gender: memberData.Gender,
+          package: memberData.Package,
+          height: memberData.Height,
+          weight: memberData.Weight,
+        });
+        setMobile(memberData.Contact || '');
+      }
+    } catch (error) {
+      console.error('Error fetching member:', error);
+      message.error('Failed to load member data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validatePassword = (_, value) => {
-    if (!value) {
+    if (!value && !isEditMode) {
       return Promise.reject(new Error('Please enter password'));
     }
-    const minLength = 6;
-    const hasUppercase = /[A-Z]/.test(value);
-    const hasLowercase = /[a-z]/.test(value);
-    const hasNumber = /[0-9]/.test(value);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+    if (value) {
+      const minLength = 6;
+      const hasUppercase = /[A-Z]/.test(value);
+      const hasLowercase = /[a-z]/.test(value);
+      const hasNumber = /[0-9]/.test(value);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
 
-    if (value.length < minLength) {
-      return Promise.reject(new Error(`Password must be at least ${minLength} characters long`));
+      if (value.length < minLength) {
+        return Promise.reject(new Error(`Password must be at least ${minLength} characters long`));
+      }
+      if (!hasUppercase) {
+        return Promise.reject(new Error('Password must contain at least one uppercase letter'));
+      }
+      if (!hasLowercase) {
+        return Promise.reject(new Error('Password must contain at least one lowercase letter'));
+      }
+      if (!hasNumber) {
+        return Promise.reject(new Error('Password must contain at least one number'));
+      }
+      if (!hasSpecialChar) {
+        return Promise.reject(new Error('Password must contain at least one special character'));
+      }
     }
-    if (!hasUppercase) {
-      return Promise.reject(new Error('Password must contain at least one uppercase letter'));
-    }
-    if (!hasLowercase) {
-      return Promise.reject(new Error('Password must contain at least one lowercase letter'));
-    }
-    if (!hasNumber) {
-      return Promise.reject(new Error('Password must contain at least one number'));
-    }
-    if (!hasSpecialChar) {
-      return Promise.reject(new Error('Password must contain at least one special character'));
-    }
-
     return Promise.resolve();
   };
 
@@ -78,398 +119,200 @@ export const Member = () => {
     };
 
     try {
-      const res = await axios.post('http://localhost:5000/api/v1/member/create', body);
-      console.log(res?.data?.data);
-      
-      setShowSuccess(true);
-      message.success("Member registered successfully! Redirecting to login...");
-      
-      form.resetFields();
-      setMobile('');
+      if (isEditMode) {
+        // Update existing member
+        await axios.put(`http://localhost:5000/api/v1/member/edit/${id}`, body);
+        message.success("Member updated successfully!");
+      } else {
+        // Create new member
+        await axios.post('http://localhost:5000/api/v1/member/create', body);
+        message.success("Member created successfully!");
+      }
       
       setTimeout(() => {
-        navigate('/');
-      }, 2000);
+        navigate('/MemberTable');
+      }, 1000);
     } catch (error) {
-      console.error('Registration error:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to register member. Please try again.';
+      console.error('Error:', error);
+      const errorMessage = error.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} member. Please try again.`;
       message.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleClear = () => {
-    form.resetFields();
-    setMobile('');
-    setShowSuccess(false);
-  };
-
   return (
-    <div className="member-signup-page">
-      <div className="member-signup-background">
-        <div className="gradient-overlay"></div>
-      </div>
-      
-      <div className="member-signup-container">
-        <Button 
-          icon={<ArrowLeftOutlined />} 
-          onClick={() => navigate('/')} 
-          className="back-button"
-          type="text"
-        >
-          Back to Login
-        </Button>
-
-        <div className="signup-content">
-          <Card className="signup-card">
-            <div className="card-header">
-              <div className="header-icon-wrapper">
-                <UserAddOutlined className="header-icon" />
+    <Layout className="dashboard-layout" hasSider>
+      <AdminSidebar selectedKey="/MemberTable" />
+      <Layout style={{ marginLeft: 260 }}>
+        <Content className="dashboard-content">
+          <div className="member-form-container">
+            <div className="form-header-section">
+              <Button 
+                icon={<ArrowLeftOutlined />} 
+                onClick={() => navigate('/MemberTable')}
+                className="back-button"
+              >
+                Back to Members
+              </Button>
+              <div className="header-title-section">
+                <UserAddOutlined className="header-icon-large" />
+                <div>
+                  <h1 className="page-title">{isEditMode ? 'Edit Member' : 'Add New Member'}</h1>
+                  <p className="page-subtitle">{isEditMode ? 'Update member information' : 'Create a new member account'}</p>
+                </div>
               </div>
-              <h2 className="card-title">Member Registration</h2>
-              <p className="card-subtitle">Create a new member account</p>
             </div>
 
-            {showSuccess && (
-              <div className="success-message">
-                <SafetyOutlined />
-                Member registered successfully! Redirecting...
-              </div>
-            )}
+            <Card className="member-form-card">
+              <div className="form-wrapper">{showSuccess && (
+                <div className="success-alert">
+                  <CheckCircleOutlined />
+                  <span>Member {isEditMode ? 'updated' : 'created'} successfully!</span>
+                </div>
+              )}
 
-            <Form
-              form={form}
-              onFinish={handleSubmit}
-              layout="vertical"
-              className="signup-form"
-              requiredMark={false}
-              initialValues={{ gender: 'Male', package: 'Gold' }}
-            >
-              <div className="form-row">
+              <Form
+                form={form}
+                onFinish={handleSubmit}
+                layout="vertical"
+                className="member-form"
+                requiredMark={false}
+                initialValues={{ gender: 'Male', package: 'Basic' }}
+              >
                 <Form.Item
                   name="name"
-                  label={
-                    <span className="form-label">
-                      <UserOutlined className="label-icon" />
-                      Full Name
-                    </span>
-                  }
+                  label={<span className="input-label"><UserOutlined />Full Name</span>}
                   rules={[
                     { required: true, message: 'Please enter full name' },
-                    { 
-                      pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/,
-                      message: 'Full name must contain first and last name with uppercase starting letters'
-                    }
+                    { pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/, message: 'Full name must contain first and last name with uppercase starting letters' }
                   ]}
                 >
-                  <Input
-                    placeholder="Enter full name (e.g., John Doe)"
-                    prefix={<UserOutlined />}
-                    size="large"
-                  />
+                  <Input placeholder="Enter full name (e.g., John Doe)" className="form-input" />
                 </Form.Item>
 
                 <Form.Item
                   name="email"
-                  label={
-                    <span className="form-label">
-                      <MailOutlined className="label-icon" />
-                      Email Address
-                    </span>
-                  }
+                  label={<span className="input-label"><MailOutlined />Email</span>}
                   rules={[
                     { required: true, message: 'Please enter email' },
                     { type: 'email', message: 'Please enter a valid email' }
                   ]}
                 >
-                  <Input
-                    placeholder="example@gmail.com"
-                    prefix={<MailOutlined />}
-                    size="large"
-                  />
+                  <Input placeholder="example@gmail.com" className="form-input" />
                 </Form.Item>
-              </div>
 
-              <div className="form-row">
                 <Form.Item
-                  name="address"
-                  label={
-                    <span className="form-label">
-                      <HomeOutlined className="label-icon" />
-                      Address
-                    </span>
-                  }
+                  name="mobile"
+                  label={<span className="input-label"><PhoneOutlined />Mobile Number</span>}
                   rules={[
-                    { required: true, message: 'Please enter address' },
-                    { min: 10, message: 'Address must be at least 10 characters' },
-                    {
-                      validator: (_, value) => {
-                        if (value && /[a-zA-Z]/.test(value) && /\d/.test(value)) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Address must contain both letters and numbers'));
+                    { required: true, message: 'Please enter mobile number' },
+                    { validator: (_, value) => {
+                        const cleanedMobile = mobile.replace(/\D/g, '');
+                        return cleanedMobile.length >= 11 ? Promise.resolve() : Promise.reject(new Error('Invalid mobile number'));
                       }
                     }
                   ]}
                 >
-                  <Input
-                    placeholder="Enter full address"
-                    prefix={<HomeOutlined />}
-                    size="large"
-                  />
+                  <div className="phone-input-container">
+                    <PhoneInput country={'lk'} value={mobile} onChange={(phone) => setMobile(phone)} containerClass="react-tel-input" />
+                  </div>
+                </Form.Item>
+
+                <Form.Item
+                  name="address"
+                  label={<span className="input-label"><HomeOutlined />Address</span>}
+                  rules={[
+                    { required: true, message: 'Please enter address' },
+                    { min: 10, message: 'Address must be at least 10 characters' }
+                  ]}
+                >
+                  <Input placeholder="Enter full address" className="form-input" />
                 </Form.Item>
 
                 <Form.Item
                   name="dob"
-                  label={
-                    <span className="form-label">
-                      <CalendarOutlined className="label-icon" />
-                      Date of Birth
-                    </span>
-                  }
+                  label={<span className="input-label"><CalendarOutlined />Date of Birth</span>}
                   rules={[{ required: true, message: 'Please select date of birth' }]}
                 >
-                  <DatePicker
-                    placeholder="Select date of birth"
-                    size="large"
-                    style={{ width: '100%' }}
-                    format="YYYY-MM-DD"
-                  />
+                  <DatePicker placeholder="Select date of birth" className="form-input" style={{ width: '100%' }} format="YYYY-MM-DD" />
                 </Form.Item>
-              </div>
 
-              <div className="form-row">
                 <Form.Item
                   name="gender"
-                  label={
-                    <span className="form-label">
-                      <UserOutlined className="label-icon" />
-                      Gender
-                    </span>
-                  }
+                  label={<span className="input-label"><UserOutlined />Gender</span>}
                   rules={[{ required: true, message: 'Please select gender' }]}
                 >
-                  <Radio.Group size="large" className="gender-radio">
-                    <Radio.Button value="Male">
-                      <ManOutlined /> Male
-                    </Radio.Button>
-                    <Radio.Button value="Female">
-                      <WomanOutlined /> Female
-                    </Radio.Button>
+                  <Radio.Group className="gender-radio">
+                    <Radio.Button value="Male"><ManOutlined /> Male</Radio.Button>
+                    <Radio.Button value="Female"><WomanOutlined /> Female</Radio.Button>
                   </Radio.Group>
                 </Form.Item>
 
                 <Form.Item
                   name="package"
-                  label={
-                    <span className="form-label">
-                      <GiftOutlined className="label-icon" />
-                      Package
-                    </span>
-                  }
+                  label={<span className="input-label"><GiftOutlined />Membership Package</span>}
                   rules={[{ required: true, message: 'Please select package' }]}
                 >
-                  <Select
-                    placeholder="Select package"
-                    size="large"
-                    options={[
-                      { value: 'Gold', label: 'Gold (3 months)' },
-                      { value: 'Platinum', label: 'Platinum (6 months - 10% off)' },
-                      { value: 'Diamond', label: 'Diamond (12 months - 10% off + Free Membership)' },
-                    ]}
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="form-row">
-                <Form.Item
-                  name="mobile"
-                  label={
-                    <span className="form-label">
-                      <PhoneOutlined className="label-icon" />
-                      Mobile Number
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: 'Please enter mobile number' },
-                    {
-                      validator: (_, value) => {
-                        const cleanedMobile = mobile.replace(/\D/g, '');
-                        if (cleanedMobile.length >= 11) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Invalid mobile number'));
-                      }
-                    }
-                  ]}
-                >
-                  <PhoneInput
-                    country={'lk'}
-                    value={mobile}
-                    onChange={(phone) => setMobile(phone)}
-                    inputStyle={{
-                      width: '100%',
-                      height: '48px',
-                      fontSize: '1rem',
-                      borderRadius: '12px',
-                      border: '2px solid #e8e8e8'
-                    }}
-                    containerClass="phone-input-container"
-                  />
+                  <Select placeholder="Select package" className="form-input" options={[{ value: 'Basic', label: 'Basic' }, { value: 'Standard', label: 'Standard' }, { value: 'Premium', label: 'Premium' }]} />
                 </Form.Item>
 
-                <Form.Item
-                  name="password"
-                  label={
-                    <span className="form-label">
-                      <LockOutlined className="label-icon" />
-                      Password
-                    </span>
-                  }
-                  rules={[{ validator: validatePassword }]}
-                >
-                  <Input.Password
-                    placeholder="Enter password"
-                    prefix={<LockOutlined />}
-                    size="large"
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="form-row">
                 <Form.Item
                   name="height"
-                  label={
-                    <span className="form-label">
-                      <ColumnHeightOutlined className="label-icon" />
-                      Height (feet)
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: 'Please enter height' },
-                    {
-                      validator: (_, value) => {
-                        if (value > 0 && value <= 10) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Height must be between 0 and 10 feet'));
-                      }
-                    }
-                  ]}
+                  label={<span className="input-label"><ColumnHeightOutlined />Height (cm)</span>}
+                  rules={[{ required: true, message: 'Please enter height' }]}
                 >
-                  <InputNumber
-                    min={0}
-                    max={10}
-                    step={0.01}
-                    size="large"
-                    style={{ width: '100%' }}
-                    placeholder="0.00"
-                  />
+                  <InputNumber placeholder="Enter height in cm" className="form-input" style={{ width: '100%' }} min={100} max={250} />
                 </Form.Item>
 
                 <Form.Item
                   name="weight"
-                  label={
-                    <span className="form-label">
-                      <DashboardOutlined className="label-icon" />
-                      Weight (kg)
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: 'Please enter weight' },
-                    {
-                      validator: (_, value) => {
-                        if (value > 0 && value <= 200) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Weight must be between 1 and 200 kg'));
-                      }
-                    }
-                  ]}
+                  label={<span className="input-label"><DashboardOutlined />Weight (kg)</span>}
+                  rules={[{ required: true, message: 'Please enter weight' }]}
                 >
-                  <InputNumber
-                    min={1}
-                    max={200}
-                    step={0.1}
-                    precision={2}
-                    size="large"
-                    style={{ width: '100%' }}
-                    placeholder="0"
-                  />
+                  <InputNumber placeholder="Enter weight in kg" className="form-input" style={{ width: '100%' }} min={30} max={300} />
                 </Form.Item>
-              </div>
 
-              <Form.Item className="form-actions">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  className="submit-button"
-                  icon={<UserAddOutlined />}
-                  block
+                <Form.Item
+                  name="password"
+                  label={<span className="input-label"><LockOutlined />Password {isEditMode && <span style={{ fontSize: '12px', fontWeight: 'normal', color: '#888' }}>(Leave blank to keep current password)</span>}</span>}
+                  rules={[{ validator: validatePassword }]}
                 >
-                  {loading ? 'Creating Account...' : 'Register Member'}
-                </Button>
-                <Button
-                  onClick={handleClear}
-                  className="clear-button"
-                  block
-                >
-                  Clear Form
-                </Button>
-              </Form.Item>
+                  <Input.Password placeholder={isEditMode ? "Enter new password (optional)" : "Enter password"} className="password-input" />
+                </Form.Item>
 
-              <div className="login-link-wrapper">
-                <p className="login-text">
-                  Already have an account? 
-                  <Button type="link" onClick={() => navigate('/')} className="login-link">
-                    Login here
+                {!isEditMode && (
+                  <div className="password-requirements">
+                    <LockOutlined />
+                    <span>Must include uppercase, lowercase, number, and special character</span>
+                  </div>
+                )}
+
+                <Form.Item className="form-actions">
+                  <Button 
+                    type="primary" 
+                    htmlType="submit" 
+                    loading={loading} 
+                    icon={<SaveOutlined />}
+                    size="large"
+                    className="submit-button"
+                  >
+                    {loading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Member' : 'Create Member')}
                   </Button>
-                </p>
-              </div>
-            </Form>
-          </Card>
-
-          <Card className="info-card">
-            <h3>
-              <HeartOutlined /> Member Benefits
-            </h3>
-            <div className="info-content">
-              <div className="info-item">
-                <TrophyOutlined className="info-icon" />
-                <div>
-                  <h4>Premium Packages</h4>
-                  <p>Choose from Gold, Platinum, or Diamond packages with exclusive benefits</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <HeartOutlined className="info-icon" />
-                <div>
-                  <h4>Health Tracking</h4>
-                  <p>Monitor your fitness progress with height and weight tracking</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <UserOutlined className="info-icon" />
-                <div>
-                  <h4>Personal Profile</h4>
-                  <p>Secure member account with personalized fitness journey</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <SafetyOutlined className="info-icon" />
-                <div>
-                  <h4>Secure Access</h4>
-                  <p>Your information is protected with secure password authentication</p>
-                </div>
-              </div>
+                  <Button 
+                    onClick={() => navigate('/MemberTable')} 
+                    size="large"
+                    className="cancel-button"
+                  >
+                    Cancel
+                  </Button>
+                </Form.Item>
+              </Form>
             </div>
-          </Card>
-        </div>
-      </div>
-    </div>
+            </Card>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
-
-export default Member;

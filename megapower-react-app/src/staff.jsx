@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { Button, Radio, Form, Select, DatePicker, message, Card, Input } from 'antd';
+import { Button, Form, Select, DatePicker, message, Input, Radio } from 'antd';
 import { 
   UserOutlined, 
   EnvironmentOutlined, 
@@ -11,20 +11,18 @@ import {
   LockOutlined, 
   IdcardOutlined,
   ManOutlined,
-  WomanOutlined
+  WomanOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { Layout } from 'antd';
-import AdminSidebar from './components/AdminSidebar';
 import './staff.css';
-
-const { Content } = Layout;
 
 export const Staff = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [mobile, setMobile] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
 
   const validatePassword = (_, value) => {
@@ -74,10 +72,16 @@ export const Staff = () => {
     try {
       const res = await axios.post('http://localhost:5000/api/v1/staffmember/create', body);
       console.log(res?.data?.data);
+      
+      setShowSuccess(true);
       message.success("Staff member registered successfully!");
+      
+      form.resetFields();
+      setMobile('');
+      
       setTimeout(() => {
-        navigate('/staffTable');
-      }, 1000);
+        navigate('/');
+      }, 2000);
     } catch (error) {
       console.log(error.message);
       message.error("Failed to register staff member. Please try again.");
@@ -86,288 +90,170 @@ export const Staff = () => {
     }
   };
 
-  const handleClear = () => {
-    form.resetFields();
-    setMobile('');
-  };
-
   return (
-    <Layout className="dashboard-layout" hasSider>
-      <AdminSidebar selectedKey="/staffTable" />
-      <Layout style={{ marginLeft: 260 }}>
-        <Content>
-          <div className="staff-page">
-        <div className="staff-container">
-          <Card className="staff-card">
-            <div className="card-header-gradient">
-              <div className="card-header">
-                <div className="header-icon-card">
-                  <IdcardOutlined className="header-icon" />
-                </div>
-                <div className="header-text">
-                  <h2 className="card-title">Staff Registration</h2>
-                  <p className="card-subtitle">Add new staff member to the system</p>
-                </div>
+    <div className="staff-signup-page">
+      <div className="staff-signup-background">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
+      </div>
+
+      <div className="staff-signup-container">
+        <div className="signup-card">
+          <div className="signup-left">
+            <div className="brand-section">
+              <div className="staff-icon">👨‍💼</div>
+              <h1 className="brand-title">Staff Registration</h1>
+              <p className="brand-tagline">Join the Mega Power Gym Professional Team</p>
+            </div>
+            <div className="features-list">
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Professional Development</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Secure Access System</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Team Collaboration</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Flexible Job Roles</span>
               </div>
             </div>
+          </div>
 
-            <Form
-              form={form}
-              onFinish={handleSubmit}
-              layout="vertical"
-              className="staff-form"
-              requiredMark={false}
-              initialValues={{ gender: 'Male', jobRole: 'Trainer' }}
-            >
-              <div className="form-row">
+          <div className="signup-right">
+            <div className="form-wrapper">
+              <div className="form-header">
+                <h2>Create Staff Account</h2>
+                <p>Fill in your details to join our team</p>
+              </div>
+
+              {showSuccess && (
+                <div className="success-alert">
+                  <CheckCircleOutlined />
+                  <span>Staff member registered successfully! Redirecting to login...</span>
+                </div>
+              )}
+
+              <Form
+                form={form}
+                onFinish={handleSubmit}
+                layout="vertical"
+                className="signup-form"
+                requiredMark={false}
+                initialValues={{ gender: 'Male', jobRole: 'Trainer' }}
+              >
                 <Form.Item
                   name="name"
-                  label={
-                    <span className="form-label">
-                      <UserOutlined className="label-icon" />
-                      Full Name
-                    </span>
-                  }
+                  label={<span className="input-label"><UserOutlined />Full Name</span>}
                   rules={[
                     { required: true, message: 'Please enter full name' },
-                    { 
-                      pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/,
-                      message: 'Full name must contain first and last name with uppercase starting letters'
-                    }
+                    { pattern: /^[A-Z][a-z]+(\s[A-Z][a-z]+)+$/, message: 'Full name must contain first and last name with uppercase starting letters' }
                   ]}
                 >
-                  <Input
-                    placeholder="Enter full name (e.g., John Doe)"
-                    prefix={<UserOutlined />}
-                    size="large"
-                  />
+                  <Input placeholder="Enter full name (e.g., John Doe)" className="form-input" />
                 </Form.Item>
 
                 <Form.Item
                   name="email"
-                  label={
-                    <span className="form-label">
-                      <MailOutlined className="label-icon" />
-                      Email
-                    </span>
-                  }
+                  label={<span className="input-label"><MailOutlined />Email</span>}
                   rules={[
                     { required: true, message: 'Please enter email' },
                     { type: 'email', message: 'Please enter a valid email' }
                   ]}
                 >
-                  <Input
-                    placeholder="example@gmail.com"
-                    prefix={<MailOutlined />}
-                    size="large"
-                  />
+                  <Input placeholder="example@gmail.com" className="form-input" />
                 </Form.Item>
-              </div>
 
-              <div className="form-row">
                 <Form.Item
-                  name="address"
-                  label={
-                    <span className="form-label">
-                      <EnvironmentOutlined className="label-icon" />
-                      Address
-                    </span>
-                  }
+                  name="mobile"
+                  label={<span className="input-label"><PhoneOutlined />Mobile Number</span>}
                   rules={[
-                    { required: true, message: 'Please enter address' },
-                    { min: 10, message: 'Address must be at least 10 characters' },
-                    {
-                      validator: (_, value) => {
-                        if (value && /[a-zA-Z]/.test(value) && /\d/.test(value)) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Address must contain both letters and numbers'));
+                    { required: true, message: 'Please enter mobile number' },
+                    { validator: (_, value) => {
+                        const cleanedMobile = mobile.replace(/\D/g, '');
+                        return cleanedMobile.length >= 11 ? Promise.resolve() : Promise.reject(new Error('Invalid mobile number'));
                       }
                     }
                   ]}
                 >
-                  <Input
-                    placeholder="Enter full address"
-                    prefix={<EnvironmentOutlined />}
-                    size="large"
-                  />
+                  <div className="phone-input-container">
+                    <PhoneInput country={'lk'} value={mobile} onChange={(phone) => setMobile(phone)} containerClass="react-tel-input" />
+                  </div>
+                </Form.Item>
+
+                <Form.Item
+                  name="address"
+                  label={<span className="input-label"><EnvironmentOutlined />Address</span>}
+                  rules={[
+                    { required: true, message: 'Please enter address' },
+                    { min: 10, message: 'Address must be at least 10 characters' },
+                    { validator: (_, value) => (value && /[a-zA-Z]/.test(value) && /\d/.test(value)) ? Promise.resolve() : Promise.reject(new Error('Address must contain both letters and numbers')) }
+                  ]}
+                >
+                  <Input placeholder="Enter full address" className="form-input" />
                 </Form.Item>
 
                 <Form.Item
                   name="dob"
-                  label={
-                    <span className="form-label">
-                      <CalendarOutlined className="label-icon" />
-                      Date of Birth
-                    </span>
-                  }
+                  label={<span className="input-label"><CalendarOutlined />Date of Birth</span>}
                   rules={[{ required: true, message: 'Please select date of birth' }]}
                 >
-                  <DatePicker
-                    placeholder="Select date of birth"
-                    size="large"
-                    style={{ width: '100%' }}
-                    format="YYYY-MM-DD"
-                  />
+                  <DatePicker placeholder="Select date of birth" className="form-input" style={{ width: '100%' }} format="YYYY-MM-DD" />
                 </Form.Item>
-              </div>
 
-              <div className="form-row">
                 <Form.Item
                   name="gender"
-                  label={
-                    <span className="form-label">
-                      <UserOutlined className="label-icon" />
-                      Gender
-                    </span>
-                  }
+                  label={<span className="input-label"><UserOutlined />Gender</span>}
                   rules={[{ required: true, message: 'Please select gender' }]}
                 >
-                  <Radio.Group size="large" className="gender-radio">
-                    <Radio.Button value="Male">
-                      <ManOutlined /> <span>Male</span>
-                    </Radio.Button>
-                    <Radio.Button value="Female">
-                      <WomanOutlined /> <span>Female</span>
-                    </Radio.Button>
+                  <Radio.Group className="gender-radio">
+                    <Radio.Button value="Male"><ManOutlined /> Male</Radio.Button>
+                    <Radio.Button value="Female"><WomanOutlined /> Female</Radio.Button>
                   </Radio.Group>
                 </Form.Item>
 
                 <Form.Item
                   name="jobRole"
-                  label={
-                    <span className="form-label">
-                      <IdcardOutlined className="label-icon" />
-                      Job Role
-                    </span>
-                  }
+                  label={<span className="input-label"><IdcardOutlined />Job Role</span>}
                   rules={[{ required: true, message: 'Please select job role' }]}
                 >
-                  <Select
-                    placeholder="Select job role"
-                    size="large"
-                    options={[
-                      { value: 'Trainer', label: 'Trainer' },
-                      { value: 'Cashier', label: 'Cashier' },
-                    ]}
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="form-row">
-                <Form.Item
-                  name="mobile"
-                  label={
-                    <span className="form-label">
-                      <PhoneOutlined className="label-icon" />
-                      Mobile Number
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: 'Please enter mobile number' },
-                    {
-                      validator: (_, value) => {
-                        const cleanedMobile = mobile.replace(/\D/g, '');
-                        if (cleanedMobile.length >= 11) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Invalid mobile number'));
-                      }
-                    }
-                  ]}
-                >
-                  <PhoneInput
-                    country={'lk'}
-                    value={mobile}
-                    onChange={(phone) => setMobile(phone)}
-                    inputStyle={{
-                      width: '100%',
-                      height: '48px',
-                      fontSize: '1rem',
-                      borderRadius: '12px',
-                      border: '2px solid #e8e8e8'
-                    }}
-                    containerClass="phone-input-container"
-                  />
+                  <Select placeholder="Select job role" className="form-input" options={[{ value: 'Trainer', label: 'Trainer' }, { value: 'Cashier', label: 'Cashier' }]} />
                 </Form.Item>
 
                 <Form.Item
                   name="password"
-                  label={
-                    <span className="form-label">
-                      <LockOutlined className="label-icon" />
-                      Password
-                    </span>
-                  }
+                  label={<span className="input-label"><LockOutlined />Password</span>}
                   rules={[{ validator: validatePassword }]}
                 >
-                  <Input.Password
-                    placeholder="Enter password"
-                    prefix={<LockOutlined />}
-                    size="large"
-                  />
+                  <Input.Password placeholder="Enter password" className="password-input" />
                 </Form.Item>
-              </div>
 
-              <Form.Item className="form-actions">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  className="submit-button"
-                  icon={<IdcardOutlined />}
-                >
-                  {loading ? 'Registering...' : 'Register Staff'}
-                </Button>
-                <Button
-                  onClick={handleClear}
-                  className="cancel-button"
-                >
-                  Clear Form
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
+                <div className="password-requirements">
+                  <LockOutlined />
+                  <span>Must include uppercase, lowercase, number, and special character</span>
+                </div>
 
-          <Card className="info-card">
-            <h3>
-              <IdcardOutlined /> Staff Registration Information
-            </h3>
-            <div className="info-content">
-              <div className="info-item">
-                <UserOutlined className="info-icon" />
-                <div>
-                  <h4>Personal Details</h4>
-                  <p>Enter accurate personal information for staff identification</p>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" loading={loading} className="register-button" block>
+                    {loading ? 'Creating Account...' : 'Create Staff Account'}
+                  </Button>
+                </Form.Item>
+
+                <div className="login-section">
+                  <div className="divider"><span>Already have an account?</span></div>
+                  <Button onClick={() => navigate('/')} className="login-btn" block>Sign In to Staff Panel</Button>
                 </div>
-              </div>
-              <div className="info-item">
-                <IdcardOutlined className="info-icon" />
-                <div>
-                  <h4>Job Role</h4>
-                  <p>Assign appropriate role: Trainer or Cashier</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <LockOutlined className="info-icon" />
-                <div>
-                  <h4>Secure Password</h4>
-                  <p>Create a strong password with uppercase, lowercase, numbers, and special characters</p>
-                </div>
-              </div>
-              <div className="info-item">
-                <PhoneOutlined className="info-icon" />
-                <div>
-                  <h4>Contact Information</h4>
-                  <p>Provide valid email and mobile number for communication</p>
-                </div>
-              </div>
+              </Form>
             </div>
-          </Card>
-        </div>
           </div>
-        </Content>
-      </Layout>
-    </Layout>
+        </div>
+      </div>
+    </div>
   );
 };

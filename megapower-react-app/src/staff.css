@@ -1,714 +1,672 @@
-/* ================================
-   Staff Registration Page - Modern UI/UX
-   ================================ */
+﻿/* ==========================================
+   STAFF REGISTRATION PAGE - MODERN UI/UX
+   ========================================== */
 
-.staff-page {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-    padding: 32px;
+/* ==========================================
+   Page Layout & Background
+   ========================================== */
+.staff-signup-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.staff-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 2rem;
-    animation: fadeInUp 0.6s ease-out;
+/* Animated Background Shapes */
+.staff-signup-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
 }
 
-/* ================================
-   Card Styles
-   ================================ */
-
-.staff-card,
-.info-card {
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: none;
-    background: white;
-    height: fit-content;
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: float 20s infinite ease-in-out;
 }
 
-.staff-card .ant-card-body,
-.info-card .ant-card-body {
-    padding: 2.5rem;
+.shape-1 {
+  width: 500px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.1);
+  top: -200px;
+  left: -200px;
+  animation-delay: 0s;
 }
 
-/* ================================
-   Header Section
-   ================================ */
-
-.card-header-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    margin: -2.5rem -2.5rem 2rem -2.5rem;
-    padding: 2rem 2.5rem;
-    border-radius: 20px 20px 0 0;
+.shape-2 {
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 107, 107, 0.1);
+  bottom: -150px;
+  right: -150px;
+  animation-delay: 7s;
 }
 
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+.shape-3 {
+  width: 300px;
+  height: 300px;
+  background: rgba(78, 205, 196, 0.1);
+  top: 50%;
+  left: 50%;
+  animation-delay: 14s;
 }
 
-.header-icon-card {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    flex-shrink: 0;
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
 }
 
-.header-icon {
-    font-size: 28px;
-    color: #ffffff;
+/* ==========================================
+   Container & Card
+   ========================================== */
+.staff-signup-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  animation: slideIn 0.6s ease-out;
+  margin: 20px 0;
 }
 
-.header-text {
-    flex: 1;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.card-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #ffffff;
-    margin: 0 0 4px 0;
+.signup-card {
+  display: flex;
+  background: white;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  height: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.card-subtitle {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.95);
-    margin: 0;
+/* ==========================================
+   Left Side - Branding
+   ========================================== */
+.signup-left {
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 35px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
 }
 
-/* ================================
-   Form Elements
-   ================================ */
-
-.staff-form {
-    margin-top: 0;
+.signup-left::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  top: -100px;
+  right: -100px;
 }
 
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 0;
+.brand-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 30px;
 }
 
-.form-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
+.staff-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  animation: bounce 2s infinite;
 }
 
-.label-icon {
-    font-size: 18px;
-    color: #667eea;
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-/* Input Fields */
-.staff-form .ant-input,
-.staff-form .ant-select-selector,
-.staff-form .ant-picker,
-.staff-form .ant-input-password {
-    border-radius: 12px;
-    border: 2px solid #e8e8e8;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    height: 48px;
+.brand-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.staff-form .ant-input-password input {
-    height: 44px;
+.brand-tagline {
+  font-size: 15px;
+  opacity: 0.9;
+  margin: 0;
+  font-weight: 300;
 }
 
-.staff-form .ant-select-selector {
-    padding: 0 16px !important;
+.features-list {
+  position: relative;
+  z-index: 1;
 }
 
-.staff-form .ant-input:hover,
-.staff-form .ant-select:hover .ant-select-selector,
-.staff-form .ant-picker:hover,
-.staff-form .ant-input-password:hover {
-    border-color: #667eea;
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  animation: fadeInLeft 0.6s ease-out;
+  animation-fill-mode: both;
 }
 
-.staff-form .ant-input:focus,
-.staff-form .ant-select-focused .ant-select-selector,
-.staff-form .ant-picker-focused,
-.staff-form .ant-input-password-focused {
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+.feature-item:nth-child(1) { animation-delay: 0.1s; }
+.feature-item:nth-child(2) { animation-delay: 0.2s; }
+.feature-item:nth-child(3) { animation-delay: 0.3s; }
+.feature-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* Prefix Icons */
-.staff-form .ant-input-prefix {
-    color: #667eea;
-    font-size: 18px;
-    margin-right: 12px;
+.feature-icon {
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
 }
 
-/* Gender Radio Buttons */
-.gender-radio {
-    display: flex;
-    gap: 12px;
+/* ==========================================
+   Right Side - Form
+   ========================================== */
+.signup-right {
+  flex: 1;
+  padding: 50px 55px 45px;
+  display: block;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  position: relative;
+  overflow-y: auto;
 }
 
-.gender-radio .ant-radio-button-wrapper {
-    height: 48px;
-    line-height: 46px;
-    padding: 0 24px;
-    border-radius: 12px;
-    border: 2px solid #e8e8e8;
-    margin-right: 0;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
+/* Decorative Pattern */
+.signup-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
 }
 
-.gender-radio .ant-radio-button-wrapper span {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
+.signup-right::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(118, 75, 162, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
 }
 
-.gender-radio .ant-radio-button-wrapper:hover {
-    border-color: #667eea;
-    color: #667eea;
+/* Custom Scrollbar */
+.signup-right::-webkit-scrollbar {
+  width: 6px;
 }
 
-.gender-radio .ant-radio-button-wrapper-checked {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: transparent;
-    color: white;
+.signup-right::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.gender-radio .ant-radio-button-wrapper-checked:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    color: white;
+.signup-right::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
 }
 
-.gender-radio .ant-radio-button-wrapper .anticon {
-    margin-right: 8px;
-    font-size: 18px;
+.signup-right::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%);
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  padding-top: 30px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.form-header::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  margin: 15px auto 0;
+  border-radius: 2px;
+}
+
+.form-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.form-header p {
+  color: #718096;
+  font-size: 13px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Success Alert */
+.success-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 1px solid #b1dfbb;
+  border-radius: 16px;
+  color: #155724;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(21, 87, 36, 0.08);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-alert .anticon {
+  font-size: 18px;
+}
+
+/* ==========================================
+   Form Styling
+   ========================================== */
+.signup-form {
+  margin-bottom: 0;
+}
+
+.signup-form .ant-form-item {
+  margin-bottom: 18px;
+}
+
+.input-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+
+.input-label .anticon {
+  color: #667eea;
+  font-size: 16px;
+}
+
+/* Form Inputs */
+.form-input {
+  border-radius: 14px !important;
+  border: 2px solid #e8ecf4 !important;
+  font-size: 15px !important;
+  height: 48px !important;
+  background: white !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+.form-input:hover {
+  border-color: #c1c9d8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-1px) !important;
+}
+
+.form-input:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.15) !important;
+  background: white !important;
+  transform: translateY(-1px) !important;
+}
+
+.input-icon {
+  color: #a0aec0;
 }
 
 /* Phone Input */
 .phone-input-container {
-    width: 100%;
+  margin-top: 8px;
 }
 
 .phone-input-container .react-tel-input .form-control {
-    width: 100% !important;
-    height: 48px !important;
-    font-size: 1rem !important;
-    border-radius: 12px !important;
-    border: 2px solid #e8e8e8 !important;
-    transition: all 0.3s ease !important;
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  border: 2px solid #e8ecf4 !important;
+  font-size: 15px !important;
+  padding-left: 58px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: white !important;
+  color: #2d3748 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
 }
 
 .phone-input-container .react-tel-input .form-control:hover {
-    border-color: #667eea !important;
+  border-color: #c1c9d8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-1px) !important;
 }
 
 .phone-input-container .react-tel-input .form-control:focus {
-    border-color: #667eea !important;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.15) !important;
+  background: white !important;
+  transform: translateY(-1px) !important;
 }
 
-/* Validation */
-.staff-form .ant-form-item-has-error .ant-input,
-.staff-form .ant-form-item-has-error .ant-select-selector,
-.staff-form .ant-form-item-has-error .ant-picker,
-.staff-form .ant-form-item-has-error .ant-input-password {
-    border-color: #ff4d4f;
+.phone-input-container .react-tel-input .flag-dropdown {
+  border: 2px solid #e8ecf4 !important;
+  border-right: none !important;
+  border-radius: 14px 0 0 14px !important;
+  background: white !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
 }
 
-.staff-form .ant-form-item-has-error .ant-input:focus,
-.staff-form .ant-form-item-has-error .ant-select-focused .ant-select-selector,
-.staff-form .ant-form-item-has-error .ant-picker-focused,
-.staff-form .ant-form-item-has-error .ant-input-password-focused {
-    border-color: #ff4d4f;
-    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
+.phone-input-container .react-tel-input .flag-dropdown:hover {
+  background: #f8f9ff !important;
+  border-color: #c1c9d8 !important;
 }
 
-.staff-form .ant-form-item-explain-error {
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
+.phone-input-container .react-tel-input .flag-dropdown.open {
+  border-color: #667eea !important;
+  background: white !important;
 }
 
-/* ================================
-   Form Actions
-   ================================ */
-
-.form-actions {
-    margin-top: 2rem;
-    margin-bottom: 0;
+.phone-input-container .react-tel-input .selected-flag {
+  padding: 0 0 0 12px !important;
+  width: 50px !important;
+  height: 44px !important;
 }
 
-.form-actions .ant-form-item-control-input-content {
-    display: flex;
-    gap: 1rem;
+/* Password Input */
+.password-input {
+  border-radius: 14px !important;
+  border: 2px solid #e8ecf4 !important;
+  font-size: 15px !important;
+  height: 48px !important;
+  background: white !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
 }
 
-.submit-button {
-    flex: 2;
-    height: 52px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-    transition: all 0.3s ease;
+.password-input:hover {
+  border-color: #c1c9d8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-1px) !important;
 }
 
-.submit-button:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+.password-input:focus,
+.password-input.ant-input-affix-wrapper-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.15) !important;
+  background: white !important;
+  transform: translateY(-1px) !important;
 }
 
-.submit-button:active {
-    transform: translateY(0);
+.password-input input {
+  font-size: 15px !important;
+  background: transparent !important;
 }
 
-.submit-button .anticon {
-    font-size: 20px;
+.password-requirements {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #718096;
+  margin-top: 6px;
 }
 
-.cancel-button {
-    flex: 1;
-    height: 52px;
-    border-radius: 12px;
-    background: #fff;
-    border: 2px solid #e8e8e8;
-    color: #666;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.password-requirements .anticon {
+  color: #667eea;
 }
 
-.cancel-button:hover {
-    border-color: #667eea;
-    color: #667eea;
-    background: rgba(102, 126, 234, 0.05);
+/* Register Button */
+.register-button {
+  height: 52px !important;
+  border-radius: 14px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35), 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-top: 10px;
+  color: white !important;
+  letter-spacing: 0.5px;
 }
 
-/* ================================
-   Information Card
-   ================================ */
-
-.info-card h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1a1d3a;
-    margin: 0 0 1.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+.register-button:hover:not(:disabled) {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.45), 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%) !important;
 }
 
-.info-card h3 .anticon {
-    font-size: 28px;
-    color: #667eea;
+.register-button:active:not(:disabled) {
+  transform: translateY(0) !important;
 }
 
-.info-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.register-button:disabled {
+  background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-.info-item {
-    display: flex;
-    gap: 1rem;
-    padding: 1.25rem;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-    border-radius: 12px;
-    transition: all 0.3s ease;
+/* Login Section */
+.login-section {
+  margin-top: 30px;
 }
 
-.info-item:hover {
-    transform: translateX(8px);
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+.divider {
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
 }
 
-.info-icon {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: white;
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #e2e8f0;
 }
 
-.info-item h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1a1d3a;
-    margin: 0 0 0.5rem 0;
+.divider::before {
+  left: 0;
 }
 
-.info-item p {
-    font-size: 0.95rem;
-    color: #666;
-    margin: 0;
-    line-height: 1.5;
+.divider::after {
+  right: 0;
 }
 
-/* ================================
-   Animations
-   ================================ */
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.divider span {
+  background: white;
+  padding: 0 15px;
+  color: #718096;
+  font-size: 13px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ================================
+.login-btn {
+  height: 46px !important;
+  border-radius: 12px !important;
+  border: 2px solid #e8ecf4 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #4a5568 !important;
+  background: white !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+.login-btn:hover {
+  border-color: #667eea !important;
+  color: #667eea !important;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Error Messages */
+.ant-form-item-explain-error {
+  font-size: 13px;
+  margin-top: 6px;
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ==========================================
    Responsive Design
-   ================================ */
+   ========================================== */
+@media (max-width: 968px) {
+  .signup-card {
+    flex-direction: column;
+  }
 
-@media (max-width: 1200px) {
-    .staff-container {
-        grid-template-columns: 1fr;
-    }
+  .signup-left {
+    padding: 40px 30px;
+  }
 
-    .info-card {
-        order: 2;
-    }
+  .signup-right {
+    padding: 40px 30px;
+  }
+
+  .brand-title {
+    font-size: 28px;
+  }
+
+  .brand-tagline {
+    font-size: 16px;
+  }
 }
 
-@media (max-width: 768px) {
-    .staff-page {
-        padding: 20px 15px;
-    }
+@media (max-width: 640px) {
+  .admin-signup-page {
+    padding: 15px;
+  }
 
-    .staff-card .ant-card-body,
-    .info-card .ant-card-body {
-        padding: 24px 20px;
-    }
+  .back-button {
+    position: relative;
+    top: 0;
+    margin-bottom: 20px;
+  }
 
-    .card-header {
-        margin-bottom: 24px;
-        padding-bottom: 20px;
-    }
+  .signup-left {
+    padding: 30px 25px;
+    min-height: 0;
+  }
 
-    .header-icon-card {
-        width: 56px;
-        height: 56px;
-    }
+  .signup-right {
+    padding: 30px 25px;
+  }
 
-    .header-icon {
-        font-size: 24px;
-    }
+  .form-header h2 {
+    font-size: 26px;
+  }
 
-    .card-title {
-        font-size: 20px;
-    }
+  .brand-title {
+    font-size: 24px;
+  }
 
-    .card-subtitle {
-        font-size: 13px;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .form-label {
-        font-size: 0.95rem;
-    }
-
-    .label-icon {
-        font-size: 16px;
-    }
-
-    .staff-form .ant-input,
-    .staff-form .ant-select-selector,
-    .staff-form .ant-picker,
-    .staff-form .ant-input-password {
-        height: 44px;
-        font-size: 0.95rem;
-    }
-
-    .staff-form .ant-input-password input {
-        height: 40px;
-    }
-
-    .gender-radio .ant-radio-button-wrapper {
-        height: 44px;
-        line-height: 42px;
-        padding: 0 20px;
-    }
-
-    .phone-input-container .react-tel-input .form-control {
-        height: 44px !important;
-    }
-
-    .form-actions .ant-form-item-control-input-content {
-        flex-direction: column;
-    }
-
-    .submit-button,
-    .cancel-button {
-        width: 100%;
-        height: 48px;
-        font-size: 1rem;
-    }
-
-    .info-card h3 {
-        font-size: 1.35rem;
-    }
-
-    .info-item {
-        padding: 1rem;
-    }
-
-    .info-icon {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        font-size: 22px;
-    }
-
-    .info-item h4 {
-        font-size: 1rem;
-    }
-
-    .info-item p {
-        font-size: 0.9rem;
-    }
+  .staff-icon {
+    font-size: 48px;
+  }
 }
 
-@media (max-width: 576px) {
-    .staff-page {
-        padding: 15px 10px;
-    }
-
-    .staff-card,
-    .info-card {
-        border-radius: 16px;
-    }
-
-    .staff-card .ant-card-body,
-    .info-card .ant-card-body {
-        padding: 20px 15px;
-    }
-
-    .card-header-gradient {
-        margin: -20px -15px 20px -15px;
-        padding: 1.5rem 15px;
-    }
-
-    .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 0;
-        padding-bottom: 0;
-        gap: 12px;
-    }
-
-    .header-icon-card {
-        width: 56px;
-        height: 56px;
-    }
-
-    .header-icon {
-        font-size: 24px;
-    }
-
-    .card-title {
-        font-size: 20px;
-    }
-
-    .card-subtitle {
-        font-size: 13px;
-    }
-
-    .form-label {
-        font-size: 0.9rem;
-    }
-
-    .label-icon {
-        font-size: 15px;
-    }
-
-    .staff-form .ant-input,
-    .staff-form .ant-select-selector,
-    .staff-form .ant-picker,
-    .staff-form .ant-input-password {
-        height: 42px;
-        font-size: 0.9rem;
-        border-radius: 10px;
-    }
-
-    .staff-form .ant-input-password input {
-        height: 38px;
-    }
-
-    .staff-form .ant-input-prefix {
-        font-size: 16px;
-    }
-
-    .gender-radio .ant-radio-button-wrapper {
-        height: 42px;
-        line-height: 40px;
-        padding: 0 16px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-    }
-
-    .gender-radio .ant-radio-button-wrapper .anticon {
-        font-size: 16px;
-    }
-
-    .phone-input-container .react-tel-input .form-control {
-        height: 42px !important;
-        font-size: 0.9rem !important;
-        border-radius: 10px !important;
-    }
-
-    .form-actions {
-        margin-top: 1.5rem;
-    }
-
-    .submit-button,
-    .cancel-button {
-        height: 44px;
-        font-size: 0.95rem;
-        border-radius: 10px;
-    }
-
-    .submit-button .anticon {
-        font-size: 18px;
-    }
-
-    .info-card h3 {
-        font-size: 1.25rem;
-    }
-
-    .info-card h3 .anticon {
-        font-size: 24px;
-    }
-
-    .info-content {
-        gap: 1.25rem;
-    }
-
-    .info-item {
-        padding: 0.875rem;
-        border-radius: 10px;
-    }
-
-    .info-icon {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        font-size: 20px;
-        border-radius: 10px;
-    }
-
-    .info-item h4 {
-        font-size: 0.95rem;
-    }
-
-    .info-item p {
-        font-size: 0.85rem;
-    }
+/* ==========================================
+   Animations
+   ========================================== */
+.signup-card {
+  animation: cardAppear 0.6s ease-out;
 }
 
-/* ================================
-   Accessibility
-   ================================ */
-
-.staff-form .ant-input:focus-visible,
-.staff-form .ant-select-selector:focus-visible,
-.staff-form .ant-picker:focus-visible,
-.staff-form .ant-input-password:focus-visible,
-.submit-button:focus-visible,
-.cancel-button:focus-visible {
-    outline: 2px solid #667eea;
-    outline-offset: 2px;
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-    .submit-button,
-    .cancel-button {
-        border: 2px solid currentColor;
-    }
-
-    .info-item {
-        border: 2px solid #000;
-    }
-}
-
-/* ================================
-   Print Styles
-   ================================ */
-
-@media print {
-    .staff-page {
-        background: white;
-        padding: 0;
-    }
-
-    .staff-container {
-        grid-template-columns: 1fr;
-    }
-
-    .staff-card,
-    .info-card {
-        box-shadow: none;
-        border: 1px solid #ccc;
-    }
-
-    .submit-button,
-    .cancel-button {
-        display: none;
-    }
-
-    .info-card {
-        page-break-before: always;
-    }
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

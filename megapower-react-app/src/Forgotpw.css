@@ -95,10 +95,38 @@
     color: #333;
 }
 
-.card-header p {
+.card-header p,
+.header-subtitle {
     margin: 0;
     font-size: 1rem;
-    color: #666;
+    color: #fffdfd;
+    line-height: 1.6;
+}
+
+/* ================================
+   Alert Component
+   ================================ */
+
+.otp-sent-alert {
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e6f7f1 100%);
+}
+
+.otp-sent-alert .ant-alert-message {
+    color: #1890ff;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.otp-sent-alert .ant-alert-description {
+    color: #595959;
+    font-size: 0.938rem;
+}
+
+.otp-sent-alert .anticon {
+    color: #52c41a;
 }
 
 /* ================================
@@ -122,6 +150,32 @@
 .label-icon {
     font-size: 20px;
     color: #667eea;
+}
+
+/* ================================
+   Form Validation
+   ================================ */
+
+.ant-form-item-has-error .phone-input-container .react-tel-input .form-control {
+    border-color: #ff4d4f !important;
+}
+
+.ant-form-item-has-error .phone-input-container .react-tel-input .form-control:focus {
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.ant-form-item-has-error .otp-input {
+    border-color: #ff4d4f !important;
+}
+
+.ant-form-item-has-error .otp-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1) !important;
+}
+
+.ant-form-item-explain-error {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    color: #ff4d4f;
 }
 
 /* ================================
@@ -245,6 +299,30 @@
 }
 
 /* ================================
+   OTP Progress & Hints
+   ================================ */
+
+.otp-hint {
+    margin-top: 0.75rem;
+}
+
+.otp-counter {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #667eea;
+    font-weight: 500;
+}
+
+.ant-progress-line {
+    margin-bottom: 0.25rem;
+}
+
+.ant-progress-bg {
+    border-radius: 4px;
+}
+
+/* ================================
    Buttons
    ================================ */
 
@@ -257,6 +335,15 @@
     border: none !important;
     transition: all 0.3s ease !important;
     margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.send-otp-button .anticon,
+.verify-otp-button .anticon {
+    font-size: 1.125rem;
 }
 
 .send-otp-button {
@@ -314,6 +401,33 @@
     color: #666;
     font-size: 0.938rem;
     margin-right: 0.5rem;
+}
+
+.resend-timer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #667eea;
+    font-size: 0.938rem;
+    font-weight: 500;
+    padding: 0.75rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 8px;
+}
+
+.timer-icon {
+    font-size: 1rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 .resend-button {
@@ -397,6 +511,22 @@
         font-size: 0.938rem;
     }
 
+    .header-subtitle {
+        font-size: 0.938rem;
+    }
+
+    .otp-sent-alert {
+        margin-bottom: 1.25rem;
+    }
+
+    .otp-sent-alert .ant-alert-message {
+        font-size: 0.938rem;
+    }
+
+    .otp-sent-alert .ant-alert-description {
+        font-size: 0.875rem;
+    }
+
     .back-button {
         font-size: 0.938rem;
     }
@@ -429,6 +559,20 @@
 
     .card-header p {
         font-size: 0.875rem;
+    }
+
+    .header-subtitle {
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    .otp-counter {
+        font-size: 0.813rem;
+    }
+
+    .resend-timer {
+        font-size: 0.875rem;
+        padding: 0.625rem;
     }
 
     .form-label {
@@ -563,8 +707,14 @@
 .send-otp-button:focus-visible,
 .verify-otp-button:focus-visible,
 .resend-button:focus-visible {
-    outline: 2px solid #667eea;
+    outline: 3px solid #667eea;
     outline-offset: 2px;
+}
+
+/* Improve button focus states */
+.send-otp-button:focus,
+.verify-otp-button:focus {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
 }
 
 /* High contrast mode support */
