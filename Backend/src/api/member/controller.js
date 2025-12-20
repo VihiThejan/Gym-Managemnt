@@ -4,23 +4,33 @@ const prisma = new PrismaClient();
 
 const member = async (req, res) => {
     const {fName, dob,gender,email, address,contact,package,weight,height,password} = req.body;
+    
+    // Log received data for debugging
+    console.log('Received member registration data:', req.body);
+    
     try{
+        // Validate required fields
+        if (!fName || !email || !contact || !password || !dob || !gender || !address || !package || !height || !weight) {
+            return res.status(400).json({
+                code: 400,
+                message: 'Missing required fields',
+                received: req.body
+            });
+        }
+
         await prisma.member.create({
             data: {
                 FName: fName,
-                DOB:dob,
-                Gender:gender,
+                DOB: new Date(dob),
+                Gender: gender,
                 Email: email,
-                Address:address,
-                Contact:contact,
-                Package:package,
+                Address: address,
+                Contact: contact,
+                Package: package,
                 Weight: parseFloat(weight),
-                Height:parseFloat(height),   
-                UName:contact,
-                Password:password
-                
-                
-
+                Height: parseFloat(height),   
+                UName: contact,
+                Password: password
             }
         })
         res.status(200).json({
@@ -28,10 +38,12 @@ const member = async (req, res) => {
             message: 'Member created successfully',
         })
     }catch(ex){
+        console.error('Error creating member:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
-            error: ex.message
+            error: ex.message,
+            details: ex.stack
         })
     }
 }
@@ -111,18 +123,44 @@ const memberLogin = async (req, res) => {
 const memberDelete = async (req, res) => {
     try{
         const id = req.params.id
+        const memberId = parseInt(id);
+        
+        // Delete related records first to avoid foreign key constraint violations
+        // Delete appointments
+        await prisma.appointment.deleteMany({
+            where: {
+                Member_Id: memberId
+            }
+        });
+        
+        // Delete attendance records
+        await prisma.attendance.deleteMany({
+            where: {
+                Member_Id: memberId
+            }
+        });
+        
+        // Delete trainer ratings
+        await prisma.trainerrate.deleteMany({
+            where: {
+                Member_Id: memberId
+            }
+        });
+        
+        // Now delete the member
         const data = await prisma.member.delete({
             where: {
-                Member_Id: parseInt(id)
+                Member_Id: memberId
             },
            
         })
         res.status(200).json({
             code: 200,
-            message: 'Member Delete successfully',
+            message: 'Member deleted successfully',
             data
         })
     }catch(ex){
+        console.error('Error deleting member:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',

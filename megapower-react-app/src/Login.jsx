@@ -147,130 +147,182 @@ export const Login = () => {
 
   return (
     <div className="login-page">
+      {/* Background decoration */}
+      <div className="login-background">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
+      </div>
+
       <div className="login-container">
-        <Card className="login-card">
-          <div className="card-header">
-            <div className="header-icon">
-              <LoginOutlined />
+        <div className="login-card">
+          {/* Left Side - Branding */}
+          <div className="login-left">
+            <div className="brand-section">
+              <div className="gym-icon">💪</div>
+              <h1 className="brand-title">Mega Power Gym</h1>
+              <p className="brand-tagline">Transform Your Body, Transform Your Life</p>
             </div>
-            <h2>Welcome Back</h2>
-            <p>Login to your account</p>
-          </div>
-
-          <form className="login-form" onSubmit={handleSubmit}>
-            <div className="user-type-section">
-              <label className="form-label">
-                <UserOutlined className="label-icon" />
-                Login As
-              </label>
-              <Radio.Group 
-                onChange={onuserChange} 
-                value={user}
-                className="user-radio-group"
-              >
-                <Radio value="Admin">Admin</Radio>
-                <Radio value="Staff">Staff</Radio>
-                <Radio value="Member">Member</Radio>
-              </Radio.Group>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">
-                <PhoneOutlined className="label-icon" />
-                Mobile Number
-              </label>
-              <PhoneInput
-                country={'lk'}
-                value={mobile}
-                onChange={(phone) => {
-                  setMobile(phone);
-                  setMobileError(validateMobile(phone));
-                }}
-                containerClass="phone-input-container"
-                inputClass="phone-input-field"
-                buttonClass="phone-input-button"
-                inputStyle={{
-                  width: '100%',
-                  height: '52px',
-                  fontSize: '1rem',
-                  borderRadius: '12px',
-                  border: '2px solid #e8e8e8',
-                  paddingLeft: '58px'
-                }}
-                buttonStyle={{
-                  borderRadius: '12px 0 0 12px',
-                  border: '2px solid #e8e8e8',
-                  borderRight: 'none'
-                }}
-              />
-              {mobileError && <span className="error-message">{mobileError}</span>}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">
-                <LockOutlined className="label-icon" />
-                Password
-              </label>
-              <Input.Password
-                value={pass}
-                onChange={(e) => {
-                  setPass(e.target.value);
-                  setPassError(validatePassword(e.target.value));
-                }}
-                placeholder="Enter your password"
-                size="large"
-                className="password-input"
-              />
-              {passError && <span className="error-message">{passError}</span>}
-            </div>
-
-            <div className="form-options">
-              <Checkbox 
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="remember-checkbox"
-              >
-                Remember me
-              </Checkbox>
-              <Button
-                type="link"
-                onClick={() => navigate("/Forgotpw")}
-                className="forgot-password-link"
-              >
-                Forgot password?
-              </Button>
-            </div>
-
-            <Button 
-              type="primary" 
-              htmlType="submit"
-              size="large"
-              loading={loading}
-              disabled={loading}
-              className="login-button"
-              block
-            >
-              {loading ? 'Logging in...' : 'Login'}
-            </Button>
-          </form>
-
-          <div className="register-section">
-            <p className="register-text">Don't have an account?</p>
-            <div className="register-links">
-              <Button type="link" onClick={() => navigate("/Admin")} className="register-link">
-                Register as Admin
-              </Button>
-              <span className="link-separator">•</span>
-              <Button type="link" onClick={() => navigate("/staffSignup")} className="register-link">
-                Staff
-              </Button>
-              <span className="link-separator">•</span>
-              <Button type="link" onClick={() => navigate("/Member")} className="register-link">
-                Member
-              </Button>
+            <div className="features-list">
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Professional Trainers</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Modern Equipment</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Flexible Memberships</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>24/7 Access</span>
+              </div>
             </div>
           </div>
-        </Card>
+
+          {/* Right Side - Login Form */}
+          <div className="login-right">
+            <div className="form-wrapper">
+              <div className="form-header">
+                <h2>Welcome Back!</h2>
+                <p>Sign in to continue your fitness journey</p>
+              </div>
+
+              <form className="login-form" onSubmit={handleSubmit}>
+                {/* User Type Selection */}
+                <div className="user-type-cards">
+                  <div 
+                    className={`user-card ${user === 'Admin' ? 'active' : ''}`}
+                    onClick={() => setUser('Admin')}
+                  >
+                    <div className="user-card-icon">👤</div>
+                    <span>Admin</span>
+                  </div>
+                  <div 
+                    className={`user-card ${user === 'Staff' ? 'active' : ''}`}
+                    onClick={() => setUser('Staff')}
+                  >
+                    <div className="user-card-icon">👨‍💼</div>
+                    <span>Staff</span>
+                  </div>
+                  <div 
+                    className={`user-card ${user === 'Member' ? 'active' : ''}`}
+                    onClick={() => setUser('Member')}
+                  >
+                    <div className="user-card-icon">🏋️</div>
+                    <span>Member</span>
+                  </div>
+                </div>
+
+                {/* Mobile Number */}
+                <div className="form-group">
+                  <label className="input-label">
+                    <PhoneOutlined /> Mobile Number
+                  </label>
+                  <PhoneInput
+                    country={'lk'}
+                    value={mobile}
+                    onChange={(phone) => {
+                      setMobile(phone);
+                      setMobileError(validateMobile(phone));
+                    }}
+                    containerClass="phone-input-container"
+                    enableSearch={true}
+                    placeholder="77 123 4567"
+                  />
+                  {mobileError && <span className="error-message">⚠ {mobileError}</span>}
+                </div>
+
+                {/* Password */}
+                <div className="form-group">
+                  <label className="input-label">
+                    <LockOutlined /> Password
+                  </label>
+                  <Input.Password
+                    value={pass}
+                    onChange={(e) => {
+                      setPass(e.target.value);
+                      setPassError(validatePassword(e.target.value));
+                    }}
+                    placeholder="Enter your password"
+                    size="large"
+                    className="password-input"
+                    prefix={<LockOutlined className="input-icon" />}
+                  />
+                  {passError && <span className="error-message">⚠ {passError}</span>}
+                </div>
+
+                {/* Remember Me & Forgot Password */}
+                <div className="form-options">
+                  <Checkbox 
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="remember-checkbox"
+                  >
+                    Remember me
+                  </Checkbox>
+                  <Button
+                    type="link"
+                    onClick={() => navigate("/Forgotpw")}
+                    className="forgot-link"
+                  >
+                    Forgot password?
+                  </Button>
+                </div>
+
+                {/* Login Button */}
+                <Button 
+                  type="primary" 
+                  htmlType="submit"
+                  size="large"
+                  loading={loading}
+                  disabled={loading}
+                  className="login-button"
+                  block
+                  icon={<LoginOutlined />}
+                >
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </form>
+
+              {/* Register Links - Dynamic based on user type selection */}
+              <div className="register-section">
+                <div className="divider">
+                  <span>Don't have an account?</span>
+                </div>
+                <div className="register-buttons">
+                  {user === 'Admin' && (
+                    <Button 
+                      className="register-btn" 
+                      onClick={() => navigate("/Admin")}
+                    >
+                      Register as Admin
+                    </Button>
+                  )}
+                  {user === 'Staff' && (
+                    <Button 
+                      className="register-btn" 
+                      onClick={() => navigate("/staffSignup")}
+                    >
+                      Register as Staff
+                    </Button>
+                  )}
+                  {user === 'Member' && (
+                    <Button 
+                      className="register-btn" 
+                      onClick={() => navigate("/MemberRegister")}
+                    >
+                      Register as Member
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -14,7 +14,6 @@ model admin {
   UserName     String
   Contact      String?
   announcement announcement[]
-  attendance   attendance[]
   chat         chat[]
   feedback     feedback[]
   payment      payment[]
@@ -44,14 +43,14 @@ model appointment {
 }
 
 model attendance {
-  Attendance_ID Int      @id @default(autoincrement())
+  Attendance_ID Int       @id @default(autoincrement())
   Member_Id     Int
   Current_date  DateTime
   In_time       DateTime
-  Out_time      DateTime
-  admin         admin    @relation(fields: [Member_Id], references: [User_ID], map: "Attendance_User_ID_fkey")
+  Out_time      DateTime?
+  member        member    @relation(fields: [Member_Id], references: [Member_Id], map: "fk_attendance_member")
 
-  @@index([Member_Id], map: "Attendance_User_ID_fkey")
+  @@index([Member_Id], map: "idx_member_id")
 }
 
 model chat {
@@ -98,6 +97,7 @@ model member {
   UName       String
   Password    String
   appointment appointment[]
+  attendance  attendance[]
   trainerrate trainerrate?
 }
 

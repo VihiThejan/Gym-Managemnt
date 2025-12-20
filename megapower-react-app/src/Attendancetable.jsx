@@ -76,9 +76,9 @@ export const Attendancetable = () => {
       setFilteredData(data.filter((item) => 
         String(item.Attendance_ID).includes(value) ||
         String(item.Member_Id).includes(value) ||
-        moment(item.Current_date).format("YYYY-MM-DD").includes(searchLower) ||
-        moment(item.In_time).format("hh:mm A").toLowerCase().includes(searchLower) ||
-        moment(item.Out_time).format("hh:mm A").toLowerCase().includes(searchLower)
+        (item.Current_date && moment(item.Current_date).format("YYYY-MM-DD").includes(searchLower)) ||
+        (item.In_time && moment(item.In_time).format("hh:mm A").toLowerCase().includes(searchLower)) ||
+        (item.Out_time && moment(item.Out_time).format("hh:mm A").toLowerCase().includes(searchLower))
       ));
     } else {
       setFilteredData(data);
@@ -114,12 +114,15 @@ export const Attendancetable = () => {
       dataIndex: "Current_date",
       key: "current_date",
       width: 150,
-      render: (date) => (
-        <div className="date-cell">
-          <CalendarOutlined style={{ marginRight: '6px', color: '#667eea' }} />
-          {moment(date).format("YYYY-MM-DD")}
-        </div>
-      ),
+      render: (date) => {
+        const formattedDate = date ? moment(date).format("YYYY-MM-DD") : 'N/A';
+        return (
+          <div className="date-cell">
+            <CalendarOutlined style={{ marginRight: '6px', color: '#667eea' }} />
+            {formattedDate}
+          </div>
+        );
+      },
       sorter: (a, b) => moment(a.Current_date).unix() - moment(b.Current_date).unix(),
     },
     {
@@ -127,24 +130,38 @@ export const Attendancetable = () => {
       dataIndex: "In_time",
       key: "inTime",
       width: 150,
-      render: (time) => (
-        <div className="time-cell in-time">
-          <LoginOutlined style={{ marginRight: '6px' }} />
-          {moment(time).format("hh:mm A")}
-        </div>
-      ),
+      render: (time) => {
+        const formattedTime = time ? moment(time).format("hh:mm A") : 'N/A';
+        return (
+          <div className="time-cell in-time">
+            <LoginOutlined style={{ marginRight: '6px' }} />
+            {formattedTime}
+          </div>
+        );
+      },
     },
     {
       title: <span><LogoutOutlined /> Check-Out Time</span>,
       dataIndex: "Out_time",
       key: "outTime",
       width: 150,
-      render: (time) => (
-        <div className="time-cell out-time">
-          <LogoutOutlined style={{ marginRight: '6px' }} />
-          {moment(time).format("hh:mm A")}
-        </div>
-      ),
+      render: (time) => {
+        if (!time) {
+          return (
+            <div className="time-cell out-time" style={{ color: '#999' }}>
+              <LogoutOutlined style={{ marginRight: '6px' }} />
+              Not checked out
+            </div>
+          );
+        }
+        const formattedTime = moment(time).format("hh:mm A");
+        return (
+          <div className="time-cell out-time">
+            <LogoutOutlined style={{ marginRight: '6px' }} />
+            {formattedTime}
+          </div>
+        );
+      },
     },
     {
       title: "Actions",

@@ -253,13 +253,91 @@ CREATE TABLE `trainerrate` (
   `Member_Id` INT NOT NULL,
   `Rating` INT NOT NULL CHECK (`Rating` >= 1 AND `Rating` <= 5),
   `Comment` TEXT,
+  `Reply` TEXT,
+  `Reply_Date` DATETIME,
+  `Reply_By_Staff_ID` INT,
   `Date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Rating_ID`),
   INDEX `idx_staff_id` (`Staff_ID`),
   INDEX `idx_member_id` (`Member_Id`),
+  INDEX `idx_reply_by` (`Reply_By_Staff_ID`),
   CONSTRAINT `fk_trainerrate_staff` FOREIGN KEY (`Staff_ID`) REFERENCES `staffmember` (`Staff_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_trainerrate_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_trainerrate_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_trainerrate_reply_staff` FOREIGN KEY (`Reply_By_Staff_ID`) REFERENCES `staffmember` (`Staff_ID`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- Table: workouts
+-- Description: Member workout sessions
+-- ============================================================
+CREATE TABLE `workouts` (
+  `Workout_ID` INT NOT NULL AUTO_INCREMENT,
+  `Member_Id` INT NOT NULL,
+  `Workout_Date` DATE NOT NULL,
+  `Workout_Time` TIME NOT NULL,
+  `Total_Duration_Minutes` INT,
+  `Total_Calories` INT,
+  `Notes` TEXT,
+  `Status` VARCHAR(50) DEFAULT 'Completed',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Workout_ID`),
+  INDEX `idx_member_id` (`Member_Id`),
+  INDEX `idx_date` (`Workout_Date`),
+  CONSTRAINT `fk_workouts_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- Table: workout_exercises
+-- Description: Individual exercises logged in workout sessions
+-- ============================================================
+CREATE TABLE `workout_exercises` (
+  `Exercise_ID` INT NOT NULL AUTO_INCREMENT,
+  `Workout_ID` INT NOT NULL,
+  `Exercise_Name` VARCHAR(255) NOT NULL,
+  `Category` VARCHAR(100) NOT NULL,
+  `Sets` INT,
+  `Reps` INT,
+  `Weight` DECIMAL(10,2),
+  `Duration_Minutes` INT,
+  `Calories_Burned` INT,
+  `Distance` DECIMAL(10,2),
+  `Notes` TEXT,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Exercise_ID`),
+  INDEX `idx_workout_id` (`Workout_ID`),
+  INDEX `idx_exercise_name` (`Exercise_Name`),
+  INDEX `idx_category` (`Category`),
+  CONSTRAINT `fk_exercises_workout` FOREIGN KEY (`Workout_ID`) REFERENCES `workouts` (`Workout_ID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- Table: personal_records
+-- Description: Member personal records for exercises
+-- ============================================================
+CREATE TABLE `personal_records` (
+  `PR_ID` INT NOT NULL AUTO_INCREMENT,
+  `Member_Id` INT NOT NULL,
+  `Exercise_Name` VARCHAR(255) NOT NULL,
+  `Category` VARCHAR(100) NOT NULL,
+  `Max_Weight` DECIMAL(10,2),
+  `Max_Reps` INT,
+  `Max_Distance` DECIMAL(10,2),
+  `Best_Time_Minutes` INT,
+  `Achievement_Date` DATE NOT NULL,
+  `Workout_ID` INT,
+  `Notes` TEXT,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`PR_ID`),
+  INDEX `idx_member_id` (`Member_Id`),
+  INDEX `idx_exercise_name` (`Exercise_Name`),
+  INDEX `idx_category` (`Category`),
+  UNIQUE KEY `unique_member_exercise` (`Member_Id`, `Exercise_Name`),
+  CONSTRAINT `fk_pr_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_pr_workout` FOREIGN KEY (`Workout_ID`) REFERENCES `workouts` (`Workout_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -481,6 +559,41 @@ INSERT INTO `feedback` (`Member_Id`, `Message`, `Date`, `Rating`, `Category`, `S
 (2, 'Would love to see more cardio equipment during peak hours.', '2024-06-03 00:00:00', 4, 'Equipment', 'Pending'),
 (3, 'Staff is very friendly and helpful. Great experience overall!', '2024-06-05 00:00:00', 5, 'Service', 'Reviewed');
 
+-- Sample Workouts
+INSERT INTO `workouts` (`Member_Id`, `Workout_Date`, `Workout_Time`, `Total_Duration_Minutes`, `Total_Calories`, `Notes`) VALUES
+(1, '2024-12-01', '07:00:00', 60, 450, 'Great morning cardio session'),
+(1, '2024-12-02', '07:15:00', 75, 520, 'Strength training day'),
+(1, '2024-12-03', '18:00:00', 45, 380, 'Evening HIIT workout'),
+(2, '2024-12-01', '08:00:00', 90, 650, 'Full body workout'),
+(2, '2024-12-04', '08:30:00', 60, 480, 'Upper body focus'),
+(3, '2024-12-02', '19:00:00', 50, 420, 'Yoga and flexibility');
+
+-- Sample Workout Exercises
+INSERT INTO `workout_exercises` (`Workout_ID`, `Exercise_Name`, `Category`, `Sets`, `Reps`, `Weight`, `Duration_Minutes`, `Calories_Burned`) VALUES
+(1, 'Running', 'Cardio', NULL, NULL, NULL, 30, 250),
+(1, 'Cycling', 'Cardio', NULL, NULL, NULL, 30, 200),
+(2, 'Bench Press', 'Strength', 4, 10, 80.0, NULL, 180),
+(2, 'Squats', 'Strength', 4, 12, 100.0, NULL, 220),
+(2, 'Deadlift', 'Strength', 3, 8, 120.0, NULL, 120),
+(3, 'Burpees', 'HIIT', 5, 15, NULL, NULL, 180),
+(3, 'Jump Rope', 'HIIT', NULL, NULL, NULL, 15, 200),
+(4, 'Bench Press', 'Strength', 5, 8, 85.0, NULL, 200),
+(4, 'Pull-ups', 'Strength', 4, 10, NULL, NULL, 150),
+(4, 'Lunges', 'Strength', 3, 12, 40.0, NULL, 300),
+(5, 'Shoulder Press', 'Strength', 4, 10, 50.0, NULL, 180),
+(5, 'Bicep Curls', 'Strength', 3, 12, 30.0, NULL, 150),
+(5, 'Tricep Dips', 'Strength', 3, 15, NULL, NULL, 150),
+(6, 'Vinyasa Flow', 'Yoga', NULL, NULL, NULL, 50, 420);
+
+-- Sample Personal Records
+INSERT INTO `personal_records` (`Member_Id`, `Exercise_Name`, `Category`, `Max_Weight`, `Max_Reps`, `Achievement_Date`, `Workout_ID`) VALUES
+(1, 'Bench Press', 'Strength', 80.0, 10, '2024-12-02', 2),
+(1, 'Squats', 'Strength', 100.0, 12, '2024-12-02', 2),
+(1, 'Deadlift', 'Strength', 120.0, 8, '2024-12-02', 2),
+(2, 'Bench Press', 'Strength', 85.0, 8, '2024-12-04', 5),
+(2, 'Pull-ups', 'Strength', NULL, 10, '2024-12-01', 4),
+(2, 'Shoulder Press', 'Strength', 50.0, 10, '2024-12-04', 5);
+
 -- ============================================================
 -- Create Views for Common Queries
 -- ============================================================
@@ -550,6 +663,41 @@ FROM member m
 LEFT JOIN attendance a ON m.Member_Id = a.Member_Id
 WHERE m.Status = 'Active'
 GROUP BY m.Member_Id;
+
+-- View: Member Workout Summary
+CREATE VIEW `view_member_workout_summary` AS
+SELECT 
+    m.Member_Id,
+    m.FName,
+    m.LName,
+    m.Email,
+    COUNT(DISTINCT w.Workout_ID) AS Total_Workouts,
+    COUNT(DISTINCT DATE_FORMAT(w.Workout_Date, '%Y-%m')) AS Active_Months,
+    COALESCE(SUM(w.Total_Calories), 0) AS Total_Calories_Burned,
+    COALESCE(AVG(w.Total_Duration_Minutes), 0) AS Avg_Workout_Duration,
+    MAX(w.Workout_Date) AS Last_Workout_Date,
+    COUNT(DISTINCT pr.PR_ID) AS Total_Personal_Records
+FROM member m
+LEFT JOIN workouts w ON m.Member_Id = w.Member_Id
+LEFT JOIN personal_records pr ON m.Member_Id = pr.Member_Id
+WHERE m.Status = 'Active'
+GROUP BY m.Member_Id;
+
+-- View: Exercise Popularity
+CREATE VIEW `view_exercise_popularity` AS
+SELECT 
+    we.Exercise_Name,
+    we.Category,
+    COUNT(DISTINCT we.Workout_ID) AS Times_Performed,
+    COUNT(DISTINCT w.Member_Id) AS Unique_Members,
+    AVG(we.Weight) AS Avg_Weight,
+    AVG(we.Reps) AS Avg_Reps,
+    AVG(we.Duration_Minutes) AS Avg_Duration,
+    SUM(we.Calories_Burned) AS Total_Calories
+FROM workout_exercises we
+JOIN workouts w ON we.Workout_ID = w.Workout_ID
+GROUP BY we.Exercise_Name, we.Category
+ORDER BY Times_Performed DESC;
 
 -- ============================================================
 -- Create Stored Procedures
@@ -638,6 +786,94 @@ BEGIN
     SELECT v_payment_id AS Payment_ID, v_receipt_no AS Receipt_Number, 'Payment processed successfully' AS Message;
 END //
 
+-- Procedure: Log Workout Session
+CREATE PROCEDURE `sp_log_workout`(
+    IN p_member_id INT,
+    IN p_date DATE,
+    IN p_time TIME,
+    IN p_duration INT,
+    IN p_calories INT,
+    IN p_notes TEXT
+)
+BEGIN
+    DECLARE v_workout_id INT;
+    
+    INSERT INTO workouts (Member_Id, Workout_Date, Workout_Time, Total_Duration_Minutes, Total_Calories, Notes)
+    VALUES (p_member_id, p_date, p_time, p_duration, p_calories, p_notes);
+    
+    SET v_workout_id = LAST_INSERT_ID();
+    SELECT v_workout_id AS Workout_ID, 'Workout logged successfully' AS Message;
+END //
+
+-- Procedure: Add Exercise to Workout
+CREATE PROCEDURE `sp_add_exercise`(
+    IN p_workout_id INT,
+    IN p_exercise_name VARCHAR(255),
+    IN p_category VARCHAR(100),
+    IN p_sets INT,
+    IN p_reps INT,
+    IN p_weight DECIMAL(10,2),
+    IN p_duration INT,
+    IN p_calories INT,
+    IN p_distance DECIMAL(10,2)
+)
+BEGIN
+    DECLARE v_exercise_id INT;
+    
+    INSERT INTO workout_exercises (Workout_ID, Exercise_Name, Category, Sets, Reps, Weight, Duration_Minutes, Calories_Burned, Distance)
+    VALUES (p_workout_id, p_exercise_name, p_category, p_sets, p_reps, p_weight, p_duration, p_calories, p_distance);
+    
+    SET v_exercise_id = LAST_INSERT_ID();
+    
+    -- Check if this is a new personal record
+    CALL sp_check_personal_record(p_workout_id, v_exercise_id);
+    
+    SELECT v_exercise_id AS Exercise_ID, 'Exercise added successfully' AS Message;
+END //
+
+-- Procedure: Check and Update Personal Records
+CREATE PROCEDURE `sp_check_personal_record`(
+    IN p_workout_id INT,
+    IN p_exercise_id INT
+)
+BEGIN
+    DECLARE v_member_id INT;
+    DECLARE v_exercise_name VARCHAR(255);
+    DECLARE v_category VARCHAR(100);
+    DECLARE v_weight DECIMAL(10,2);
+    DECLARE v_reps INT;
+    DECLARE v_distance DECIMAL(10,2);
+    DECLARE v_duration INT;
+    DECLARE v_date DATE;
+    DECLARE v_current_pr_weight DECIMAL(10,2);
+    DECLARE v_current_pr_reps INT;
+    
+    -- Get workout and exercise details
+    SELECT w.Member_Id, w.Workout_Date, we.Exercise_Name, we.Category, we.Weight, we.Reps, we.Distance, we.Duration_Minutes
+    INTO v_member_id, v_date, v_exercise_name, v_category, v_weight, v_reps, v_distance, v_duration
+    FROM workout_exercises we
+    JOIN workouts w ON we.Workout_ID = w.Workout_ID
+    WHERE we.Exercise_ID = p_exercise_id;
+    
+    -- Check existing PR
+    SELECT Max_Weight, Max_Reps INTO v_current_pr_weight, v_current_pr_reps
+    FROM personal_records
+    WHERE Member_Id = v_member_id AND Exercise_Name = v_exercise_name;
+    
+    -- Update or insert PR if new record achieved
+    IF v_current_pr_weight IS NULL OR v_weight > v_current_pr_weight OR v_reps > v_current_pr_reps THEN
+        INSERT INTO personal_records (Member_Id, Exercise_Name, Category, Max_Weight, Max_Reps, Max_Distance, Best_Time_Minutes, Achievement_Date, Workout_ID)
+        VALUES (v_member_id, v_exercise_name, v_category, v_weight, v_reps, v_distance, v_duration, v_date, p_workout_id)
+        ON DUPLICATE KEY UPDATE
+            Max_Weight = GREATEST(Max_Weight, v_weight),
+            Max_Reps = GREATEST(Max_Reps, v_reps),
+            Max_Distance = GREATEST(COALESCE(Max_Distance, 0), COALESCE(v_distance, 0)),
+            Best_Time_Minutes = LEAST(COALESCE(Best_Time_Minutes, 999999), COALESCE(v_duration, 999999)),
+            Achievement_Date = v_date,
+            Workout_ID = p_workout_id;
+    END IF;
+END //
+
 DELIMITER ;
 
 -- ============================================================
@@ -673,6 +909,25 @@ BEGIN
     );
 END //
 
+-- Trigger: Update workout totals when exercise is added
+CREATE TRIGGER `trg_update_workout_totals`
+AFTER INSERT ON `workout_exercises`
+FOR EACH ROW
+BEGIN
+    UPDATE workouts
+    SET Total_Calories = (
+        SELECT COALESCE(SUM(Calories_Burned), 0)
+        FROM workout_exercises
+        WHERE Workout_ID = NEW.Workout_ID
+    ),
+    Total_Duration_Minutes = (
+        SELECT COALESCE(SUM(Duration_Minutes), 0)
+        FROM workout_exercises
+        WHERE Workout_ID = NEW.Workout_ID
+    )
+    WHERE Workout_ID = NEW.Workout_ID;
+END //
+
 DELIMITER ;
 
 -- ============================================================
@@ -686,6 +941,9 @@ CREATE INDEX idx_staff_email ON staffmember(Email);
 CREATE INDEX idx_payment_status_date ON payment(Status, Date);
 CREATE INDEX idx_attendance_member_date ON attendance(Member_Id, Current_date);
 CREATE INDEX idx_appointment_datetime ON appointment(Date_and_Time);
+CREATE INDEX idx_workout_member_date ON workouts(Member_Id, Workout_Date);
+CREATE INDEX idx_exercise_workout ON workout_exercises(Workout_ID, Exercise_Name);
+CREATE INDEX idx_pr_member_exercise ON personal_records(Member_Id, Exercise_Name);
 
 -- ============================================================
 -- Grant Permissions (Adjust as needed)
@@ -701,10 +959,10 @@ CREATE INDEX idx_appointment_datetime ON appointment(Date_and_Time);
 -- ============================================================
 
 SELECT 'Database setup completed successfully!' AS Status;
-SELECT 'Total tables created: 19' AS Info;
-SELECT 'Total views created: 4' AS Info;
-SELECT 'Total stored procedures created: 4' AS Info;
-SELECT 'Total triggers created: 2' AS Info;
+SELECT 'Total tables created: 22' AS Info;
+SELECT 'Total views created: 6' AS Info;
+SELECT 'Total stored procedures created: 7' AS Info;
+SELECT 'Total triggers created: 3' AS Info;
 
 -- Show all tables
 SHOW TABLES;
@@ -729,4 +987,10 @@ SELECT 'Appointments' AS Entity, COUNT(*) AS Count FROM appointment
 UNION ALL
 SELECT 'Schedules' AS Entity, COUNT(*) AS Count FROM schedule
 UNION ALL
-SELECT 'Packages' AS Entity, COUNT(*) AS Count FROM packages;
+SELECT 'Packages' AS Entity, COUNT(*) AS Count FROM packages
+UNION ALL
+SELECT 'Workouts' AS Entity, COUNT(*) AS Count FROM workouts
+UNION ALL
+SELECT 'Workout Exercises' AS Entity, COUNT(*) AS Count FROM workout_exercises
+UNION ALL
+SELECT 'Personal Records' AS Entity, COUNT(*) AS Count FROM personal_records;

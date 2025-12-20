@@ -136,22 +136,44 @@ const staffList = async (req, res) => {
 const staffDelete = async (req, res) => {
     try{
         const id = req.params.id
+        const staffId = parseInt(id)
+        
+        // Check if staff has related appointments or schedules
+        const appointments = await prisma.appointment.count({
+            where: { Staff_ID: staffId }
+        })
+        
+        const schedules = await prisma.schedule.count({
+            where: { Staff_ID: staffId }
+        })
+        
+        if (appointments > 0 || schedules > 0) {
+            return res.status(400).json({
+                code: 400,
+                message: 'Cannot delete staff member. This staff has associated appointments or schedules. Please remove them first.',
+                details: {
+                    appointments,
+                    schedules
+                }
+            })
+        }
+        
+        // If no related records, proceed with deletion
         const data = await prisma.staffmember.delete({
             where: {
-                    Staff_ID : parseInt(id)
-                        
-            },
-           
+                Staff_ID: staffId
+            }
         })
+        
         res.status(200).json({
             code: 200,
-            message: 'Staff Member fetched successfully',
+            message: 'Staff member deleted successfully',
             data
         })
     }catch(ex){
         res.status(500).json({
             code: 500,
-            message: 'Internal Server Error',
+            message: 'Failed to delete staff member',
             error: ex.message
         })
     }

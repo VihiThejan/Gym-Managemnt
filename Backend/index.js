@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const { initializeDatabase } = require('./src/config/database');
 const loginRoute = require('./src/api/login/route');
 const appoinmentRoute = require('./src/api/Appoinment/route');
 const equipmentRoute = require('./src/api/equipment/route');
@@ -58,7 +59,37 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(5000, () => {
-    console.log("Server is listening on port 5000!");
-    console.log("Socket.IO is ready for connections");
+// Initialize database and start server
+async function startServer() {
+    try {
+        // Initialize database (will create if not exists)
+        await initializeDatabase();
+        
+        // Start the server
+        const PORT = process.env.PORT || 5000;
+        server.listen(PORT, () => {
+            console.log('═══════════════════════════════════════════════');
+            console.log('🏋️  Mega Power Gym Management System');
+            console.log('═══════════════════════════════════════════════');
+            console.log(`🚀 Server is listening on port ${PORT}`);
+            console.log(`🌐 API Base URL: http://localhost:${PORT}/api/v1`);
+            console.log(`💬 Socket.IO is ready for connections`);
+            console.log('═══════════════════════════════════════════════');
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error.message);
+        console.error('Please check your database configuration and try again.');
+        process.exit(1);
+    }
+}
+
+// Handle graceful shutdown
+process.on('SIGINT', async () => {
+    console.log('\n⚠️  Shutting down gracefully...');
+    const { closeDatabase } = require('./src/config/database');
+    await closeDatabase();
+    process.exit(0);
 });
+
+// Start the server
+startServer();

@@ -47,12 +47,12 @@ const items = [
   { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '1', path: '/MemberDashboard' },
   { label: 'My Profile', icon: <UserOutlined />, key: '2', path: '/MemberProfile' },
   { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/MemberPayment' },
-  { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/Announcementtable' },
-  { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/Attendancetable' },
-  { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/Appoinmenttable' },
-  { label: 'Feedback', icon: <CommentOutlined />, key: '8', path: '/Feedback' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '9', path: '/chat' },
-  { label: 'Rate Trainer', icon: <StarOutlined />, key: '10', path: '/Trainerrate' },
+  { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/MemberAnnouncements' },
+  { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/MemberAttendance' },
+  { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/MemberAppointment' },
+  { label: 'Chat', icon: <MessageOutlined />, key: '8', path: '/chat' },
+  { label: 'Rate Trainer', icon: <StarOutlined />, key: '9', path: '/Trainerrate' },
+  { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '10', path: '/WorkoutTracker' },
 ];
 
 export const MemberDashboard = () => {
@@ -173,7 +173,7 @@ export const MemberDashboard = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          selectedKeys={['1']}
           onClick={handleMenuClick}
           className="dashboard-menu"
         >
@@ -183,6 +183,22 @@ export const MemberDashboard = () => {
             </Menu.Item>
           ))}
         </Menu>
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            width: '100%',
+            padding: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            background: 'rgba(102, 126, 234, 0.1)'
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          <MenuUnfoldOutlined style={{ fontSize: '20px', color: 'white', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.3s' }} />
+        </div>
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="dashboard-content-layout">
         <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} className="dashboard-header">
@@ -277,7 +293,7 @@ export const MemberDashboard = () => {
                   className="action-card"
                 >
                   <div className="action-buttons-container">
-                    <Button type="primary" icon={<ScheduleOutlined />} onClick={() => navigate('/Appoinmenttable')} block className="action-button">
+                    <Button type="primary" icon={<ScheduleOutlined />} onClick={() => navigate('/MemberAppointment')} block className="action-button">
                       View My Appointments
                     </Button>
                     <Button type="primary" icon={<CalendarOutlined />} onClick={() => navigate('/Scheduletable')} block className="action-button">
