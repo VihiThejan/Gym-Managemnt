@@ -1,10 +1,18 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const bcrypt = require('bcryptjs');
 
 
 const staffMember = async (req, res) => {
     const {FName, dob, address,gender,contactNo,email,jobRole,password} = req.body;
+    
+    console.log('Received staff registration data:', req.body);
+    
     try{
+        // Hash the password before storing
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log('Password hashed for staff registration');
+        
         await prisma.staffmember.create({
             data: {
                 
@@ -16,17 +24,20 @@ const staffMember = async (req, res) => {
                 Email: email,
                 Job_Role:jobRole,
                 UName:contactNo,
-                Password:password
+                Password:hashedPassword
                 
                 
 
             }
         })
+        console.log('Staff member created successfully with hashed password');
+        
         res.status(200).json({
             code: 200,
             message: 'Staff member created successfully',
         })
     }catch(ex){
+        console.error('Error creating staff member:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
@@ -37,51 +48,48 @@ const staffMember = async (req, res) => {
 
 const staffLogin = async (req, res) => {
     const {username, password} = req.body;
+    
+    console.log('Staff login attempt:', { username, passwordLength: password?.length });
+    
     try{
-        console.log('Staff Login Attempt - Username:', username, 'Password:', password);
-        
-        // First try exact match
-        let data = await prisma.staffmember.findFirst({
+        // Find staff by Contact_No (used as username)
+        const data = await prisma.staffmember.findFirst({
             select: {
                 Staff_ID: true,
                 FName: true,
-                UName: true,
+                Password: true,
                 Contact_No: true
             },
             where:{
-                UName: username,
-                Password: password
+                Contact_No: username
             }
         });
 
-        // If not found, try matching Contact_No
-        if(!data){
-            data = await prisma.staffmember.findFirst({
-                select: {
-                    Staff_ID: true,
-                    FName: true,
-                    UName: true,
-                    Contact_No: true
-                },
-                where:{
-                    Contact_No: username,
-                    Password: password
-                }
-            });
-        }
-
-        console.log('Staff Login Result:', data);
+        console.log('Staff found:', data ? 'Yes' : 'No');
 
         if(data !== null){
-            res.status(200).json({
-                code: 200,
-                message: 'Login Success',
-                data: {
-                    Staff_ID: data.Staff_ID,
-                    FName: data.FName
-                }
-            })
+            // Compare the provided password with the hashed password
+            const isMatch = await bcrypt.compare(password, data.Password);
+            
+            console.log('Password match:', isMatch);
+            
+            if(isMatch){
+                // Remove password from response
+                const { Password, ...userData } = data;
+                res.status(200).json({
+                    code: 200,
+                    message: 'Login Success',
+                    data: userData
+                })
+            }else{
+                res.status(200).json({
+                    code: 400,
+                    message: 'Invalid username or password',
+                    data: null
+                })
+            }
         }else{
+            console.log('User not found with contact:', username);
             res.status(200).json({
                 code: 400,
                 message: 'Invalid username or password',
@@ -91,7 +99,7 @@ const staffLogin = async (req, res) => {
 
     }
     catch(ex){
-        console.error('Staff Login Error:', ex);
+        console.error('Staff login error:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',

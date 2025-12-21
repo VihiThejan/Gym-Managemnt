@@ -184,6 +184,11 @@ export const MemberRegister = () => {
         setTimeout(() => {
           navigate('/Login');
         }, 2000);
+      } else if (response?.data?.code === 400) {
+        message.error({
+          content: response?.data?.message || 'Registration failed',
+          duration: 5
+        });
       } else {
         message.error(response?.data?.message || 'Registration failed');
       }

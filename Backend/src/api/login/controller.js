@@ -110,9 +110,29 @@ const forgetpw = async (req, res) => {
     }
     
     try{
+        // Check if user exists in any table before sending OTP
+        const adminUser = await prisma.admin.findFirst({
+            where: { Contact: contact }
+        });
+        
+        const memberUser = await prisma.member.findFirst({
+            where: { Contact: contact }
+        });
+        
+        const staffUser = await prisma.staffmember.findFirst({
+            where: { Contact_No: contact }
+        });
+        
+        if (!adminUser && !memberUser && !staffUser) {
+            console.log('User not found with contact:', contact);
+            return res.status(200).json({
+                code: 400,
+                message: 'No account found with this contact number',
+            });
+        }
+        
+        console.log('User found - generating OTP for contact:', contact);
         const otp = crypto.randomInt(100000, 999999);
-
-        console.log('Generating OTP for contact:', contact);
         console.log('Generated OTP:', otp);
         
         // Set OTP expiration time to 10 minutes from now
