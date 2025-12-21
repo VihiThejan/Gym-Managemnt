@@ -40,19 +40,22 @@ const packageOptions = [
   { 
     value: "Gold", 
     label: "🥇 Gold Package", 
-    price: 12000, 
+    price: 12000,
+    id: 1,
     features: ["All equipment access", "Personal trainer", "Nutrition plan", "Priority booking"]
   },
   { 
     value: "Silver", 
     label: "🥈 Silver Package", 
-    price: 8000, 
+    price: 8000,
+    id: 2,
     features: ["All equipment access", "Group classes", "Locker facility"]
   },
   { 
     value: "Bronze", 
     label: "🥉 Bronze Package", 
-    price: 5000, 
+    price: 5000,
+    id: 3,
     features: ["Basic equipment access", "Locker facility"]
   },
 ];
@@ -250,9 +253,13 @@ export const MemberPayment = () => {
   };
 
   const savePaymentToDatabase = async (orderId, status) => {
+    // Get package ID from package name
+    const packageData = packageOptions.find(p => p.value === selectedPackage);
+    const packageId = packageData ? packageData.id : 1; // Default to 1 if not found
+
     const body = {
       memberId: parseInt(memberId),
-      packageId: selectedPackage,
+      packageId: packageId,
       amount: amount,
       date: new Date().toISOString(),
       orderId: orderId,
@@ -619,67 +626,105 @@ export const MemberPayment = () => {
                         <Radio.Group 
                           onChange={(e) => setPaymentMethod(e.target.value)}
                           value={paymentMethod}
-                          className="payment-method-group"
+                          style={{ width: '100%', display: 'block' }}
                         >
-                          <Space direction="vertical" style={{ width: '100%' }} size="middle">
-                            <Card 
-                              className={`payment-method-card ${paymentMethod === 'payhere' ? 'selected' : ''}`}
-                              hoverable
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                            <div 
+                              onClick={() => setPaymentMethod('payhere')}
+                              style={{ 
+                                border: paymentMethod === 'payhere' ? '2px solid #667eea' : '2px solid #e8e8e8',
+                                borderRadius: '12px',
+                                padding: '16px',
+                                cursor: 'pointer',
+                                background: paymentMethod === 'payhere' ? 'rgba(102, 126, 234, 0.05)' : '#fff',
+                                width: '100%'
+                              }}
                             >
-                              <div className="payment-method-wrapper">
-                                <Radio value="payhere" />
-                                <div className="payment-method-content">
-                                  <CreditCardOutlined className="payment-icon" />
-                                  <div className="payment-method-info">
-                                    <Text strong>PayHere Payment Gateway</Text>
-                                    <br />
-                                    <Text type="secondary" style={{ fontSize: 12 }}>
-                                      Credit/Debit Card, Online Banking
-                                    </Text>
-                                  </div>
-                                  <Badge status="success" text="Recommended" className="payment-badge" />
-                                </div>
-                              </div>
-                            </Card>
+                              <table style={{ width: '100%' }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ width: '40px', verticalAlign: 'middle' }}>
+                                      <Radio value="payhere" />
+                                    </td>
+                                    <td style={{ width: '50px', verticalAlign: 'middle' }}>
+                                      <CreditCardOutlined style={{ fontSize: '32px', color: '#667eea' }} />
+                                    </td>
+                                    <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
+                                      <div style={{ fontWeight: 600, marginBottom: 4 }}>PayHere Payment Gateway</div>
+                                      <div style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.45)' }}>
+                                        Credit/Debit Card, Online Banking
+                                      </div>
+                                    </td>
+                                    <td style={{ width: '120px', verticalAlign: 'middle', textAlign: 'right' }}>
+                                      <Badge status="success" text="Recommended" />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
 
-                            <Card 
-                              className={`payment-method-card ${paymentMethod === 'bank' ? 'selected' : ''}`}
-                              hoverable
+                            <div 
+                              onClick={() => setPaymentMethod('bank')}
+                              style={{ 
+                                border: paymentMethod === 'bank' ? '2px solid #667eea' : '2px solid #e8e8e8',
+                                borderRadius: '12px',
+                                padding: '16px',
+                                cursor: 'pointer',
+                                background: paymentMethod === 'bank' ? 'rgba(102, 126, 234, 0.05)' : '#fff',
+                                width: '100%'
+                              }}
                             >
-                              <div className="payment-method-wrapper">
-                                <Radio value="bank" />
-                                <div className="payment-method-content">
-                                  <BankOutlined className="payment-icon" />
-                                  <div className="payment-method-info">
-                                    <Text strong>Bank Transfer</Text>
-                                    <br />
-                                    <Text type="secondary" style={{ fontSize: 12 }}>
-                                      Direct bank deposit
-                                    </Text>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
+                              <table style={{ width: '100%' }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ width: '40px', verticalAlign: 'middle' }}>
+                                      <Radio value="bank" />
+                                    </td>
+                                    <td style={{ width: '50px', verticalAlign: 'middle' }}>
+                                      <BankOutlined style={{ fontSize: '32px', color: '#667eea' }} />
+                                    </td>
+                                    <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
+                                      <div style={{ fontWeight: 600, marginBottom: 4 }}>Bank Transfer</div>
+                                      <div style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.45)' }}>
+                                        Direct bank deposit
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
 
-                            <Card 
-                              className={`payment-method-card ${paymentMethod === 'cash' ? 'selected' : ''}`}
-                              hoverable
+                            <div 
+                              onClick={() => setPaymentMethod('cash')}
+                              style={{ 
+                                border: paymentMethod === 'cash' ? '2px solid #667eea' : '2px solid #e8e8e8',
+                                borderRadius: '12px',
+                                padding: '16px',
+                                cursor: 'pointer',
+                                background: paymentMethod === 'cash' ? 'rgba(102, 126, 234, 0.05)' : '#fff',
+                                width: '100%'
+                              }}
                             >
-                              <div className="payment-method-wrapper">
-                                <Radio value="cash" />
-                                <div className="payment-method-content">
-                                  <WalletOutlined className="payment-icon" />
-                                  <div className="payment-method-info">
-                                    <Text strong>Pay at Counter</Text>
-                                    <br />
-                                    <Text type="secondary" style={{ fontSize: 12 }}>
-                                      Cash payment at gym counter
-                                    </Text>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
-                          </Space>
+                              <table style={{ width: '100%' }}>
+                                <tbody>
+                                  <tr>
+                                    <td style={{ width: '40px', verticalAlign: 'middle' }}>
+                                      <Radio value="cash" />
+                                    </td>
+                                    <td style={{ width: '50px', verticalAlign: 'middle' }}>
+                                      <WalletOutlined style={{ fontSize: '32px', color: '#667eea' }} />
+                                    </td>
+                                    <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
+                                      <div style={{ fontWeight: 600, marginBottom: 4 }}>Pay at Counter</div>
+                                      <div style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.45)' }}>
+                                        Cash payment at gym counter
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
                         </Radio.Group>
                       </Form.Item>
 

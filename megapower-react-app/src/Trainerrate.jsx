@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Rate, message, Card, Table, Tag, Space, Button, Modal, Input } from "antd";
+import { Layout, Menu, Rate, message, Card, Table, Tag, Space, Button, Modal, Input, Form, Select, Row, Col, Divider, Avatar } from "antd";
 import { 
   StarOutlined, 
   UserOutlined, 
@@ -15,6 +15,8 @@ import {
   StarFilled,
   CommentOutlined,
   SendOutlined,
+  PlusOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -22,6 +24,7 @@ import Logo from './components/Logo';
 import './Trainerrate.css';
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 const { Header, Content, Sider } = Layout;
 
@@ -57,12 +60,32 @@ const items = [
 export const Trainerrate = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [ratings, setRatings] = useState([]);
+  const [trainers, setTrainers] = useState([]);
   const [loadingRatings, setLoadingRatings] = useState(false);
-  const [replyModalVisible, setReplyModalVisible] = useState(false);
-  const [selectedRating, setSelectedRating] = useState(null);
-  const [replyText, setReplyText] = useState('');
-  const [replyLoading, setReplyLoading] = useState(false);
+  const [loadingTrainers, setLoadingTrainers] = useState(false);
+  const [rateModalVisible, setRateModalVisible] = useState(false);
+  const [submittingRating, setSubmittingRating] = useState(false);
+  const [form] = Form.useForm();
   const navigate = useNavigate();
+
+  // Get member ID from localStorage
+  const getLoginData = () => {
+    try {
+      const loginData = localStorage.getItem('login');
+      if (loginData) {
+        const parsedData = JSON.parse(loginData);
+        return {
+          memberId: parsedData.Member_Id || null,
+          memberName: parsedData.FName || ''
+        };
+      }
+      return { memberId: null, memberName: '' };
+    } catch (error) {
+      return { memberId: null, memberName: '' };
+    }
+  };
+
+  const { memberId, memberName } = getLoginData();
 
   const handleMenuClick = ({ key }) => {
     const selectedItem = items.find(item => item.key === key);
@@ -72,45 +95,65 @@ export const Trainerrate = () => {
   };
 
   useEffect(() => {
-    fetchRatings();
-  }, []);
-
-  const handleReplyClick = (record) => {
-    setSelectedRating(record);
-    setReplyModalVisible(true);
-    setReplyText('');
-  };
-
-  const handleReplySubmit = async () => {
-    if (!replyText.trim()) {
-      message.warning('Please enter a reply message');
+    if (!memberId) {
+      message.error('Please login to rate trainers');
+      navigate('/');
       return;
     }
+    fetchRatings();
+    fetchTrainers();
+  }, [memberId]);
 
+  const fetchTrainers = async () => {
     try {
-      setReplyLoading(true);
-      // You can implement the reply API endpoint here
-      // await axios.post('http://localhost:5000/api/v1/trainerrate/reply', {
-      //   ratingId: selectedRating.Rating_ID,
-      //   reply: replyText
-      // });
-      
-      message.success('Reply sent successfully!');
-      setReplyModalVisible(false);
-      setReplyText('');
-      setSelectedRating(null);
+      setLoadingTrainers(true);
+      const res = await axios.get('http://localhost:5000/api/v1/staffmember/list');
+      const staffData = res?.data?.data || [];
+      // Filter only trainers (assuming trainers have Job_Role as 'Trainer')
+      const trainersList = staffData.filter(staff => 
+        staff.Job_Role && staff.Job_Role.toLowerCase().includes('trainer')
+      );
+      setTrainers(trainersList);
     } catch (error) {
-      console.error('Error sending reply:', error);
-      message.error('Failed to send reply');
+      console.error('Error fetching trainers:', error);
+      message.error('Failed to load trainers');
     } finally {
-      setReplyLoading(false);
+      setLoadingTrainers(false);
     }
   };
 
-  const handleReplyCancel = () => {
-    setReplyModalVisible(false);
-    setReplyText('');
-    setSelectedRating(null);
+  const handleOpenRateModal = () => {
+    form.resetFields();
+    setRateModalVisible(true);
+  };
+
+  const handleSubmitRating = async (values) => {
+    try {
+      setSubmittingRating(true);
+      const body = {
+        staffId: values.trainerId,
+        memberId: parseInt(memberId),
+        rating: values.rating,
+        comment: values.comment || ''
+      };
+
+      await axios.post('http://localhost:5000/api/v1/trainerrate/create', body);
+      message.success('Rating submitted successfully!');
+      setRateModalVisible(false);
+      form.resetFields();
+      fetchRatings(); // Refresh the ratings list
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      message.error('Failed to submit rating. Please try again.');
+    } finally {
+      setSubmittingRating(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('login');
+    message.success('Logged out successfully');
+    navigate('/');
   };
 
   const fetchRatings = async () => {
@@ -123,8 +166,11 @@ export const Trainerrate = () => {
       const staffRes = await axios.get('http://localhost:5000/api/v1/staffmember/list');
       const staffData = staffRes?.data?.data || [];
       
+      // Filter ratings for current member only
+      const myRatings = ratingsData.filter(rating => rating.Member_Id === parseInt(memberId));
+      
       // Map ratings with staff names
-      const ratingsWithNames = ratingsData.map(rating => {
+      const ratingsWithNames = myRatings.map(rating => {
         const staffMember = staffData.find(s => 
           (s.Staff_ID || s.Staff_Id || s.staff_id || s.id) === rating.Staff_ID
         );
@@ -149,13 +195,6 @@ export const Trainerrate = () => {
 
   const columns = [
     {
-      title: 'Rating ID',
-      dataIndex: 'Rating_ID',
-      key: 'Rating_ID',
-      width: 100,
-      sorter: (a, b) => a.Rating_ID - b.Rating_ID,
-    },
-    {
       title: 'Trainer Name',
       dataIndex: 'trainerName',
       key: 'trainerName',
@@ -165,12 +204,6 @@ export const Trainerrate = () => {
           <strong>{name}</strong>
         </Space>
       ),
-    },
-    {
-      title: 'Member ID',
-      dataIndex: 'Member_Id',
-      key: 'Member_Id',
-      width: 120,
     },
     {
       title: 'Rating',
@@ -189,25 +222,8 @@ export const Trainerrate = () => {
       ellipsis: true,
       render: (comment) => (
         <div style={{ maxWidth: 400 }}>
-          {comment}
+          {comment || 'No comment'}
         </div>
-      ),
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: 120,
-      fixed: 'right',
-      render: (_, record) => (
-        <Button
-          type="primary"
-          icon={<CommentOutlined />}
-          onClick={() => handleReplyClick(record)}
-          className="reply-button"
-          size="middle"
-        >
-          Reply
-        </Button>
       ),
     },
   ];
@@ -263,98 +279,192 @@ export const Trainerrate = () => {
               <StarOutlined style={{ marginRight: 12 }} />
               Rate Trainer
             </h2>
+            <Space>
+              <Avatar style={{ background: '#667eea' }} icon={<UserOutlined />} />
+              <span style={{ color: 'white', fontWeight: 600 }}>{memberName}</span>
+              <Button 
+                type="primary" 
+                danger 
+                icon={<LogoutOutlined />}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </Space>
           </div>
         </Header>
 
         <Content className="trainerrate-main-content">
           <div className="trainerrate-content">
-            <Card 
-              className="ratings-table-card"
-              title={
-                <Space>
-                  <StarFilled style={{ fontSize: 24, color: '#ffd700' }} />
-                  <span style={{ fontSize: 20, fontWeight: 700 }}>Trainer Ratings</span>
-                  <Tag color="purple" style={{ fontSize: 14, padding: '4px 12px' }}>{ratings.length} Total</Tag>
-                </Space>
-              }
-            >
-              <Table
-                columns={columns}
-                dataSource={ratings}
-                rowKey="Rating_ID"
-                loading={loadingRatings}
-                pagination={{
-                  pageSize: 10,
-                  showSizeChanger: true,
-                  showTotal: (total) => `Total ${total} ratings`,
-                  pageSizeOptions: ['10', '20', '50', '100'],
-                }}
-                scroll={{ x: 1200 }}
-                className="ratings-table"
-              />
-            </Card>
+            <Row gutter={[24, 24]}>
+              <Col xs={24}>
+                <Card 
+                  className="rate-trainer-card"
+                  style={{ 
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none'
+                  }}
+                  bodyStyle={{ padding: '32px' }}
+                >
+                  <Row align="middle" justify="space-between">
+                    <Col>
+                      <Space direction="vertical" size={4}>
+                        <h3 style={{ color: 'white', margin: 0, fontSize: 24 }}>
+                          <StarFilled style={{ marginRight: 12, color: '#ffd700' }} />
+                          Share Your Experience
+                        </h3>
+                        <p style={{ color: 'rgba(255, 255, 255, 0.9)', margin: 0, fontSize: 16 }}>
+                          Rate your trainer and help us improve our services
+                        </p>
+                      </Space>
+                    </Col>
+                    <Col>
+                      <Button 
+                        type="primary" 
+                        size="large"
+                        icon={<PlusOutlined />}
+                        onClick={handleOpenRateModal}
+                        style={{ 
+                          height: 48,
+                          background: 'white',
+                          color: '#667eea',
+                          border: 'none',
+                          fontWeight: 600,
+                          fontSize: 16
+                        }}
+                      >
+                        Rate a Trainer
+                      </Button>
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+
+              <Col xs={24}>
+                <Card 
+                  className="ratings-table-card"
+                  title={
+                    <Space>
+                      <StarFilled style={{ fontSize: 24, color: '#ffd700' }} />
+                      <span style={{ fontSize: 20, fontWeight: 700 }}>My Ratings</span>
+                      <Tag color="purple" style={{ fontSize: 14, padding: '4px 12px' }}>{ratings.length} Total</Tag>
+                    </Space>
+                  }
+                >
+                  <Table
+                    columns={columns}
+                    dataSource={ratings}
+                    rowKey="Rating_ID"
+                    loading={loadingRatings}
+                    pagination={{
+                      pageSize: 10,
+                      showSizeChanger: true,
+                      showTotal: (total) => `Total ${total} ratings`,
+                      pageSizeOptions: ['10', '20', '50'],
+                    }}
+                    locale={{
+                      emptyText: 'You haven\'t rated any trainers yet'
+                    }}
+                    className="ratings-table"
+                  />
+                </Card>
+              </Col>
+            </Row>
           </div>
         </Content>
       </Layout>
 
-      {/* Reply Modal */}
+      {/* Rate Trainer Modal */}
       <Modal
         title={
           <Space>
-            <CommentOutlined style={{ color: '#667eea', fontSize: 20 }} />
-            <span style={{ fontSize: 18, fontWeight: 600 }}>Reply to Rating</span>
+            <StarFilled style={{ color: '#ffd700', fontSize: 24 }} />
+            <span style={{ fontSize: 20, fontWeight: 700 }}>Rate Trainer</span>
           </Space>
         }
-        open={replyModalVisible}
-        onOk={handleReplySubmit}
-        onCancel={handleReplyCancel}
-        confirmLoading={replyLoading}
-        okText="Send Reply"
-        cancelText="Cancel"
+        open={rateModalVisible}
+        onCancel={() => setRateModalVisible(false)}
+        footer={null}
         width={600}
-        okButtonProps={{
-          icon: <SendOutlined />,
-          style: { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none' }
-        }}
+        destroyOnClose
       >
-        {selectedRating && (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ background: '#f5f5f5', padding: 16, borderRadius: 8, marginBottom: 16 }}>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <div>
-                  <strong>Trainer:</strong> <Tag color="blue">{selectedRating.trainerName}</Tag>
-                </div>
-                <div>
-                  <strong>Member ID:</strong> <Tag>{selectedRating.Member_Id}</Tag>
-                </div>
-                <div>
-                  <strong>Rating:</strong> <Rate disabled value={selectedRating.Rating} style={{ fontSize: 14 }} />
-                </div>
-                <div>
-                  <strong>Comment:</strong>
-                  <div style={{ marginTop: 8, padding: 12, background: 'white', borderRadius: 6, border: '1px solid #e0e0e0' }}>
-                    {selectedRating.Comment}
-                  </div>
-                </div>
-              </Space>
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#333' }}>
-                Your Reply:
-              </label>
-              <TextArea
-                rows={5}
-                placeholder="Type your reply here..."
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                maxLength={500}
-                showCount
-                style={{ borderRadius: 8 }}
-              />
-            </div>
-          </div>
-        )}
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmitRating}
+          style={{ marginTop: 24 }}
+        >
+          <Form.Item
+            name="trainerId"
+            label={<span style={{ fontWeight: 600, fontSize: 15 }}>Select Trainer</span>}
+            rules={[{ required: true, message: 'Please select a trainer' }]}
+          >
+            <Select
+              placeholder="Choose a trainer to rate"
+              size="large"
+              loading={loadingTrainers}
+              showSearch
+              optionFilterProp="children"
+              style={{ width: '100%' }}
+            >
+              {trainers.map(trainer => (
+                <Option key={trainer.Staff_ID} value={trainer.Staff_ID}>
+                  <Space>
+                    <TeamOutlined style={{ color: '#667eea' }} />
+                    {trainer.FName} {trainer.LName || ''} - {trainer.Job_Role}
+                  </Space>
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="rating"
+            label={<span style={{ fontWeight: 600, fontSize: 15 }}>Your Rating</span>}
+            rules={[{ required: true, message: 'Please provide a rating' }]}
+          >
+            <Rate style={{ fontSize: 32 }} />
+          </Form.Item>
+
+          <Form.Item
+            name="comment"
+            label={<span style={{ fontWeight: 600, fontSize: 15 }}>Comment (Optional)</span>}
+          >
+            <TextArea
+              rows={4}
+              placeholder="Share your experience with this trainer..."
+              maxLength={500}
+              showCount
+            />
+          </Form.Item>
+
+          <Divider style={{ margin: '24px 0' }} />
+
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+            <Space size="middle">
+              <Button 
+                size="large" 
+                onClick={() => setRateModalVisible(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="primary" 
+                size="large"
+                htmlType="submit"
+                loading={submittingRating}
+                icon={<SendOutlined />}
+                style={{ 
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none',
+                  minWidth: 140
+                }}
+              >
+                Submit Rating
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
       </Modal>
     </Layout>
   );

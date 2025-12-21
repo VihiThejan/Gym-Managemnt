@@ -219,6 +219,11 @@ export const WorkoutTracker = () => {
         ...values,
         memberId: user.Member_Id,
         date: values.date.format('YYYY-MM-DD'),
+        calories: parseInt(values.calories) || 0,
+        sets: parseInt(values.sets) || 0,
+        reps: parseInt(values.reps) || 0,
+        weight: parseFloat(values.weight) || 0,
+        duration: parseInt(values.duration) || 0,
       };
 
       // TODO: Replace with actual API call
@@ -231,8 +236,9 @@ export const WorkoutTracker = () => {
         date: workoutData.date,
       };
       
-      setWorkouts([newWorkout, ...workouts]);
-      calculateStats([newWorkout, ...workouts]);
+      const updatedWorkouts = [newWorkout, ...workouts];
+      setWorkouts(updatedWorkouts);
+      calculateStats(updatedWorkouts);
       
       message.success('Workout logged successfully!');
       handleCancel();
