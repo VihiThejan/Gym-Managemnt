@@ -703,8 +703,6 @@ ORDER BY Times_Performed DESC;
 -- Create Stored Procedures
 -- ============================================================
 
-DELIMITER //
-
 -- Procedure: Get Dashboard Statistics
 CREATE PROCEDURE `sp_get_dashboard_stats`()
 BEGIN
@@ -715,9 +713,9 @@ BEGIN
         (SELECT COALESCE(SUM(Amount), 0) FROM payment WHERE Status = 'Completed' 
             AND MONTH(Date) = MONTH(CURRENT_DATE()) AND YEAR(Date) = YEAR(CURRENT_DATE())) AS monthly_revenue,
         (SELECT COUNT(DISTINCT Member_Id) FROM attendance 
-            WHERE Current_date = CURRENT_DATE()) AS today_attendance,
+            WHERE `Current_date` = CURRENT_DATE()) AS today_attendance,
         (SELECT COUNT(*) FROM payment WHERE Status = 'Pending') AS pending_payments;
-END //
+END;
 
 -- Procedure: Register New Member
 CREATE PROCEDURE `sp_register_member`(
@@ -742,7 +740,7 @@ BEGIN
     
     SET v_member_id = LAST_INSERT_ID();
     SELECT v_member_id AS Member_Id, 'Member registered successfully' AS Message;
-END //
+END;
 
 -- Procedure: Mark Attendance
 CREATE PROCEDURE `sp_mark_attendance`(
@@ -758,11 +756,11 @@ BEGIN
         CONCAT(p_date, ' ', p_in_time), 
         CONCAT(p_date, ' ', p_out_time));
     
-    INSERT INTO attendance (Member_Id, Current_date, In_time, Out_time, Duration_Minutes)
+    INSERT INTO attendance (Member_Id, `Current_date`, In_time, Out_time, Duration_Minutes)
     VALUES (p_member_id, p_date, p_in_time, p_out_time, v_duration);
     
     SELECT 'Attendance marked successfully' AS Message, v_duration AS Duration_Minutes;
-END //
+END;
 
 -- Procedure: Process Payment
 CREATE PROCEDURE `sp_process_payment`(
@@ -784,7 +782,7 @@ BEGIN
     
     SET v_payment_id = LAST_INSERT_ID();
     SELECT v_payment_id AS Payment_ID, v_receipt_no AS Receipt_Number, 'Payment processed successfully' AS Message;
-END //
+END;
 
 -- Procedure: Log Workout Session
 CREATE PROCEDURE `sp_log_workout`(
@@ -803,7 +801,7 @@ BEGIN
     
     SET v_workout_id = LAST_INSERT_ID();
     SELECT v_workout_id AS Workout_ID, 'Workout logged successfully' AS Message;
-END //
+END;
 
 -- Procedure: Add Exercise to Workout
 CREATE PROCEDURE `sp_add_exercise`(
@@ -829,7 +827,7 @@ BEGIN
     CALL sp_check_personal_record(p_workout_id, v_exercise_id);
     
     SELECT v_exercise_id AS Exercise_ID, 'Exercise added successfully' AS Message;
-END //
+END;
 
 -- Procedure: Check and Update Personal Records
 CREATE PROCEDURE `sp_check_personal_record`(
@@ -872,15 +870,11 @@ BEGIN
             Achievement_Date = v_date,
             Workout_ID = p_workout_id;
     END IF;
-END //
-
-DELIMITER ;
+END;
 
 -- ============================================================
 -- Create Triggers
 -- ============================================================
-
-DELIMITER //
 
 -- Trigger: Update member status based on payment
 CREATE TRIGGER `trg_update_member_status_after_payment`
@@ -890,7 +884,7 @@ BEGIN
     IF NEW.Status = 'Completed' THEN
         UPDATE member SET Status = 'Active' WHERE Member_Id = NEW.Member_Id;
     END IF;
-END //
+END;
 
 -- Trigger: Audit log for member updates
 CREATE TRIGGER `trg_audit_member_update`
@@ -907,7 +901,7 @@ BEGIN
         CONCAT('Status: ', OLD.Status, ', Package: ', OLD.Package),
         CONCAT('Status: ', NEW.Status, ', Package: ', NEW.Package)
     );
-END //
+END;
 
 -- Trigger: Update workout totals when exercise is added
 CREATE TRIGGER `trg_update_workout_totals`
@@ -926,9 +920,7 @@ BEGIN
         WHERE Workout_ID = NEW.Workout_ID
     )
     WHERE Workout_ID = NEW.Workout_ID;
-END //
-
-DELIMITER ;
+END;
 
 -- ============================================================
 -- Create Indexes for Performance
@@ -939,7 +931,7 @@ CREATE INDEX idx_member_email ON member(Email);
 CREATE INDEX idx_member_status ON member(Status);
 CREATE INDEX idx_staff_email ON staffmember(Email);
 CREATE INDEX idx_payment_status_date ON payment(Status, Date);
-CREATE INDEX idx_attendance_member_date ON attendance(Member_Id, Current_date);
+CREATE INDEX idx_attendance_member_date ON attendance(Member_Id, `Current_date`);
 CREATE INDEX idx_appointment_datetime ON appointment(Date_and_Time);
 CREATE INDEX idx_workout_member_date ON workouts(Member_Id, Workout_Date);
 CREATE INDEX idx_exercise_workout ON workout_exercises(Workout_ID, Exercise_Name);
