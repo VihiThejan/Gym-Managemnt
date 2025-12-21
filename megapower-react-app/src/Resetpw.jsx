@@ -72,7 +72,14 @@ export const Reset = () => {
         if (!validateForm()) return;
         
         setResetting(true);
-        const contact = await localStorage.getItem('contact');
+        const contact = localStorage.getItem('contact');
+        
+        if (!contact) {
+            message.error('Contact information not found. Please start the password reset process again.');
+            setResetting(false);
+            return;
+        }
+        
         const body = {
             password: pass,
             confirmPassword: confirmPassword,
@@ -80,13 +87,24 @@ export const Reset = () => {
         }
         
         try {
-            await axios.post("http://localhost:5000/api/v1/auth/reset", body);
-            message.success('Password reset successfully!');
-            setTimeout(() => {
-                navigate("/");
-            }, 1500);
+            const response = await axios.post("http://localhost:5000/api/v1/auth/reset", body);
+            
+            if (response?.data?.code === 200) {
+                message.success('Password reset successfully!');
+                localStorage.removeItem('contact');
+                setTimeout(() => {
+                    navigate("/");
+                }, 1500);
+            } else if (response?.data?.code === 300) {
+                message.error(response?.data?.message || 'Passwords do not match.');
+            } else if (response?.data?.code === 400) {
+                message.error(response?.data?.message || 'Failed to reset password.');
+            } else {
+                message.error(response?.data?.message || 'Failed to reset password. Please try again.');
+            }
         } catch (error) {
-            message.error('Failed to reset password. Please try again.');
+            console.error('Reset password error:', error);
+            message.error(error?.response?.data?.message || 'Failed to reset password. Please try again.');
         } finally {
             setResetting(false);
         }

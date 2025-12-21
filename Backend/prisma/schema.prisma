@@ -161,9 +161,10 @@ model trainerrate {
 }
 
 model otp {
-  ID      Int    @id @default(autoincrement())
-  Contact String @db.VarChar(45)
-  Otp     Int
+  ID         Int      @id @default(autoincrement())
+  Contact    String   @db.VarChar(45)
+  Otp        Int
+  Expires_At DateTime
 }
 
 model messages {
