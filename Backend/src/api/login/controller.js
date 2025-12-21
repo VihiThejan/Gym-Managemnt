@@ -245,17 +245,8 @@ const resetPw = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log('Password hashed successfully');
         
-        // First check all admin users to debug
-        const allAdmins = await prisma.admin.findMany({
-            select: {
-                User_ID: true,
-                Contact: true,
-                UserName: true
-            }
-        });
-        console.log('All admin users in database:', allAdmins);
-        
-        const user = await prisma.admin.findFirst({
+        // Try to find user in admin table first
+        let adminUser = await prisma.admin.findFirst({
             select: {
                 User_ID: true,
                 Contact: true
@@ -265,9 +256,33 @@ const resetPw = async (req, res) => {
             }
         });
         
-        console.log('User lookup result:', user);
+        // Try to find user in member table if not found in admin
+        let memberUser = await prisma.member.findFirst({
+            select: {
+                Member_Id: true,
+                Contact: true
+            },
+            where: {
+                Contact: contact
+            }
+        });
         
-        if (!user) {
+        // Try to find user in staffmember table if not found in admin or member
+        let staffUser = await prisma.staffmember.findFirst({
+            select: {
+                Staff_ID: true,
+                Contact_No: true
+            },
+            where: {
+                Contact_No: contact
+            }
+        });
+        
+        console.log('Admin user lookup result:', adminUser);
+        console.log('Member user lookup result:', memberUser);
+        console.log('Staff user lookup result:', staffUser);
+        
+        if (!adminUser && !memberUser && !staffUser) {
             console.log('User not found with contact:', contact);
             return res.status(200).json({
                 code: 400,
@@ -276,18 +291,41 @@ const resetPw = async (req, res) => {
             });
         }
         
-        console.log('Updating password for user:', user.User_ID);
-        
-        const updateResult = await prisma.admin.update({
-            data: {
-                Password: hashedPassword
-            },
-            where: {
-                User_ID: user.User_ID
-            }
-        });
-        
-        console.log('Password updated successfully for user:', user.User_ID);
+        // Update password based on user type
+        if (adminUser) {
+            console.log('Updating password for admin user:', adminUser.User_ID);
+            await prisma.admin.update({
+                data: {
+                    Password: hashedPassword
+                },
+                where: {
+                    User_ID: adminUser.User_ID
+                }
+            });
+            console.log('Admin password updated successfully');
+        } else if (memberUser) {
+            console.log('Updating password for member user:', memberUser.Member_Id);
+            await prisma.member.update({
+                data: {
+                    Password: hashedPassword
+                },
+                where: {
+                    Member_Id: memberUser.Member_Id
+                }
+            });
+            console.log('Member password updated successfully');
+        } else if (staffUser) {
+            console.log('Updating password for staff user:', staffUser.Staff_ID);
+            await prisma.staffmember.update({
+                data: {
+                    Password: hashedPassword
+                },
+                where: {
+                    Staff_ID: staffUser.Staff_ID
+                }
+            });
+            console.log('Staff password updated successfully');
+        }
         
         // Delete the OTP after successful password reset
         const deleteOtpResult = await prisma.otp.deleteMany({
