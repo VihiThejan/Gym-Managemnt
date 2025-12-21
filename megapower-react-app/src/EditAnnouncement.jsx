@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, DatePicker, TimePicker, Input, message, Form, Card, Spin } from 'antd';
-import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, ClockCircleOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons';
+import { Button, DatePicker, Input, message, Form, Card, Spin } from 'antd';
+import { SaveOutlined, CloseOutlined, EditOutlined, CalendarOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons';
 import axios from "axios";
 import moment from "moment";
 import { Layout } from 'antd';
@@ -19,7 +19,6 @@ export const EditAnnouncement = () => {
   const [messageText, setMessage] = useState('');
   const [staff_id, setStaffId] = useState(null); 
   const [date, setDate] = useState(null);
-  const [time, setTime] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -36,12 +35,9 @@ export const EditAnnouncement = () => {
           const dateTime = moment(announcement.Date_Time);
           console.log('Loaded DateTime:', dateTime.format('YYYY-MM-DD HH:mm:ss'));
           setDate(dateTime);
-          // Always set time, even if it's midnight - this allows user to change it
-          setTime(dateTime);
         } else {
-          // If no date/time exists, set defaults
+          // If no date/time exists, set default
           setDate(moment());
-          setTime(moment());
         }
         setLoading(false);
       } catch (error) {
@@ -66,21 +62,14 @@ export const EditAnnouncement = () => {
       message.error("Please select a date.");
       return false;
     }
-    if (!time) {
-      message.error("Please select a time.");
-      return false;
-    }
     return true;
   };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    // Combine date and time properly to avoid timezone issues
-    const dateStr = date.format('YYYY-MM-DD');
-    const timeStr = time.format('HH:mm:ss');
-    const combinedDateTime = moment(`${dateStr}T${timeStr}`);
-    const formattedDate = combinedDateTime.toISOString();
+    // Format date to ISO string
+    const formattedDate = date.toISOString();
 
     const body = {
       Staff_ID: staff_id,
@@ -89,11 +78,10 @@ export const EditAnnouncement = () => {
     };
 
     console.log("Sending update request with body:", body);
-    console.log("Combined DateTime:", combinedDateTime.format('YYYY-MM-DD HH:mm:ss'));
 
     try {
       setSubmitting(true);
-      const res = await axios.put(`http://localhost:5000/api/v1/announcement/update/${id}`, body);
+      const res = await axios.put(`http://localhost:5000/api/v1/announcement/Update/${id}`, body);
       console.log("Response from server:", res.data);
       message.success("Announcement updated successfully!");
       setTimeout(() => navigate('/Announcementtable'), 1000);
@@ -165,61 +153,26 @@ export const EditAnnouncement = () => {
               />
             </Form.Item>
 
-            {/* Date and Time Fields */}
-            <div className="date-time-group">
-              <Form.Item
-                label={
-                  <span className="form-label">
-                    <CalendarOutlined className="label-icon" />
-                    Date
-                  </span>
-                }
-                required
-                className="date-field"
-              >
-                <DatePicker
-                  value={date}
-                  onChange={(date) => setDate(date)}
-                  className="custom-datepicker"
-                  size="large"
-                  format="YYYY-MM-DD"
-                  placeholder="Select date"
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label={
-                  <span className="form-label">
-                    <ClockCircleOutlined className="label-icon" />
-                    Time
-                  </span>
-                }
-                required
-                className="time-field"
-              >
-                <TimePicker
-                  value={time}
-                  onChange={(newTime) => {
-                    console.log('Time changed to:', newTime ? newTime.format('HH:mm:ss') : 'null');
-                    if (newTime) {
-                      setTime(newTime);
-                    }
-                  }}
-                  className="custom-timepicker"
-                  size="large"
-                  format="HH:mm"
-                  placeholder="Select time"
-                  style={{ width: '100%' }}
-                  showNow={true}
-                  minuteStep={5}
-                  use12Hours={false}
-                  allowClear={false}
-                  inputReadOnly={false}
-                  disabled={false}
-                />
-              </Form.Item>
-            </div>
+            {/* Date Field */}
+            <Form.Item
+              label={
+                <span className="form-label">
+                  <CalendarOutlined className="label-icon" />
+                  Date
+                </span>
+              }
+              required
+            >
+              <DatePicker
+                value={date}
+                onChange={(date) => setDate(date)}
+                className="custom-datepicker"
+                size="large"
+                format="YYYY-MM-DD"
+                placeholder="Select date"
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
 
             {/* Action Buttons */}
             <div className="form-actions">

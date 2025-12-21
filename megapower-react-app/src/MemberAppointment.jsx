@@ -230,10 +230,10 @@ const MemberAppointment = () => {
       }
 
       const appointmentData = {
-        memberid: memberId,
-        staffid: parseInt(values.staffid),
-        date_time: combinedDateTime.toISOString(),
-        contact: values.contact
+        Member_Id: parseInt(memberId),
+        Staff_ID: parseInt(values.staffid),
+        Date_and_Time: combinedDateTime.toISOString(),
+        Contact: values.contact
       };
 
       if (isEditMode && editingAppointment) {
@@ -244,10 +244,16 @@ const MemberAppointment = () => {
         );
         message.success('✅ Appointment updated successfully!');
       } else {
-        // Create new appointment
+        // Create new appointment - use lowercase for create endpoint
+        const createData = {
+          memberid: parseInt(memberId),
+          staffid: parseInt(values.staffid),
+          date_time: combinedDateTime.toISOString(),
+          contact: values.contact
+        };
         await axios.post(
           'http://localhost:5000/api/v1/appointment/create',
-          appointmentData
+          createData
         );
         message.success('✅ Appointment booked successfully!');
       }
@@ -745,7 +751,7 @@ const MemberAppointment = () => {
             <span>{isEditMode ? 'Edit Appointment' : 'Book New Appointment'}</span>
           </Space>
         }
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         width={600}
