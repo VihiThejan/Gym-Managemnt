@@ -342,7 +342,10 @@ CREATE TABLE `personal_records` (
 
 -- ============================================================
 -- Table: chat
--- Description: Chat messages in the system
+-- ============================================================
+-- Table: chat
+-- Description: Legacy chat table (deprecated - use messages table instead)
+-- Note: Kept for backward compatibility with old Prisma schema
 -- ============================================================
 CREATE TABLE `chat` (
   `Chat_ID` INT NOT NULL AUTO_INCREMENT,
@@ -357,7 +360,7 @@ CREATE TABLE `chat` (
   INDEX `idx_user_id` (`User_ID`),
   INDEX `idx_date_time` (`Date`, `Time`),
   INDEX `idx_room` (`Room_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Legacy table - use messages table for new implementation';
 
 -- ============================================================
 -- Table: otp
@@ -400,6 +403,8 @@ CREATE TABLE `users` (
 -- ============================================================
 -- Table: messages
 -- Description: Messages between users in chat system
+-- Note: sender_id and receiver_id can reference Member_Id, Staff_ID, or User_ID
+--       No foreign key constraints to allow flexibility across user types
 -- ============================================================
 CREATE TABLE `messages` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -415,8 +420,7 @@ CREATE TABLE `messages` (
   INDEX `idx_sender` (`sender_id`),
   INDEX `idx_receiver` (`receiver_id`),
   INDEX `idx_timestamp` (`timestamp`),
-  CONSTRAINT `fk_messages_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_messages_receiver` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  INDEX `idx_conversation` (`sender_id`, `receiver_id`, `timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================

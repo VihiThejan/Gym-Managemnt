@@ -168,24 +168,21 @@ model otp {
 }
 
 model messages {
-  id                                Int      @id @default(autoincrement())
-  sender_id                         Int?
-  receiver_id                       Int?
-  message                           String?  @db.Text
-  file_url                          String?  @db.VarChar(255)
-  voice_url                         String?  @db.VarChar(255)
-  timestamp                         DateTime @default(now()) @db.Timestamp(0)
-  users_messages_sender_idTousers   users?   @relation("messages_sender_idTousers", fields: [sender_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "messages_ibfk_1")
-  users_messages_receiver_idTousers users?   @relation("messages_receiver_idTousers", fields: [receiver_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "messages_ibfk_2")
+  id          Int      @id @default(autoincrement())
+  sender_id   Int
+  receiver_id Int
+  message     String?  @db.Text
+  file_url    String?  @db.VarChar(255)
+  voice_url   String?  @db.VarChar(255)
+  timestamp   DateTime @default(now()) @db.Timestamp(0)
 
-  @@index([receiver_id], map: "receiver_id")
-  @@index([sender_id], map: "sender_id")
+  @@index([receiver_id], map: "idx_receiver")
+  @@index([sender_id], map: "idx_sender")
+  @@index([timestamp], map: "idx_timestamp")
 }
 
 model users {
-  id                                   Int        @id @default(autoincrement())
-  username                             String     @unique(map: "username") @db.VarChar(255)
-  password                             String     @db.VarChar(255)
-  messages_messages_sender_idTousers   messages[] @relation("messages_sender_idTousers")
-  messages_messages_receiver_idTousers messages[] @relation("messages_receiver_idTousers")
+  id       Int    @id @default(autoincrement())
+  username String @unique(map: "username") @db.VarChar(255)
+  password String @db.VarChar(255)
 }

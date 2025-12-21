@@ -106,6 +106,7 @@ function Chat() {
                 membersRes.data.data.forEach(member => {
                     users.push({
                         id: member.Member_Id,
+                        uniqueKey: `member_${member.Member_Id}`,
                         name: `${member.FName} ${member.LName || ''}`,
                         role: 'Member',
                         type: 'member'
@@ -118,6 +119,7 @@ function Chat() {
                 staffRes.data.data.forEach(staff => {
                     users.push({
                         id: staff.Staff_ID,
+                        uniqueKey: `staff_${staff.Staff_ID}`,
                         name: staff.FName,
                         role: 'Staff',
                         type: 'staff'
@@ -133,10 +135,24 @@ function Chat() {
         }
     };
 
-    const handleReceiverChange = (value) => {
+    const handleReceiverChange = async (value) => {
         setReceiverId(value);
         const receiver = userList.find(u => u.id.toString() === value);
         setSelectedReceiver(receiver);
+        
+        // Load message history when receiver is selected
+        if (currentUser && currentUser.id) {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/v1/messages/${currentUser.id}/${value}`);
+                if (response.data.code === 200) {
+                    setChatMessages(response.data.data || []);
+                }
+            } catch (error) {
+                console.error('Error loading message history:', error);
+                // Don't show error message, just start with empty chat
+                setChatMessages([]);
+            }
+        }
     };
 
     const initializeSocket = (userId) => {
@@ -298,7 +314,7 @@ function Chat() {
                                         }}
                                     >
                                         {userList.map((user) => (
-                                            <Option key={`${user.type}_${user.id}`} value={user.id.toString()}>
+                                            <Option key={user.uniqueKey} value={user.id.toString()}>
                                                 {user.name} - {user.role} (ID: {user.id})
                                             </Option>
                                         ))}

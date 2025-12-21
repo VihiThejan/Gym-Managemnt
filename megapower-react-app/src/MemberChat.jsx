@@ -137,6 +137,7 @@ export const MemberChat = () => {
 
       const members = membersRes.data.data.map((member) => ({
         id: member.Member_Id,
+        uniqueKey: `member_${member.Member_Id}`,
         name: `${member.FName} ${member.LName}`,
         role: 'Member',
         email: member.Email,
@@ -144,6 +145,7 @@ export const MemberChat = () => {
 
       const staff = staffRes.data.data.map((s) => ({
         id: s.Staff_ID,
+        uniqueKey: `staff_${s.Staff_ID}`,
         name: `${s.FName} ${s.LName}`,
         role: s.Position || 'Staff',
         email: s.Email,
@@ -323,13 +325,29 @@ export const MemberChat = () => {
                   placeholder="Select a trainer or staff member to chat with"
                   className="receiver-select"
                   value={receiverId || undefined}
-                  onChange={(value) => setReceiverId(value)}
+                  onChange={async (value) => {
+                    setReceiverId(value);
+                    
+                    // Load message history when receiver is selected
+                    if (currentUser) {
+                      try {
+                        const response = await axios.get(`http://localhost:5000/api/v1/messages/${currentUser}/${value}`);
+                        if (response.data.code === 200) {
+                          setMessages(response.data.data || []);
+                        }
+                      } catch (error) {
+                        console.error('Error loading message history:', error);
+                        // Don't show error message, just start with empty chat
+                        setMessages([]);
+                      }
+                    }
+                  }}
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
                 >
                   {allUsers.map((user) => (
-                    <Option key={user.id} value={user.id}>
+                    <Option key={user.uniqueKey} value={user.id}>
                       {user.name} ({user.role}) - ID: {user.id}
                     </Option>
                   ))}
