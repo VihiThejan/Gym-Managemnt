@@ -145,40 +145,41 @@ const Reports = () => {
   };
 
   const memberColumns = [
-    { title: 'Member ID', dataIndex: 'Mem_ID', key: 'id', render: (id) => <Tag color="purple">{id}</Tag> },
+    { title: 'Member ID', dataIndex: 'Member_Id', key: 'id', render: (id) => <Tag color="purple">{id}</Tag> },
     { title: 'Name', dataIndex: 'FName', key: 'name' },
-    { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Contact', dataIndex: 'contactNo', key: 'contact' },
-    { title: 'Join Date', dataIndex: 'createdAt', key: 'date', render: (date) => moment(date).format('DD MMM YYYY') }
+    { title: 'Email', dataIndex: 'Email', key: 'email' },
+    { title: 'Contact', dataIndex: 'Contact', key: 'contact' },
+    { title: 'Join Date', dataIndex: 'DOB', key: 'date', render: (date) => moment(date).format('DD MMM YYYY') }
   ];
 
   const paymentColumns = [
     { title: 'Payment ID', dataIndex: 'Payment_ID', key: 'id', render: (id) => <Tag color="green">{id}</Tag> },
-    { title: 'Member ID', dataIndex: 'Member_ID', key: 'member', render: (id) => <Tag color="blue">{id}</Tag> },
+    { title: 'Member ID', dataIndex: 'Member_Id', key: 'member', render: (id) => <Tag color="blue">{id}</Tag> },
     { title: 'Amount', dataIndex: 'Amount', key: 'amount', render: (amount) => `LKR ${parseFloat(amount).toFixed(2)}` },
-    { title: 'Method', dataIndex: 'Payment_Method', key: 'method' },
-    { title: 'Status', dataIndex: 'Payment_Status', key: 'status', render: (status) => (
+    { title: 'Method', dataIndex: 'Payment_Method', key: 'method', render: (method) => method || 'N/A' },
+    { title: 'Status', dataIndex: 'Status', key: 'status', render: (status) => (
       <Tag color={status === 'Completed' ? 'success' : 'warning'} icon={status === 'Completed' ? <CheckCircleOutlined /> : <ClockCircleOutlined />}>
-        {status}
+        {status || 'Pending'}
       </Tag>
     )},
-    { title: 'Date', dataIndex: 'Payment_Date', key: 'date', render: (date) => moment(date).format('DD MMM YYYY') }
+    { title: 'Date', dataIndex: 'Date', key: 'date', render: (date) => moment(date).format('DD MMM YYYY') }
   ];
 
   const attendanceColumns = [
-    { title: 'Attendance ID', dataIndex: 'Att_ID', key: 'id', render: (id) => <Tag color="cyan">{id}</Tag> },
-    { title: 'Member ID', dataIndex: 'Member_ID', key: 'member', render: (id) => <Tag color="blue">{id}</Tag> },
+    { title: 'Attendance ID', dataIndex: 'Attendance_ID', key: 'id', render: (id) => <Tag color="cyan">{id}</Tag> },
+    { title: 'Member ID', dataIndex: 'Member_Id', key: 'member', render: (id) => <Tag color="blue">{id}</Tag> },
     { title: 'Date', dataIndex: 'Current_date', key: 'date', render: (date) => moment(date).format('DD MMM YYYY') },
-    { title: 'Time In', dataIndex: 'Timein', key: 'timein', render: (time) => moment(time, 'HH:mm:ss').format('hh:mm A') },
-    { title: 'Time Out', dataIndex: 'Timeout', key: 'timeout', render: (time) => time ? moment(time, 'HH:mm:ss').format('hh:mm A') : '-' }
+    { title: 'Time In', dataIndex: 'In_time', key: 'timein', render: (time) => moment(time).format('hh:mm A') },
+    { title: 'Time Out', dataIndex: 'Out_time', key: 'timeout', render: (time) => time ? moment(time).format('hh:mm A') : '-' }
   ];
 
   const equipmentColumns = [
-    { title: 'Equipment ID', dataIndex: 'Equipment_ID', key: 'id', render: (id) => <Tag color="orange">{id}</Tag> },
-    { title: 'Name', dataIndex: 'Name', key: 'name' },
-    { title: 'Type', dataIndex: 'Type', key: 'type' },
-    { title: 'Quantity', dataIndex: 'Quantity', key: 'quantity' },
-    { title: 'Purchase Date', dataIndex: 'Purchase_Date', key: 'date', render: (date) => moment(date).format('DD MMM YYYY') }
+    { title: 'Equipment ID', dataIndex: 'Equipment_Id', key: 'id', render: (id) => <Tag color="orange">{id}</Tag> },
+    { title: 'Name', dataIndex: 'EName', key: 'name' },
+    { title: 'Vendor', dataIndex: 'Vendor', key: 'vendor' },
+    { title: 'Quantity', dataIndex: 'Qty', key: 'quantity' },
+    { title: 'Description', dataIndex: 'Description', key: 'description' },
+    { title: 'Purchase Date', dataIndex: 'Date', key: 'date', render: (date) => moment(date).format('DD MMM YYYY') }
   ];
 
   return (
@@ -512,7 +513,7 @@ const Reports = () => {
               <Table
                 columns={memberColumns}
                 dataSource={tableData}
-                rowKey="Mem_ID"
+                rowKey="Member_Id"
                 loading={loading}
                 pagination={{ pageSize: 10, showSizeChanger: true }}
                 scroll={{ x: 800 }}
@@ -548,7 +549,7 @@ const Reports = () => {
               <Table
                 columns={attendanceColumns}
                 dataSource={tableData}
-                rowKey="Att_ID"
+                rowKey="Attendance_ID"
                 loading={loading}
                 pagination={{ pageSize: 10, showSizeChanger: true }}
                 scroll={{ x: 900 }}
@@ -566,10 +567,10 @@ const Reports = () => {
               <Table
                 columns={equipmentColumns}
                 dataSource={tableData}
-                rowKey="Equipment_ID"
+                rowKey="Equipment_Id"
                 loading={loading}
                 pagination={{ pageSize: 10, showSizeChanger: true }}
-                scroll={{ x: 800 }}
+                scroll={{ x: 1000 }}
               />
             </Card>
           )}
