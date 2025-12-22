@@ -93,30 +93,51 @@ export const MemberDashboard = () => {
       };
       
       const memberId = getLoginData();
+      console.log('Current Member ID:', memberId);
       
       // Fetch attendance for current member
       const attendanceRes = await axios.get('http://localhost:5000/api/v1/attendance/list');
+      console.log('All attendance data:', attendanceRes.data?.data);
       const memberAttendance = attendanceRes.data?.data?.filter(
-        att => att.memberId === parseInt(memberId)
+        att => att.Member_Id === parseInt(memberId)
       ) || [];
+      console.log('Member attendance:', memberAttendance);
       
       // Fetch appointments for current member
       const appointmentsRes = await axios.get('http://localhost:5000/api/v1/appointment/list');
+      console.log('All appointments:', appointmentsRes.data?.data);
       const memberAppointments = appointmentsRes.data?.data?.filter(
-        app => app.memberid === parseInt(memberId)
+        app => app.Member_Id === parseInt(memberId)
       ) || [];
+      console.log('Member appointments:', memberAppointments);
       
-      // Fetch schedules for completed workouts
-      const schedulesRes = await axios.get('http://localhost:5000/api/v1/schedule/list');
-      const memberWorkouts = schedulesRes.data?.data?.filter(
-        schedule => schedule.memberId === parseInt(memberId)
-      ) || [];
+      // Calculate upcoming appointments (future dates)
+      const now = new Date();
+      const upcomingAppointments = memberAppointments.filter(app => {
+        const appDate = new Date(app.Date_and_Time);
+        return appDate >= now;
+      });
+      
+      // Calculate monthly attendance
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      const monthlyAttendance = memberAttendance.filter(att => {
+        const attDate = new Date(att.Current_date);
+        return attDate.getMonth() === currentMonth && attDate.getFullYear() === currentYear;
+      });
 
       setStats({
-        totalAttendance: memberAttendance.length,
-        upcomingAppointments: memberAppointments.length,
-        completedWorkouts: memberWorkouts.length,
-        goalProgress: memberAttendance.length > 0 ? Math.min((memberAttendance.length / 30) * 100, 100) : 0
+        totalAttendance: monthlyAttendance.length,
+        upcomingAppointments: upcomingAppointments.length,
+        completedWorkouts: memberAttendance.length,
+        goalProgress: monthlyAttendance.length > 0 ? Math.min((monthlyAttendance.length / 30) * 100, 100) : 0
+      });
+      
+      console.log('Updated stats:', {
+        totalAttendance: monthlyAttendance.length,
+        upcomingAppointments: upcomingAppointments.length,
+        completedWorkouts: memberAttendance.length,
+        goalProgress: monthlyAttendance.length > 0 ? Math.min((monthlyAttendance.length / 30) * 100, 100) : 0
       });
       
       setLoading(false);
