@@ -1,7 +1,7 @@
 const paymentRoute = require('express').Router();
-const {paymentHandling,paymentList } = require('./controller');
+const {paymentHandling, paymentList, upload } = require('./controller');
 
-paymentRoute.post('/create', paymentHandling);
+paymentRoute.post('/create', upload.single('paymentSlip'), paymentHandling);
 paymentRoute.get('/list', paymentList);
 
 paymentRoute.post("/payment/notify", (req, res) => {

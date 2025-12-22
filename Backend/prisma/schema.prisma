@@ -102,12 +102,15 @@ model member {
 }
 
 model payment {
-  Payment_ID Int      @id @default(autoincrement())
-  Member_Id  Int
-  Package_ID Int
-  Amount     Float
-  Date       DateTime
-  admin      admin    @relation(fields: [Member_Id], references: [User_ID], map: "Payment_User_ID_fkey")
+  Payment_ID     Int       @id @default(autoincrement())
+  Member_Id      Int
+  Package_ID     Int
+  Amount         Float
+  Date           DateTime
+  Payment_Method String?
+  Payment_Slip   String?
+  Status         String?
+  admin          admin     @relation(fields: [Member_Id], references: [User_ID], map: "Payment_User_ID_fkey")
 
   @@index([Member_Id], map: "Payment_User_ID_fkey")
 }

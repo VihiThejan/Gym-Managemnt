@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, DatePicker, Select, message, Input, Form, Layout, Card, InputNumber } from "antd";
+import { Button, DatePicker, Select, message, Input, Form, Layout, Card, InputNumber, Upload, Radio } from "antd";
 import { 
   DollarOutlined, 
   UserOutlined, 
@@ -8,7 +8,9 @@ import {
   CreditCardOutlined,
   ArrowLeftOutlined,
   SaveOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  BankOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -25,6 +27,8 @@ export const Payment = () => {
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     fetchMembers();
@@ -66,15 +70,24 @@ export const Payment = () => {
 
     const formattedDate = values.date ? values.date.toISOString() : new Date().toISOString();
 
-    const body = {
-      memberId: values.memberId,
-      packageId: values.packageId,
-      amount: values.amount,
-      date: formattedDate,
-    };
-
     try {
-      await axios.post("http://localhost:5000/api/v1/payment/create", body);
+      const formData = new FormData();
+      formData.append('memberId', values.memberId);
+      formData.append('packageId', values.packageId);
+      formData.append('amount', values.amount);
+      formData.append('date', formattedDate);
+      formData.append('paymentMethod', values.paymentMethod || 'cash');
+
+      // Add payment slip if bank transfer is selected and file is uploaded
+      if (values.paymentMethod === 'bank' && fileList.length > 0) {
+        formData.append('paymentSlip', fileList[0].originFileObj);
+      }
+
+      await axios.post("http://localhost:5000/api/v1/payment/create", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       
       setShowSuccess(true);
       message.success("Payment added successfully!");
@@ -85,7 +98,7 @@ export const Payment = () => {
       
     } catch (error) {
       console.error('Error creating payment:', error);
-      message.error("Failed to add payment. Please try again.");
+      message.error(error.response?.data?.message || "Failed to add payment. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -212,6 +225,62 @@ export const Payment = () => {
                     className="form-input"
                   />
                 </Form.Item>
+
+                <Form.Item
+                  label={
+                    <span className="input-label">
+                      <BankOutlined /> Payment Method
+                    </span>
+                  }
+                  name="paymentMethod"
+                  rules={[{ required: true, message: 'Please select payment method' }]}
+                  initialValue="cash"
+                >
+                  <Radio.Group 
+                    size="large"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  >
+                    <Radio.Button value="cash">Cash</Radio.Button>
+                    <Radio.Button value="bank">Bank Transfer</Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+
+                {paymentMethod === 'bank' && (
+                  <Form.Item
+                    label={
+                      <span className="input-label">
+                        <UploadOutlined /> Upload Payment Slip
+                      </span>
+                    }
+                    name="paymentSlip"
+                    rules={[
+                      { required: true, message: 'Please upload payment slip for bank transfer' }
+                    ]}
+                    valuePropName="fileList"
+                    getValueFromEvent={(e) => {
+                      if (Array.isArray(e)) {
+                        return e;
+                      }
+                      return e?.fileList;
+                    }}
+                  >
+                    <Upload
+                      beforeUpload={() => false}
+                      fileList={fileList}
+                      onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+                      maxCount={1}
+                      accept="image/*,.pdf"
+                      listType="picture"
+                    >
+                      <Button icon={<UploadOutlined />} size="large">
+                        Click to Upload
+                      </Button>
+                    </Upload>
+                    <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
+                      Accepted formats: JPG, PNG, PDF (Max size: 5MB)
+                    </div>
+                  </Form.Item>
+                )}
 
                 <Form.Item className="form-actions">
                   <Button
