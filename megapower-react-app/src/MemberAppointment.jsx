@@ -200,7 +200,8 @@ const MemberAppointment = () => {
       staffid: appointment.Staff_ID,
       date: appointmentMoment,
       time: appointmentMoment,
-      contact: appointment.Contact
+      contact: appointment.Contact,
+      purpose: appointment.Purpose || ''
     });
     setIsModalVisible(true);
   };
@@ -221,9 +222,14 @@ const MemberAppointment = () => {
       const appointmentTime = values.time.format('HH:mm:ss');
       const combinedDateTime = moment(`${appointmentDate} ${appointmentTime}`, 'YYYY-MM-DD HH:mm:ss');
 
-      // Validate future date
-      if (combinedDateTime.isBefore(moment())) {
-        message.error('❌ Cannot book appointments in the past');
+      console.log('Booking appointment for:', combinedDateTime.format('YYYY-MM-DD HH:mm:ss'));
+      console.log('Current time:', moment().format('YYYY-MM-DD HH:mm:ss'));
+
+      // Validate future date (allow booking at least 30 minutes from now)
+      const minBookingTime = moment().add(30, 'minutes');
+      if (combinedDateTime.isBefore(minBookingTime)) {
+        const minTimeStr = minBookingTime.format('h:mm A');
+        message.error(`⏰ Please select a time at least 30 minutes from now (after ${minTimeStr})`);
         setLoading(false);
         return;
       }
@@ -232,7 +238,8 @@ const MemberAppointment = () => {
         Member_Id: parseInt(memberId),
         Staff_ID: parseInt(values.staffid),
         Date_and_Time: combinedDateTime.toISOString(),
-        Contact: values.contact
+        Contact: values.contact,
+        Purpose: values.purpose
       };
 
       if (isEditMode && editingAppointment) {
@@ -248,18 +255,29 @@ const MemberAppointment = () => {
           memberid: parseInt(memberId),
           staffid: parseInt(values.staffid),
           date_time: combinedDateTime.toISOString(),
-          contact: values.contact
+          contact: values.contact,
+          purpose: values.purpose
         };
-        await axios.post(
+        
+        console.log('Creating appointment:', createData);
+        
+        const response = await axios.post(
           'http://localhost:5000/api/v1/appointment/create',
           createData
         );
+        
+        console.log('Create response:', response.data);
         message.success('✅ Appointment booked successfully!');
       }
 
       setIsModalVisible(false);
       form.resetFields();
-      await fetchAppointments(memberId);
+      
+      // Wait a moment then refresh to ensure database has updated
+      setTimeout(() => {
+        fetchAppointments(memberId);
+      }, 500);
+      
     } catch (error) {
       console.error('Error saving appointment:', error);
       message.error(error.response?.data?.message || '❌ Failed to save appointment');
@@ -300,6 +318,39 @@ const MemberAppointment = () => {
   const disabledDate = (current) => {
     // Can't select dates before today
     return current && current < moment().startOf('day');
+  };
+
+  const disabledTime = (current) => {
+    // If date is not today, no time restrictions
+    if (!current || !current.isSame(moment(), 'day')) {
+      return {};
+    }
+
+    // If date is today, disable hours and minutes that have passed
+    const now = moment();
+    const currentHour = now.hour();
+    const currentMinute = now.minute();
+
+    return {
+      disabledHours: () => {
+        const hours = [];
+        for (let i = 0; i < currentHour; i++) {
+          hours.push(i);
+        }
+        return hours;
+      },
+      disabledMinutes: (selectedHour) => {
+        if (selectedHour === currentHour) {
+          const minutes = [];
+          // Disable current minute and previous minutes, require at least 30 min ahead
+          for (let i = 0; i <= currentMinute + 29; i++) {
+            if (i < 60) minutes.push(i);
+          }
+          return minutes;
+        }
+        return [];
+      },
+    };
   };
 
   const columns = [
@@ -812,10 +863,24 @@ const MemberAppointment = () => {
                   style={{ width: '100%' }}
                   placeholder="Select time"
                   minuteStep={15}
+                  disabledTime={() => disabledTime(form.getFieldValue('date'))}
+                  showNow={false}
                 />
               </Form.Item>
             </Col>
           </Row>
+
+          <Form.Item
+            label="Purpose of Appointment"
+            name="purpose"
+            rules={[{ required: true, message: 'Please enter the purpose' }]}
+          >
+            <Input
+              placeholder="e.g., Personal Training, Consultation, Fitness Assessment"
+              size="large"
+              maxLength={100}
+            />
+          </Form.Item>
 
           <Form.Item
             label="Contact Number"

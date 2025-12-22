@@ -3,22 +3,29 @@ const prisma = new PrismaClient();
 
 
 const Appoinmenthandling = async (req, res) => {
-    const {memberid, staffid, date_time,contact} = req.body;
+    const {memberid, staffid, date_time, contact, purpose, notes} = req.body;
     try{
-        await prisma.appointment.create({
+        const newAppointment = await prisma.appointment.create({
             data: {
                 Member_Id: parseInt(memberid),
                 Staff_ID: parseInt(staffid),
-                Date_and_Time:date_time,
-                Contact:contact
-
+                Date_and_Time: new Date(date_time),
+                Contact: contact,
+                Purpose: purpose || 'Consultation',
+                Status: 'Scheduled',
+                Notes: notes || null
             }
-        })
+        });
+        
+        console.log('Created appointment:', newAppointment);
+        
         res.status(200).json({
             code: 200,
-            message: 'Appoinment created successfully',
+            message: 'Appointment created successfully',
+            data: newAppointment
         })
     }catch(ex){
+        console.error('Error creating appointment:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
@@ -29,9 +36,9 @@ const Appoinmenthandling = async (req, res) => {
 
 const AppoinmentList = async (req, res) => {
     try{
-        const data = await prisma.appointment.findMany(
-            {select: {
-                App_ID:true,
+        const data = await prisma.appointment.findMany({
+            select: {
+                App_ID: true,
                 Member_Id: true,
                 Staff_ID: true,
                 Date_and_Time: true,
@@ -39,15 +46,35 @@ const AppoinmentList = async (req, res) => {
                 Purpose: true,
                 Status: true,
                 Notes: true,
-            
+                member: {
+                    select: {
+                        FName: true,
+                        LName: true,
+                        Email: true
+                    }
+                },
+                staffmember: {
+                    select: {
+                        FName: true,
+                        LName: true,
+                        Job_Role: true
+                    }
+                }
+            },
+            orderBy: {
+                Date_and_Time: 'desc'
             }
-        },)
+        });
+        
+        console.log(`Fetched ${data.length} appointments`);
+        
         res.status(200).json({
             code: 200,
             message: 'Appointments fetched successfully',
             data
         })
     }catch(ex){
+        console.error('Error fetching appointments:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',

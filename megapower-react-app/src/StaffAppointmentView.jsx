@@ -74,20 +74,30 @@ const StaffAppointmentView = () => {
       setLoading(true);
       const res = await axios.get("http://localhost:5000/api/v1/appointment/list");
       const appointments = res?.data?.data || [];
+      
+      console.log('Fetched appointments:', appointments);
+      
       setData(appointments);
       setFilteredData(appointments);
       
-      const pending = appointments.filter(a => a.Status === 'Pending').length;
+      // Count based on actual status values from database
+      const now = moment();
+      const scheduled = appointments.filter(a => 
+        (a.Status === 'Scheduled' || !a.Status) && moment(a.Date_and_Time).isAfter(now)
+      ).length;
+      const completed = appointments.filter(a => 
+        a.Status === 'Completed' || moment(a.Date_and_Time).isBefore(now)
+      ).length;
       const confirmed = appointments.filter(a => a.Status === 'Confirmed').length;
-      const completed = appointments.filter(a => a.Status === 'Completed').length;
       
       setStats({
         total: appointments.length,
-        pending,
-        confirmed,
-        completed
+        pending: scheduled,
+        confirmed: confirmed,
+        completed: completed
       });
     } catch (error) {
+      console.error('Error fetching appointments:', error);
       message.error('Failed to fetch appointment data');
     } finally {
       setLoading(false);
@@ -150,26 +160,26 @@ const StaffAppointmentView = () => {
     },
     {
       title: "Date",
-      dataIndex: "Date",
+      dataIndex: "Date_and_Time",
       key: "date",
       width: 150,
-      render: (date) => (
+      render: (dateTime) => (
         <div className="info-cell">
           <CalendarOutlined className="cell-icon" />
-          <span>{date ? moment(date).format('DD MMM YYYY') : 'N/A'}</span>
+          <span>{dateTime ? moment.utc(dateTime).local().format('DD MMM YYYY') : 'N/A'}</span>
         </div>
       ),
-      sorter: (a, b) => moment(a.Date).unix() - moment(b.Date).unix(),
+      sorter: (a, b) => moment(a.Date_and_Time).unix() - moment(b.Date_and_Time).unix(),
     },
     {
       title: "Time",
-      dataIndex: "Time",
+      dataIndex: "Date_and_Time",
       key: "time",
       width: 120,
-      render: (time) => (
+      render: (dateTime) => (
         <div className="info-cell">
           <ClockCircleOutlined className="cell-icon" />
-          <span style={{ fontWeight: 500 }}>{time ? moment(time, 'HH:mm:ss').format('hh:mm A') : 'N/A'}</span>
+          <span style={{ fontWeight: 500 }}>{dateTime ? moment.utc(dateTime).local().format('hh:mm A') : 'N/A'}</span>
         </div>
       ),
     },
@@ -193,15 +203,16 @@ const StaffAppointmentView = () => {
       fixed: "right",
       render: (status) => {
         const statusConfig = {
+          'Scheduled': { color: 'processing', icon: <ClockCircleOutlined /> },
           'Pending': { color: 'warning', icon: <ClockCircleOutlined /> },
-          'Confirmed': { color: 'processing', icon: <ExclamationCircleOutlined /> },
-          'Completed': { color: 'success', icon: <CheckCircleOutlined /> },
+          'Confirmed': { color: 'success', icon: <CheckCircleOutlined /> },
+          'Completed': { color: 'default', icon: <CheckCircleOutlined /> },
           'Cancelled': { color: 'error', icon: <ExclamationCircleOutlined /> }
         };
-        const config = statusConfig[status] || { color: 'default', icon: null };
+        const config = statusConfig[status] || statusConfig['Scheduled'];
         return (
           <Tag color={config.color} icon={config.icon}>
-            {status || 'Pending'}
+            {status || 'Scheduled'}
           </Tag>
         );
       },
