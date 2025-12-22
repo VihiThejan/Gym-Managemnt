@@ -275,7 +275,7 @@ export const MemberDashboard = () => {
                     <Progress 
                       type="circle" 
                       percent={Math.round(stats.goalProgress)} 
-                      width={80}
+                      size={80}
                       strokeColor="white"
                       format={percent => <span style={{ color: 'white', fontWeight: 'bold' }}>{percent}%</span>}
                     />

@@ -34,7 +34,12 @@ model appointment {
   Member_Id     Int
   Staff_ID      Int
   Date_and_Time DateTime
-  Contact       String
+  Contact       String      @db.VarChar(100)
+  Purpose       String?     @db.VarChar(255)
+  Status        String?     @default("Scheduled") @db.VarChar(50)
+  Notes         String?     @db.Text
+  created_at    DateTime?   @default(now()) @db.Timestamp(0)
+  updated_at    DateTime?   @default(now()) @updatedAt @db.Timestamp(0)
   member        member      @relation(fields: [Member_Id], references: [Member_Id], map: "Appointment_Member_Id_fkey")
   staffmember   staffmember @relation(fields: [Staff_ID], references: [Staff_ID], map: "Appointment_Staff_ID_fkey")
 

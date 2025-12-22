@@ -35,7 +35,6 @@ import './MemberAppointment.css';
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 const { Option } = Select;
-const { TabPane } = Tabs;
 const { Search } = Input;
 
 const siderStyle = {
@@ -639,107 +638,103 @@ const MemberAppointment = () => {
             onChange={setActiveTab}
             size="large"
             className="appointments-tabs"
-          >
-            <TabPane 
-              tab={
-                <span>
-                  <ClockCircleOutlined />
-                  Upcoming <Badge count={stats.upcoming} style={{ backgroundColor: '#52c41a', marginLeft: 8 }} />
-                </span>
-              } 
-              key="upcoming"
-            >
-              <div className="appointments-grid">
-                {loading ? (
-                  <div style={{ textAlign: 'center', padding: '60px 0', width: '100%' }}>
-                    <Spin size="large" tip="Loading appointments..." />
-                  </div>
-                ) : filteredAppointments.length > 0 ? (
-                  filteredAppointments.map(apt => renderAppointmentCard(apt))
-                ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={
-                      <div>
-                        <Title level={4}>No Upcoming Appointments</Title>
-                        <Text type="secondary">Book your next training session now!</Text>
-                      </div>
-                    }
-                  >
-                    <Button type="primary" icon={<PlusOutlined />} onClick={showModal} size="large">
-                      Book Appointment
-                    </Button>
-                  </Empty>
-                )}
-              </div>
-            </TabPane>
-
-            <TabPane 
-              tab={
-                <span>
-                  <CheckCircleOutlined />
-                  Completed <Badge count={stats.completed} style={{ backgroundColor: '#1890ff', marginLeft: 8 }} />
-                </span>
-              } 
-              key="completed"
-            >
-              <div className="appointments-grid">
-                {loading ? (
-                  <div style={{ textAlign: 'center', padding: '60px 0', width: '100%' }}>
-                    <Spin size="large" tip="Loading appointments..." />
-                  </div>
-                ) : filteredAppointments.length > 0 ? (
-                  filteredAppointments.map((apt, idx) => renderAppointmentCard(apt, idx))
-                ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={
-                      <div>
-                        <Title level={4}>No Completed Appointments</Title>
-                        <Text type="secondary">Your completed sessions will appear here.</Text>
-                      </div>
-                    }
-                  />
-                )}
-              </div>
-            </TabPane>
-
-            <TabPane 
-              tab={
-                <span>
-                  <HistoryOutlined />
-                  All History <Badge count={stats.total} style={{ backgroundColor: '#722ed1', marginLeft: 8 }} />
-                </span>
-              } 
-              key="all"
-            >
-              <div className="appointments-grid">
-                {loading ? (
-                  <div style={{ textAlign: 'center', padding: '60px 0', width: '100%' }}>
-                    <Spin size="large" tip="Loading appointments..." />
-                  </div>
-                ) : filteredAppointments.length > 0 ? (
-                  filteredAppointments.map((apt, idx) => renderAppointmentCard(apt, idx))
-                ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description={
-                      <div>
-                        <Title level={4}>No Appointments Found</Title>
-                        <Text type="secondary">{searchText ? 'Try adjusting your search terms' : 'Start your fitness journey by booking your first session!'}</Text>
-                      </div>
-                    }
-                  >
-                    {!searchText && (
-                      <Button type="primary" icon={<PlusOutlined />} onClick={showModal} size="large">
-                        Book Your First Session
-                      </Button>
+            items={[
+              {
+                key: 'upcoming',
+                label: (
+                  <span>
+                    <ClockCircleOutlined />
+                    Upcoming <Badge count={stats.upcoming} style={{ backgroundColor: '#52c41a', marginLeft: 8 }} />
+                  </span>
+                ),
+                children: (
+                  <div className="appointments-grid">
+                    {loading ? (
+                      <Spin size="large" />
+                    ) : filteredAppointments.length > 0 ? (
+                      filteredAppointments.map(apt => renderAppointmentCard(apt))
+                    ) : (
+                      <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description={
+                          <div>
+                            <Title level={4}>No Upcoming Appointments</Title>
+                            <Text type="secondary">Book your next training session now!</Text>
+                          </div>
+                        }
+                      >
+                        <Button type="primary" icon={<PlusOutlined />} onClick={showModal} size="large">
+                          Book Appointment
+                        </Button>
+                      </Empty>
                     )}
-                  </Empty>
-                )}
-              </div>
-            </TabPane>
-          </Tabs>
+                  </div>
+                ),
+              },
+              {
+                key: 'completed',
+                label: (
+                  <span>
+                    <CheckCircleOutlined />
+                    Completed <Badge count={stats.completed} style={{ backgroundColor: '#1890ff', marginLeft: 8 }} />
+                  </span>
+                ),
+                children: (
+                  <div className="appointments-grid">
+                    {loading ? (
+                      <Spin size="large" />
+                    ) : filteredAppointments.length > 0 ? (
+                      filteredAppointments.map((apt, idx) => renderAppointmentCard(apt, idx))
+                    ) : (
+                      <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description={
+                          <div>
+                            <Title level={4}>No Completed Appointments</Title>
+                            <Text type="secondary">Your completed sessions will appear here.</Text>
+                          </div>
+                        }
+                      />
+                    )}
+                  </div>
+                ),
+              },
+              {
+                key: 'all',
+                label: (
+                  <span>
+                    <HistoryOutlined />
+                    All History <Badge count={stats.total} style={{ backgroundColor: '#722ed1', marginLeft: 8 }} />
+                  </span>
+                ),
+                children: (
+                  <div className="appointments-grid">
+                    {loading ? (
+                      <Spin size="large" />
+                    ) : filteredAppointments.length > 0 ? (
+                      filteredAppointments.map((apt, idx) => renderAppointmentCard(apt, idx))
+                    ) : (
+                      <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description={
+                          <div>
+                            <Title level={4}>No Appointments Found</Title>
+                            <Text type="secondary">{searchText ? 'Try adjusting your search terms' : 'Start your fitness journey by booking your first session!'}</Text>
+                          </div>
+                        }
+                      >
+                        {!searchText && (
+                          <Button type="primary" icon={<PlusOutlined />} onClick={showModal} size="large">
+                            Book Your First Session
+                          </Button>
+                        )}
+                      </Empty>
+                    )}
+                  </div>
+                ),
+              },
+            ]}
+          />
         </Card>
       </Content>
 
