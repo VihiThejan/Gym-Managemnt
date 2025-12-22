@@ -36,12 +36,15 @@ const AppoinmentList = async (req, res) => {
                 Staff_ID: true,
                 Date_and_Time: true,
                 Contact: true,
+                Purpose: true,
+                Status: true,
+                Notes: true,
             
             }
         },)
         res.status(200).json({
             code: 200,
-            message: 'Equipment fetched successfully',
+            message: 'Appointments fetched successfully',
             data
         })
     }catch(ex){

@@ -282,11 +282,61 @@ export const Paymenttable = () => {
       ),
     },
     {
+      title: "Payment Method",
+      dataIndex: "Payment_Method",
+      key: "paymentMethod",
+      width: 150,
+      render: (method) => {
+        const methodMap = {
+          "cash": { name: "Cash", color: "green" },
+          "bank": { name: "Bank Transfer", color: "blue" },
+          "payhere": { name: "PayHere", color: "purple" }
+        };
+        const methodInfo = methodMap[method] || { name: method || "N/A", color: "default" };
+        return <Tag color={methodInfo.color}>{methodInfo.name}</Tag>;
+      },
+    },
+    {
       title: "Payment Date",
       dataIndex: "Date",
       key: "date",
       width: 150,
       render: (date) => moment(date).format("YYYY-MM-DD"),
+    },
+    {
+      title: "Status",
+      dataIndex: "Status",
+      key: "status",
+      width: 120,
+      render: (status) => {
+        const statusMap = {
+          "Completed": { color: "success" },
+          "Pending": { color: "warning" },
+          "Failed": { color: "error" }
+        };
+        const statusInfo = statusMap[status] || { color: "default" };
+        return <Tag color={statusInfo.color}>{status || "Pending"}</Tag>;
+      },
+    },
+    {
+      title: "Description",
+      dataIndex: "Payment_Slip",
+      key: "description",
+      width: 150,
+      render: (slip, record) => {
+        if (record.Payment_Method === 'bank' && slip) {
+          return (
+            <a 
+              href={`http://localhost:5000/uploads/payment-slips/${slip}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              View Slip
+            </a>
+          );
+        }
+        return <span style={{ color: '#999' }}>-</span>;
+      },
     },
     {
       title: "Action",

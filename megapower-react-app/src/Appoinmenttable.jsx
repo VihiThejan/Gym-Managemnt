@@ -137,6 +137,38 @@ export const Appoinmenttable = () => {
       ),
     },
     {
+      title: 'Status',
+      dataIndex: 'Status',
+      key: 'status',
+      width: 120,
+      render: (status) => {
+        const statusColors = {
+          'Scheduled': 'blue',
+          'Confirmed': 'green',
+          'Completed': 'success',
+          'Cancelled': 'error',
+          'Pending': 'warning'
+        };
+        return (
+          <span className={`appointment-status-${(status || 'Pending').toLowerCase()}`}>
+            <CheckCircleOutlined />
+            {status || 'Pending'}
+          </span>
+        );
+      },
+    },
+    {
+      title: 'Notes',
+      dataIndex: 'Notes',
+      key: 'notes',
+      width: 200,
+      render: (notes) => (
+        <span style={{ color: notes ? '#000' : '#999' }}>
+          {notes || '-'}
+        </span>
+      ),
+    },
+    {
       title: 'Actions',
       key: 'action',
       width: 180,
