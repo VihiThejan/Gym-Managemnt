@@ -487,8 +487,8 @@
   }
 }
 
-/* Dark Mode Support (Optional) */
-@media (prefers-color-scheme: dark) {
+/* Dark Mode Support (Disabled - keeping light theme only) */
+/* @media (prefers-color-scheme: dark) {
   .member-profile-layout {
     background: #141414;
   }
@@ -510,7 +510,7 @@
     background: #1f1f1f;
     border-top: 1px solid #303030;
   }
-}
+} */
 
 /* Animations */
 @keyframes fadeIn {
