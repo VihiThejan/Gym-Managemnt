@@ -8,189 +8,406 @@ datasource db {
 }
 
 model admin {
-  User_ID      Int            @id @default(autoincrement())
-  Name         String
-  Password     String
-  UserName     String
-  Contact      String?
-  announcement announcement[]
-  chat         chat[]
-  feedback     feedback[]
-  payment      payment[]
+  User_ID    Int       @id @default(autoincrement())
+  Name       String    @db.VarChar(255)
+  Password   String    @db.VarChar(255)
+  UserName   String    @unique(map: "UserName") @db.VarChar(255)
+  Contact    String?   @db.VarChar(255)
+  Email      String?   @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
 }
 
 model announcement {
-  Announcement_ID Int      @id @default(autoincrement())
+  Announcement_ID Int         @id @default(autoincrement())
   Staff_ID        Int
-  Message         String
-  Date_Time       DateTime
-  admin           admin    @relation(fields: [Staff_ID], references: [User_ID], map: "Announcement_User_ID_fkey")
+  Message         String      @db.Text
+  Title           String?     @db.VarChar(255)
+  Date_Time       DateTime    @db.DateTime(0)
+  Status          String?     @default("Active") @db.VarChar(50)
+  created_at      DateTime?   @default(now()) @db.Timestamp(0)
+  admin           staffmember @relation(fields: [Staff_ID], references: [Staff_ID], onDelete: Cascade, map: "Announcement_User_ID_fkey")
 
-  @@index([Staff_ID], map: "Announcement_User_ID_fkey")
+  @@index([Date_Time], map: "idx_date_time")
+  @@index([Staff_ID], map: "idx_staff_id")
 }
 
 model appointment {
   App_ID        Int         @id @default(autoincrement())
   Member_Id     Int
   Staff_ID      Int
-  Date_and_Time DateTime
+  Date_and_Time DateTime    @db.DateTime(0)
   Contact       String      @db.VarChar(100)
   Purpose       String?     @db.VarChar(255)
   Status        String?     @default("Scheduled") @db.VarChar(50)
   Notes         String?     @db.Text
   created_at    DateTime?   @default(now()) @db.Timestamp(0)
   updated_at    DateTime?   @default(now()) @updatedAt @db.Timestamp(0)
-  member        member      @relation(fields: [Member_Id], references: [Member_Id], map: "Appointment_Member_Id_fkey")
-  staffmember   staffmember @relation(fields: [Staff_ID], references: [Staff_ID], map: "Appointment_Staff_ID_fkey")
+  member        member      @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "Appointment_Member_Id_fkey")
+  staffmember   staffmember @relation(fields: [Staff_ID], references: [Staff_ID], onDelete: Cascade, map: "Appointment_Staff_ID_fkey")
 
-  @@index([Member_Id], map: "Appointment_Member_Id_fkey")
-  @@index([Staff_ID], map: "Appointment_Staff_ID_fkey")
+  @@index([Date_and_Time], map: "idx_appointment_datetime")
+  @@index([Date_and_Time], map: "idx_date_time")
+  @@index([Member_Id], map: "idx_member_id")
+  @@index([Staff_ID], map: "idx_staff_id")
 }
 
 model attendance {
-  Attendance_ID Int       @id @default(autoincrement())
-  Member_Id     Int
-  Current_date  DateTime
-  In_time       DateTime
-  Out_time      DateTime?
-  member        member    @relation(fields: [Member_Id], references: [Member_Id], map: "fk_attendance_member")
+  Attendance_ID    Int       @id @default(autoincrement())
+  Member_Id        Int
+  Current_date     DateTime  @db.Date
+  In_time          DateTime  @db.DateTime(0)
+  Out_time         DateTime? @db.DateTime(0)
+  Duration_Minutes Int?
+  Notes            String?   @db.Text
+  created_at       DateTime? @default(now()) @db.Timestamp(0)
+  member           member    @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "fk_attendance_member")
 
   @@index([Member_Id], map: "idx_member_id")
+  @@index([Member_Id, Current_date], map: "idx_attendance_member_date")
+  @@index([Current_date], map: "idx_date")
 }
 
 model chat {
-  Chat_ID Int      @id @default(autoincrement())
-  User_ID Int
-  Message String
-  Date    DateTime
-  Time    DateTime
-  admin   admin    @relation(fields: [User_ID], references: [User_ID], map: "Chat_User_ID_fkey")
+  Chat_ID    Int       @id @default(autoincrement())
+  User_ID    Int
+  User_Type  String    @db.VarChar(50)
+  Message    String    @db.Text
+  Date       DateTime  @db.Date
+  Time       DateTime  @db.Time(0)
+  Room_ID    String?   @db.VarChar(100)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
 
-  @@index([User_ID], map: "Chat_User_ID_fkey")
+  @@index([Date, Time], map: "idx_date_time")
+  @@index([Room_ID], map: "idx_room")
+  @@index([User_ID], map: "idx_user_id")
 }
 
 model equipment {
-  Equipment_Id Int      @id @default(autoincrement())
-  EName        String
-  Qty          Int
-  Vendor       String
-  Description  String
-  Date         DateTime
+  Equipment_Id     Int       @id @default(autoincrement())
+  EName            String    @db.VarChar(255)
+  Qty              Int
+  Vendor           String    @db.VarChar(255)
+  Description      String    @db.Text
+  Date             DateTime  @db.DateTime(0)
+  Purchase_Cost    Decimal?  @db.Decimal(10, 2)
+  Status           String?   @default("Active") @db.VarChar(50)
+  Maintenance_Date DateTime? @db.Date
+  created_at       DateTime? @default(now()) @db.Timestamp(0)
+  updated_at       DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([EName], map: "idx_name")
 }
 
 model feedback {
-  Feedback_ID Int      @id @default(autoincrement())
-  Member_Id   Int
-  Message     String
-  Date        DateTime
-  admin       admin    @relation(fields: [Member_Id], references: [User_ID], map: "Feedback_User_ID_fkey")
+  Feedback_ID   Int       @id @default(autoincrement())
+  Member_Id     Int
+  Message       String    @db.Text
+  Date          DateTime  @db.DateTime(0)
+  Rating        Int?
+  Category      String?   @db.VarChar(100)
+  Status        String?   @default("Pending") @db.VarChar(50)
+  Response      String?   @db.Text
+  Response_Date DateTime? @db.DateTime(0)
+  created_at    DateTime? @default(now()) @db.Timestamp(0)
+  admin         member    @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "Feedback_User_ID_fkey")
 
-  @@index([Member_Id], map: "Feedback_User_ID_fkey")
+  @@index([Date], map: "idx_date")
+  @@index([Member_Id], map: "idx_member_id")
 }
 
 model member {
-  Member_Id   Int           @id @default(autoincrement())
-  FName       String
-  DOB         DateTime
-  Gender      String
-  Email       String
-  Address     String
-  Contact     String
-  Package     String
-  Weight      Float
-  Height      Float
-  UName       String
-  Password    String
-  appointment appointment[]
-  attendance  attendance[]
-  trainerrate trainerrate?
+  Member_Id         Int                @id @default(autoincrement())
+  FName             String             @db.VarChar(255)
+  LName             String?            @db.VarChar(255)
+  DOB               DateTime           @db.DateTime(0)
+  Gender            String             @db.VarChar(50)
+  Email             String             @unique(map: "Email") @db.VarChar(255)
+  Address           String             @db.VarChar(255)
+  Contact           String             @db.VarChar(100)
+  Package           String             @db.VarChar(100)
+  Weight            Float              @db.Float
+  Height            Float              @db.Float
+  UName             String             @unique(map: "UName") @db.VarChar(255)
+  Password          String             @db.VarChar(255)
+  Status            String?            @default("Active") @db.VarChar(50)
+  Registration_Date DateTime?          @default(now()) @db.DateTime(0)
+  created_at        DateTime?          @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?          @default(now()) @db.Timestamp(0)
+  appointment       appointment[]
+  attendance        attendance[]
+  feedback          feedback[]
+  payment           payment[]
+  personal_records  personal_records[]
+  schedule          schedule[]
+  trainerrate       trainerrate[]
+  workouts          workouts[]
+
+  @@index([Email], map: "idx_member_email")
+  @@index([Status], map: "idx_member_status")
 }
 
 model payment {
   Payment_ID     Int       @id @default(autoincrement())
   Member_Id      Int
   Package_ID     Int
-  Amount         Float
-  Date           DateTime
-  Payment_Method String?
-  Payment_Slip   String?
-  Status         String?
-  admin          admin     @relation(fields: [Member_Id], references: [User_ID], map: "Payment_User_ID_fkey")
+  Amount         Decimal   @db.Decimal(10, 2)
+  Date           DateTime  @db.DateTime(0)
+  Status         String?   @default("Pending") @db.VarChar(50)
+  Payment_Method String?   @db.VarChar(50)
+  Payment_Slip   String?   @db.VarChar(255)
+  Transaction_ID String?   @db.VarChar(255)
+  Receipt_Number String?   @db.VarChar(100)
+  Notes          String?   @db.Text
+  Due_Date       DateTime? @db.Date
+  created_at     DateTime? @default(now()) @db.Timestamp(0)
+  updated_at     DateTime? @default(now()) @db.Timestamp(0)
+  admin          member    @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "Payment_User_ID_fkey")
 
-  @@index([Member_Id], map: "Payment_User_ID_fkey")
+  @@index([Date], map: "idx_date")
+  @@index([Member_Id], map: "idx_member_id")
+  @@index([Status, Date], map: "idx_payment_status_date")
+  @@index([Status], map: "idx_status")
 }
 
 model schedule {
-  Schedule_ID Int         @id @default(autoincrement())
-  Staff_ID    Int
-  Member_ID   Int
-  EName       String
-  Equipment   String
-  Quantity    Int
-  Date_Time   DateTime
-  staffmember staffmember @relation(fields: [Staff_ID], references: [Staff_ID], map: "Schedule_Staff_ID_fkey")
-  trainer     trainer[]
+  Schedule_ID      Int         @id @default(autoincrement())
+  Staff_ID         Int
+  Member_ID        Int
+  EName            String      @db.VarChar(255)
+  Equipment        String      @db.VarChar(255)
+  Quantity         Int
+  Date_Time        DateTime    @db.DateTime(0)
+  Duration_Minutes Int?
+  Status           String?     @default("Scheduled") @db.VarChar(50)
+  Notes            String?     @db.Text
+  created_at       DateTime?   @default(now()) @db.Timestamp(0)
+  updated_at       DateTime?   @default(now()) @db.Timestamp(0)
+  member           member      @relation(fields: [Member_ID], references: [Member_Id], onDelete: Cascade, map: "fk_schedule_member")
+  staffmember      staffmember @relation(fields: [Staff_ID], references: [Staff_ID], onDelete: Cascade, map: "Schedule_Staff_ID_fkey")
+  trainer          trainer[]
 
-  @@index([Staff_ID], map: "Schedule_Staff_ID_fkey")
+  @@index([Date_Time], map: "idx_date_time")
+  @@index([Member_ID], map: "idx_member_id")
+  @@index([Staff_ID], map: "idx_staff_id")
 }
 
 model staffmember {
-  Staff_ID    Int           @id @default(autoincrement())
-  FName       String
-  DOB         DateTime
-  Address     String
-  Gender      String
-  Contact_No  String
-  Email       String
-  Job_Role    String
-  UName       String
-  Password    String
-  appointment appointment[]
-  schedule    schedule[]
+  Staff_ID                                               Int            @id @default(autoincrement())
+  FName                                                  String         @db.VarChar(255)
+  LName                                                  String?        @db.VarChar(255)
+  DOB                                                    DateTime       @db.DateTime(0)
+  Address                                                String         @db.VarChar(255)
+  Gender                                                 String         @db.VarChar(50)
+  Contact_No                                             String         @db.VarChar(100)
+  Email                                                  String         @unique(map: "Email") @db.VarChar(255)
+  Job_Role                                               String         @db.VarChar(100)
+  UName                                                  String         @unique(map: "UName") @db.VarChar(255)
+  Password                                               String         @db.VarChar(255)
+  Status                                                 String?        @default("Active") @db.VarChar(50)
+  Salary                                                 Decimal?       @db.Decimal(10, 2)
+  Hire_Date                                              DateTime?      @default(now()) @db.DateTime(0)
+  created_at                                             DateTime?      @default(now()) @db.Timestamp(0)
+  updated_at                                             DateTime?      @default(now()) @db.Timestamp(0)
+  announcement                                           announcement[]
+  appointment                                            appointment[]
+  schedule                                               schedule[]
+  trainer                                                trainer[]
+  trainerrate_trainerrate_Reply_By_Staff_IDTostaffmember trainerrate[]  @relation("trainerrate_Reply_By_Staff_IDTostaffmember")
+  trainerrate_trainerrate_Staff_IDTostaffmember          trainerrate[]  @relation("trainerrate_Staff_IDTostaffmember")
+
+  @@index([Email], map: "idx_staff_email")
 }
 
 model trainer {
-  Trainer_ID  Int      @id @default(autoincrement())
+  Trainer_ID  Int          @id @default(autoincrement())
   Schedule_ID Int
-  schedule    schedule @relation(fields: [Schedule_ID], references: [Schedule_ID], map: "Trainer_Schedule_ID_fkey")
+  Staff_ID    Int?
+  Notes       String?      @db.Text
+  created_at  DateTime?    @default(now()) @db.Timestamp(0)
+  schedule    schedule     @relation(fields: [Schedule_ID], references: [Schedule_ID], onDelete: Cascade, map: "Trainer_Schedule_ID_fkey")
+  staffmember staffmember? @relation(fields: [Staff_ID], references: [Staff_ID], map: "fk_trainer_staff")
 
-  @@index([Schedule_ID], map: "Trainer_Schedule_ID_fkey")
+  @@index([Schedule_ID], map: "idx_schedule_id")
+  @@index([Staff_ID], map: "idx_staff_id")
 }
 
 model trainerrate {
-  Rating_ID Int     @id @default(autoincrement())
-  Staff_ID  Int
-  Member_Id Int
-  Rating    Int
-  Comment   String?
-  member    member  @relation(fields: [Rating_ID], references: [Member_Id], map: "TrainerRate_Member_Id_fkey")
+  Rating_ID                                              Int          @id @default(autoincrement())
+  Staff_ID                                               Int
+  Member_Id                                              Int
+  Rating                                                 Int
+  Comment                                                String?      @db.Text
+  Reply                                                  String?      @db.Text
+  Reply_Date                                             DateTime?    @db.DateTime(0)
+  Reply_By_Staff_ID                                      Int?
+  Date                                                   DateTime?    @default(now()) @db.DateTime(0)
+  created_at                                             DateTime?    @default(now()) @db.Timestamp(0)
+  updated_at                                             DateTime?    @default(now()) @db.Timestamp(0)
+  member                                                 member       @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "fk_trainerrate_member")
+  staffmember_trainerrate_Reply_By_Staff_IDTostaffmember staffmember? @relation("trainerrate_Reply_By_Staff_IDTostaffmember", fields: [Reply_By_Staff_ID], references: [Staff_ID], map: "fk_trainerrate_reply_staff")
+  staffmember_trainerrate_Staff_IDTostaffmember          staffmember  @relation("trainerrate_Staff_IDTostaffmember", fields: [Staff_ID], references: [Staff_ID], onDelete: Cascade, map: "fk_trainerrate_staff")
 
-  @@index([Staff_ID], map: "TrainerRate_Staff_ID_fkey")
+  @@index([Member_Id], map: "idx_member_id")
+  @@index([Reply_By_Staff_ID], map: "idx_reply_by")
+  @@index([Staff_ID], map: "idx_staff_id")
 }
 
 model otp {
-  ID         Int      @id @default(autoincrement())
-  Contact    String   @db.VarChar(45)
-  Otp        Int
-  Expires_At DateTime
+  ID         Int       @id @default(autoincrement())
+  Contact    String    @db.VarChar(45)
+  Email      String?   @db.VarChar(255)
+  Otp        String    @db.VarChar(10)
+  User_Type  String?   @db.VarChar(50)
+  Expires_At DateTime  @db.DateTime(0)
+  Is_Used    Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([Contact], map: "idx_contact")
+  @@index([Email], map: "idx_email")
+  @@index([Expires_At], map: "idx_expires")
 }
 
 model messages {
-  id          Int      @id @default(autoincrement())
-  sender_id   Int
-  receiver_id Int
-  message     String?  @db.Text
-  file_url    String?  @db.VarChar(255)
-  voice_url   String?  @db.VarChar(255)
-  timestamp   DateTime @default(now()) @db.Timestamp(0)
+  id           Int      @id @default(autoincrement())
+  sender_id    Int
+  receiver_id  Int
+  message      String?  @db.Text
+  file_url     String?  @db.VarChar(255)
+  voice_url    String?  @db.VarChar(255)
+  message_type String?  @default("text") @db.VarChar(50)
+  is_read      Boolean? @default(false)
+  timestamp    DateTime @default(now()) @db.Timestamp(0)
 
   @@index([receiver_id], map: "idx_receiver")
   @@index([sender_id], map: "idx_sender")
   @@index([timestamp], map: "idx_timestamp")
+  @@index([sender_id, receiver_id, timestamp], map: "idx_conversation")
 }
 
 model users {
-  id       Int    @id @default(autoincrement())
-  username String @unique(map: "username") @db.VarChar(255)
-  password String @db.VarChar(255)
+  id           Int       @id @default(autoincrement())
+  username     String    @unique(map: "unique_username") @db.VarChar(255)
+  password     String    @db.VarChar(255)
+  email        String?   @db.VarChar(255)
+  user_type    String?   @db.VarChar(50)
+  reference_id Int?
+  status       String?   @default("Active") @db.VarChar(50)
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  updated_at   DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([user_type, reference_id], map: "idx_user_type_ref")
+}
+
+model audit_log {
+  Log_ID     Int       @id @default(autoincrement())
+  User_ID    Int?
+  User_Type  String?   @db.VarChar(50)
+  Action     String    @db.VarChar(255)
+  Table_Name String?   @db.VarChar(100)
+  Record_ID  Int?
+  Old_Values String?   @db.Text
+  New_Values String?   @db.Text
+  IP_Address String?   @db.VarChar(45)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([Action], map: "idx_action")
+  @@index([created_at], map: "idx_created")
+  @@index([Table_Name], map: "idx_table")
+  @@index([User_Type, User_ID], map: "idx_user_type_id")
+}
+
+model packages {
+  Package_ID      Int       @id @default(autoincrement())
+  Package_Name    String    @db.VarChar(100)
+  Duration_Months Int
+  Price           Decimal   @db.Decimal(10, 2)
+  Description     String?   @db.Text
+  Features        String?   @db.Text
+  Status          String?   @default("Active") @db.VarChar(50)
+  created_at      DateTime? @default(now()) @db.Timestamp(0)
+  updated_at      DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([Status], map: "idx_status")
+}
+
+model personal_records {
+  PR_ID             Int       @id @default(autoincrement())
+  Member_Id         Int
+  Exercise_Name     String    @db.VarChar(255)
+  Category          String    @db.VarChar(100)
+  Max_Weight        Decimal?  @db.Decimal(10, 2)
+  Max_Reps          Int?
+  Max_Distance      Decimal?  @db.Decimal(10, 2)
+  Best_Time_Minutes Int?
+  Achievement_Date  DateTime  @db.Date
+  Workout_ID        Int?
+  Notes             String?   @db.Text
+  created_at        DateTime? @default(now()) @db.Timestamp(0)
+  updated_at        DateTime? @default(now()) @db.Timestamp(0)
+  member            member    @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "fk_pr_member")
+  workouts          workouts? @relation(fields: [Workout_ID], references: [Workout_ID], map: "fk_pr_workout")
+
+  @@unique([Member_Id, Exercise_Name], map: "unique_member_exercise")
+  @@index([Workout_ID], map: "fk_pr_workout")
+  @@index([Category], map: "idx_category")
+  @@index([Exercise_Name], map: "idx_exercise_name")
+  @@index([Member_Id], map: "idx_member_id")
+  @@index([Member_Id, Exercise_Name], map: "idx_pr_member_exercise")
+}
+
+model sessions {
+  Session_ID Int       @id @default(autoincrement())
+  User_ID    Int
+  User_Type  String    @db.VarChar(50)
+  Token      String    @db.VarChar(500)
+  IP_Address String?   @db.VarChar(45)
+  User_Agent String?   @db.VarChar(255)
+  Expires_At DateTime  @db.DateTime(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([Expires_At], map: "idx_expires")
+  @@index([Token(length: 255)], map: "idx_token")
+  @@index([User_Type, User_ID], map: "idx_user_type_id")
+}
+
+model workout_exercises {
+  Exercise_ID      Int       @id @default(autoincrement())
+  Workout_ID       Int
+  Exercise_Name    String    @db.VarChar(255)
+  Category         String    @db.VarChar(100)
+  Sets             Int?
+  Reps             Int?
+  Weight           Decimal?  @db.Decimal(10, 2)
+  Duration_Minutes Int?
+  Calories_Burned  Int?
+  Distance         Decimal?  @db.Decimal(10, 2)
+  Notes            String?   @db.Text
+  created_at       DateTime? @default(now()) @db.Timestamp(0)
+  workouts         workouts  @relation(fields: [Workout_ID], references: [Workout_ID], onDelete: Cascade, map: "fk_exercises_workout")
+
+  @@index([Category], map: "idx_category")
+  @@index([Exercise_Name], map: "idx_exercise_name")
+  @@index([Workout_ID, Exercise_Name], map: "idx_exercise_workout")
+  @@index([Workout_ID], map: "idx_workout_id")
+}
+
+model workouts {
+  Workout_ID             Int                 @id @default(autoincrement())
+  Member_Id              Int
+  Workout_Date           DateTime            @db.Date
+  Workout_Time           DateTime            @db.Time(0)
+  Total_Duration_Minutes Int?
+  Total_Calories         Int?
+  Notes                  String?             @db.Text
+  Status                 String?             @default("Completed") @db.VarChar(50)
+  created_at             DateTime?           @default(now()) @db.Timestamp(0)
+  updated_at             DateTime?           @default(now()) @db.Timestamp(0)
+  personal_records       personal_records[]
+  workout_exercises      workout_exercises[]
+  member                 member              @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "fk_workouts_member")
+
+  @@index([Workout_Date], map: "idx_date")
+  @@index([Member_Id], map: "idx_member_id")
+  @@index([Member_Id, Workout_Date], map: "idx_workout_member_date")
 }
