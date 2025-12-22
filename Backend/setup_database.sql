@@ -188,6 +188,7 @@ CREATE TABLE `payment` (
   `Date` DATETIME NOT NULL,
   `Status` VARCHAR(50) DEFAULT 'Pending',
   `Payment_Method` VARCHAR(50),
+  `Payment_Slip` VARCHAR(255),
   `Transaction_ID` VARCHAR(255),
   `Receipt_Number` VARCHAR(100),
   `Notes` TEXT,
