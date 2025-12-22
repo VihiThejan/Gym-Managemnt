@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Input, message, Tag } from "antd";
+import { Button, Table, Input, message, Tag, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
@@ -8,7 +8,8 @@ import {
   DollarOutlined,
   CreditCardOutlined,
   FilePdfOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  CheckCircleOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import jsPDF from 'jspdf';
@@ -57,6 +58,20 @@ export const Paymenttable = () => {
       setFilteredData(filtered);
     } else {
       setFilteredData(data);
+    }
+  };
+
+  const confirmPayment = async (paymentId) => {
+    try {
+      setLoading(true);
+      await axios.put(`http://localhost:5000/api/v1/payment/confirm/${paymentId}`);
+      message.success('Payment confirmed successfully');
+      fetchData();
+    } catch (error) {
+      console.error(`Error confirming payment: ${error.message}`);
+      message.error('Failed to confirm payment');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -341,21 +356,37 @@ export const Paymenttable = () => {
     {
       title: "Action",
       key: "action",
-      width: 120,
+      width: 180,
       fixed: "right",
       render: (_, record) => (
-        <Button
-          type="primary"
-          icon={<FilePdfOutlined />}
-          onClick={() => generatePDF(record)}
-          size="small"
-          style={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            border: 'none'
-          }}
-        >
-          PDF
-        </Button>
+        <Space size="small">
+          {record.Status === 'Pending' && (
+            <Button
+              type="primary"
+              icon={<CheckCircleOutlined />}
+              onClick={() => confirmPayment(record.Payment_ID)}
+              size="small"
+              style={{ 
+                background: '#52c41a',
+                border: 'none'
+              }}
+            >
+              Confirm
+            </Button>
+          )}
+          <Button
+            type="primary"
+            icon={<FilePdfOutlined />}
+            onClick={() => generatePDF(record)}
+            size="small"
+            style={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              border: 'none'
+            }}
+          >
+            PDF
+          </Button>
+        </Space>
       ),
     },
   ];

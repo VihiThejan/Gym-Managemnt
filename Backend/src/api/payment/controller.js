@@ -111,10 +111,40 @@ const paymentList = async (req, res) => {
     }
 }
 
+const confirmPayment = async (req, res) => {
+    try {
+        const paymentId = parseInt(req.params.id);
+        
+        // Update payment status to Completed
+        const updatedPayment = await prisma.payment.update({
+            where: {
+                Payment_ID: paymentId
+            },
+            data: {
+                Status: 'Completed'
+            }
+        });
+        
+        res.status(200).json({
+            code: 200,
+            message: 'Payment confirmed successfully',
+            data: updatedPayment
+        });
+    } catch (ex) {
+        console.error('Error confirming payment:', ex);
+        res.status(500).json({
+            code: 500,
+            message: 'Internal Server Error',
+            error: ex.message
+        });
+    }
+}
+
 
 module.exports = {
     paymentHandling,
     paymentList,
+    confirmPayment,
     upload, // Export upload middleware
 };
 

@@ -1,8 +1,9 @@
 const paymentRoute = require('express').Router();
-const {paymentHandling, paymentList, upload } = require('./controller');
+const {paymentHandling, paymentList, confirmPayment, upload } = require('./controller');
 
 paymentRoute.post('/create', upload.single('paymentSlip'), paymentHandling);
 paymentRoute.get('/list', paymentList);
+paymentRoute.put('/confirm/:id', confirmPayment);
 
 paymentRoute.post("/payment/notify", (req, res) => {
     console.log("PayHere Notification Received:", req.body);
