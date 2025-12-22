@@ -90,10 +90,14 @@ export const MemberAttendance = () => {
       const response = await axios.get("http://localhost:5000/api/v1/attendance/list");
       const allAttendance = response?.data?.data || [];
       
+      console.log('All attendance data:', allAttendance);
+      
       // Filter for current member
       const memberAttendance = allAttendance.filter(
         att => att.Member_Id === parseInt(memberId)
       );
+
+      console.log('Member attendance:', memberAttendance);
 
       // Sort by date, newest first
       const sortedData = memberAttendance.sort((a, b) => 
@@ -113,9 +117,32 @@ export const MemberAttendance = () => {
 
   const checkTodayAttendance = (data) => {
     const today = moment().format('YYYY-MM-DD');
-    const todayRecord = data.find(att => 
-      moment(att.Current_date).format('YYYY-MM-DD') === today
-    );
+    console.log('Checking for today:', today);
+    console.log('Available dates in data:', data.map(att => ({
+      id: att.Attendance_ID,
+      date: att.Current_date,
+      formatted: moment(att.Current_date).format('YYYY-MM-DD'),
+      inTime: att.In_time,
+      outTime: att.Out_time
+    })));
+    
+    // Get all records for today
+    const todayRecords = data.filter(att => {
+      const recordDate = moment(att.Current_date).format('YYYY-MM-DD');
+      return recordDate === today;
+    });
+    
+    console.log('All today records:', todayRecords);
+    
+    // Get the most recent record for today (sorted by In_time descending)
+    const todayRecord = todayRecords.length > 0 
+      ? todayRecords.sort((a, b) => moment(b.In_time).unix() - moment(a.In_time).unix())[0]
+      : null;
+    
+    console.log('Latest today attendance record:', todayRecord);
+    console.log('Out_time value:', todayRecord?.Out_time);
+    console.log('Out_time type:', typeof todayRecord?.Out_time);
+    
     setTodayAttendance(todayRecord || null);
   };
 
@@ -159,23 +186,35 @@ export const MemberAttendance = () => {
     navigate('/');
   };
 
-  const handleCheckIn = async () => {
+  const handleCheckIn = async (values) => {
     const today = moment().format('YYYY-MM-DD');
-    const now = moment().format('HH:mm:ss');
+    // If no time is selected, use current device time
+    const inTime = values?.inTime 
+      ? moment(values.inTime).format('HH:mm:ss')
+      : moment().format('HH:mm:ss');
+
+    console.log('Checking in with:', { memberId, today, inTime });
 
     try {
-      await axios.post("http://localhost:5000/api/v1/attendance/create", {
+      const response = await axios.post("http://localhost:5000/api/v1/attendance/create", {
         memberId: parseInt(memberId),
         currentDate: today,
-        inTime: now
+        inTime: inTime
       });
 
-      message.success({
-        content: 'Checked in successfully! Enjoy your workout! Remember to check out when you leave.',
-        duration: 5
-      });
-      setCheckInModalVisible(false);
-      fetchAttendanceData();
+      console.log('Check-in response:', response.data);
+
+      if (response?.data?.code === 200) {
+        message.success({
+          content: 'Checked in successfully! Enjoy your workout! Remember to check out when you leave.',
+          duration: 5
+        });
+        setCheckInModalVisible(false);
+        form.resetFields();
+        await fetchAttendanceData(); // Refresh data after check-in
+      } else if (response?.data?.code === 400) {
+        message.warning(response?.data?.message || 'Unable to check in');
+      }
     } catch (error) {
       console.error('Error checking in:', error);
       const errorMsg = error.response?.data?.message || 'Failed to check in. Please try again.';
@@ -185,11 +224,6 @@ export const MemberAttendance = () => {
 
   const handleCheckOut = async (values) => {
     try {
-      if (!values.outTime) {
-        message.error('Please select a checkout time!');
-        return;
-      }
-
       if (!todayAttendance) {
         message.error('Please check in first!');
         return;
@@ -198,8 +232,10 @@ export const MemberAttendance = () => {
       const currentDate = moment(todayAttendance.Current_date).format('YYYY-MM-DD');
       const inTime = moment(todayAttendance.In_time).format('HH:mm:ss');
       
-      // Convert the time picker value to 24-hour format
-      const outTime = moment(values.outTime).format('HH:mm:ss');
+      // If no time is selected, use current device time
+      const outTime = values?.outTime 
+        ? moment(values.outTime).format('HH:mm:ss')
+        : moment().format('HH:mm:ss');
       
       // Validate that check-out time is after check-in time
       const checkInMoment = moment(todayAttendance.In_time);
@@ -231,13 +267,17 @@ export const MemberAttendance = () => {
         Out_time: outTime
       });
 
-      message.success({
-        content: `Checked out successfully! Workout duration: ${hours}h ${minutes}m. Great job!`,
-        duration: 5
-      });
-      setCheckOutModalVisible(false);
-      form.resetFields();
-      fetchAttendanceData();
+      console.log('Check-out response:', response.data);
+
+      if (response?.data?.code === 200) {
+        message.success({
+          content: `Checked out successfully! Workout duration: ${hours}h ${minutes}m. Great job!`,
+          duration: 5
+        });
+        setCheckOutModalVisible(false);
+        form.resetFields();
+        await fetchAttendanceData(); // Refresh data after check-out
+      }
     } catch (error) {
       console.error('Error checking out:', error);
       const errorMsg = error.response?.data?.message || error.message || 'Failed to check out. Please try again.';
@@ -342,10 +382,23 @@ export const MemberAttendance = () => {
   ];
 
   // Check if member can check in today
-  const canCheckIn = !todayAttendance;
+  // Can check in if: no attendance today OR last attendance has been checked out
+  const canCheckIn = !todayAttendance || 
+    (todayAttendance && todayAttendance.Out_time && 
+     moment(todayAttendance.Out_time).isValid() && 
+     moment(todayAttendance.Out_time).year() > 2000);
   
   // Check if member can check out (has checked in today but Out_time is null or not set)
-  const canCheckOut = todayAttendance && todayAttendance.In_time && !todayAttendance.Out_time;
+  // Handle both null and invalid date strings
+  const canCheckOut = todayAttendance && todayAttendance.In_time && 
+    (!todayAttendance.Out_time || 
+     todayAttendance.Out_time === '' || 
+     !moment(todayAttendance.Out_time).isValid() ||
+     moment(todayAttendance.Out_time).year() < 2000);
+  
+  console.log('Can check in:', canCheckIn);
+  console.log('Can check out:', canCheckOut);
+  console.log('Today attendance:', todayAttendance);
 
   return (
     <Layout hasSider className="member-attendance-layout">
@@ -564,24 +617,47 @@ export const MemberAttendance = () => {
             </Space>
           }
           open={checkInModalVisible}
-          onOk={handleCheckIn}
-          onCancel={() => setCheckInModalVisible(false)}
+          onOk={() => form.submit()}
+          onCancel={() => {
+            setCheckInModalVisible(false);
+            form.resetFields();
+          }}
           okText="Check In"
           okButtonProps={{ size: 'large', icon: <CheckCircleOutlined /> }}
           cancelButtonProps={{ size: 'large' }}
         >
-          <div className="modal-content">
-            <div className="time-display">
-              <ClockCircleOutlined className="clock-icon" />
-              <Title level={2} className="current-time">
-                {moment().format('hh:mm:ss A')}
-              </Title>
-              <Text type="secondary">{moment().format('dddd, MMMM DD, YYYY')}</Text>
+          <Form
+            form={form}
+            onFinish={handleCheckIn}
+            layout="vertical"
+          >
+            <div className="modal-content">
+              <div className="time-display">
+                <ClockCircleOutlined className="clock-icon" />
+                <Title level={2} className="current-time">
+                  {moment().format('hh:mm:ss A')}
+                </Title>
+                <Text type="secondary">{moment().format('dddd, MMMM DD, YYYY')}</Text>
+              </div>
+              <Form.Item
+                label="Check In Time (Optional - leave empty for current time)"
+                name="inTime"
+                tooltip="If you don't select a time, the current device time will be used automatically"
+              >
+                <TimePicker
+                  format="hh:mm A"
+                  use12Hours
+                  size="large"
+                  style={{ width: '100%' }}
+                  showNow
+                  placeholder="Use current time"
+                />
+              </Form.Item>
+              <Text className="modal-text">
+                You can manually enter the check-in time or leave it empty to use the current time.
+              </Text>
             </div>
-            <Text className="modal-text">
-              Are you sure you want to check in now?
-            </Text>
-          </div>
+          </Form>
         </Modal>
 
         {/* Check Out Modal */}
@@ -616,10 +692,9 @@ export const MemberAttendance = () => {
                 <Text type="secondary">{moment().format('dddd, MMMM DD, YYYY')}</Text>
               </div>
               <Form.Item
-                label="Check Out Time"
+                label="Check Out Time (Optional - leave empty for current time)"
                 name="outTime"
-                rules={[{ required: true, message: 'Please select check out time' }]}
-                initialValue={moment()}
+                tooltip="If you don't select a time, the current device time will be used automatically"
               >
                 <TimePicker
                   format="hh:mm A"
@@ -627,11 +702,11 @@ export const MemberAttendance = () => {
                   size="large"
                   style={{ width: '100%' }}
                   showNow
-                  defaultValue={moment()}
+                  placeholder="Use current time"
                 />
               </Form.Item>
               <Text className="modal-text">
-                Please confirm your check out time.
+                You can manually enter the check-out time or leave it empty to use the current time.
               </Text>
             </div>
           </Form>
