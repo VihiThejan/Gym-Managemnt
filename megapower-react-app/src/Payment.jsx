@@ -141,7 +141,8 @@ export const Payment = () => {
                 onFinish={handleSubmit}
                 className="payment-form"
                 initialValues={{
-                  date: moment()
+                  date: moment(),
+                  paymentMethod: 'cash'
                 }}
               >
                 <Form.Item
@@ -234,7 +235,6 @@ export const Payment = () => {
                   }
                   name="paymentMethod"
                   rules={[{ required: true, message: 'Please select payment method' }]}
-                  initialValue="cash"
                 >
                   <Radio.Group 
                     size="large"

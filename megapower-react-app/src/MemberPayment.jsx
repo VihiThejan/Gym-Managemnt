@@ -5,7 +5,7 @@ import moment from "moment";
 import { 
   Button, Select, message, Form, Input, 
   Card, Layout, Menu, Avatar, Typography, Row, Col, Divider, Space, Dropdown,
-  Steps, Radio, Descriptions, Badge, Spin, Alert, Table
+  Steps, Radio, Descriptions, Badge, Spin, Alert, Table, Upload
 } from 'antd';
 import { 
   SaveOutlined, DollarOutlined, UserOutlined, 
@@ -14,7 +14,7 @@ import {
   LogoutOutlined, DashboardOutlined, NotificationOutlined, MessageOutlined,
   StarOutlined, ScheduleOutlined, CommentOutlined, HistoryOutlined,
   BankOutlined, WalletOutlined, SafetyOutlined, InfoCircleOutlined,
-  TrophyOutlined
+  TrophyOutlined, UploadOutlined
 } from '@ant-design/icons';
 import Logo from './components/Logo';
 import './MemberPayment.css';
@@ -94,6 +94,7 @@ export const MemberPayment = () => {
   const [memberData, setMemberData] = useState(null);
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     if (!memberId) {
@@ -281,22 +282,47 @@ export const MemberPayment = () => {
       return;
     }
 
+    // Validate bank transfer requires slip upload
+    if (paymentMethod === 'bank' && fileList.length === 0) {
+      message.error("Please upload payment slip for bank transfer.");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       if (paymentMethod === 'payhere') {
         handlePayHerePayment();
       } else {
-        // For other payment methods, just save to database
-        const orderId = `MANUAL_${memberId}_${new Date().getTime()}`;
-        await savePaymentToDatabase(orderId, 'pending');
+        // For bank transfer or cash, save to database
+        const packageId = packageOptions.find(p => p.value === selectedPackage)?.id;
+        
+        const formData = new FormData();
+        formData.append('memberId', memberId);
+        formData.append('packageId', packageId);
+        formData.append('amount', amount);
+        formData.append('date', new Date().toISOString());
+        formData.append('paymentMethod', paymentMethod);
+
+        // Add payment slip if bank transfer
+        if (paymentMethod === 'bank' && fileList.length > 0) {
+          formData.append('paymentSlip', fileList[0].originFileObj);
+        }
+
+        await axios.post("http://localhost:5000/api/v1/payment/create", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        
         message.success("Payment request submitted successfully!");
         setCurrentStep(2);
+        setFileList([]); // Clear uploaded file
         fetchPaymentHistory();
       }
     } catch (error) {
       console.error("Error processing payment:", error);
-      message.error("Failed to process payment. Please try again.");
+      message.error(error.response?.data?.message || "Failed to process payment. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -727,6 +753,37 @@ export const MemberPayment = () => {
                           </div>
                         </Radio.Group>
                       </Form.Item>
+
+                      {paymentMethod === 'bank' && (
+                        <Form.Item
+                          label={
+                            <span style={{ fontWeight: 600, fontSize: '14px' }}>
+                              <UploadOutlined /> Upload Payment Slip
+                            </span>
+                          }
+                          required
+                          style={{ marginTop: 24 }}
+                        >
+                          <Upload
+                            beforeUpload={() => false}
+                            fileList={fileList}
+                            onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+                            maxCount={1}
+                            accept="image/*,.pdf"
+                            listType="picture-card"
+                          >
+                            {fileList.length === 0 && (
+                              <div>
+                                <UploadOutlined style={{ fontSize: '32px', color: '#667eea' }} />
+                                <div style={{ marginTop: 8 }}>Upload Slip</div>
+                              </div>
+                            )}
+                          </Upload>
+                          <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
+                            Upload your bank transfer receipt (JPG, PNG, or PDF - Max 5MB)
+                          </div>
+                        </Form.Item>
+                      )}
 
                       <Divider />
 
