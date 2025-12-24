@@ -242,6 +242,7 @@ export const Payment = () => {
                   >
                     <Radio.Button value="cash">Cash</Radio.Button>
                     <Radio.Button value="bank">Bank Transfer</Radio.Button>
+                    <Radio.Button value="stripe">Stripe (Online)</Radio.Button>
                   </Radio.Group>
                 </Form.Item>
 
