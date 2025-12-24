@@ -305,7 +305,7 @@ export const Paymenttable = () => {
         const methodMap = {
           "cash": { name: "Cash", color: "green" },
           "bank": { name: "Bank Transfer", color: "blue" },
-          "payhere": { name: "PayHere", color: "purple" }
+          "stripe": { name: "Stripe", color: "purple" }
         };
         const methodInfo = methodMap[method] || { name: method || "N/A", color: "default" };
         return <Tag color={methodInfo.color}>{methodInfo.name}</Tag>;

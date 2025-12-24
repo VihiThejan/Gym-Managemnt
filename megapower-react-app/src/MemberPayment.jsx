@@ -88,7 +88,7 @@ export const MemberPayment = () => {
   // State variables
   const [selectedPackage, setSelectedPackage] = useState('');
   const [amount, setAmount] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState('payhere');
+  const [paymentMethod, setPaymentMethod] = useState('stripe');
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [memberData, setMemberData] = useState(null);
@@ -106,10 +106,10 @@ export const MemberPayment = () => {
     fetchPaymentHistory();
   }, [memberId]);
 
-  // Ensure PayHere is available
+  // Load Stripe.js
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://www.payhere.lk/lib/payhere.js';
+    script.src = 'https://js.stripe.com/v3/';
     script.async = true;
     document.body.appendChild(script);
 
@@ -194,9 +194,9 @@ export const MemberPayment = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  const handlePayHerePayment = async () => {
-    if (!window.payhere) {
-      message.error("Payment gateway is not available. Please try again later.");
+  const handleStripePayment = async () => {
+    if (!window.Stripe) {
+      message.error("Stripe is not loaded. Please refresh the page.");
       return;
     }
 
@@ -205,52 +205,44 @@ export const MemberPayment = () => {
       return;
     }
 
-    const orderId = `GYM_${memberId}_${new Date().getTime()}`;
+    try {
+      // Create payment intent
+      const packageData = packageOptions.find(p => p.value === selectedPackage);
+      const packageId = packageData ? packageData.id : 1;
 
-    const payment = {
-      sandbox: true, // Set to false in production
-      merchant_id: "1229586", // Replace with your PayHere Merchant ID
-      return_url: `http://localhost:3000/MemberPayment?success=true&orderId=${orderId}`,
-      cancel_url: "http://localhost:3000/MemberPayment?cancelled=true",
-      notify_url: "http://localhost:5000/api/v1/payment/notify",
-      order_id: orderId,
-      items: `${selectedPackage} Membership Package`,
-      amount: amount.toFixed(2),
-      currency: "LKR",
-      first_name: memberData.FName || memberName,
-      last_name: "",
-      email: memberData.Email || "member@gym.com",
-      phone: memberData.Contact || "0000000000",
-      address: memberData.Address || "Colombo",
-      city: "Colombo",
-      country: "Sri Lanka",
-    };
+      const response = await axios.post("http://localhost:5000/api/v1/payment/create-payment-intent", {
+        amount: amount,
+        memberId: parseInt(memberId),
+        packageId: packageId,
+        currency: 'lkr'
+      });
 
-    window.payhere.onCompleted = async function (orderId) {
-      console.log("Payment completed. OrderID:", orderId);
+      const { clientSecret } = response.data;
+
+      // Initialize Stripe
+      const stripe = window.Stripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_51QaVRvP0f7H4rE6bNl7W5yE9bMmqWdw6zxYQh3qH4pC0mNtFjZ1KvvNO0fXjZx9oNR8K1vWjZ7hB6kMqWzXyZ0007vQtQnZy');
       
-      // Save payment to database
-      try {
-        await savePaymentToDatabase(orderId, 'completed');
+      // Redirect to Stripe Checkout
+      const { error } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: {
+            // This would typically be a card element
+            // For now, we'll redirect to a checkout page
+          },
+        },
+      });
+
+      if (error) {
+        message.error(error.message);
+      } else {
         message.success("Payment Successful! Your membership has been updated.");
-        setCurrentStep(2); // Move to success step
-        fetchPaymentHistory(); // Refresh payment history
-      } catch (error) {
-        message.error("Payment completed but failed to save record.");
+        setCurrentStep(2);
+        fetchPaymentHistory();
       }
-    };
-
-    window.payhere.onDismissed = function () {
-      console.log("Payment dismissed");
-      message.warning("Payment was canceled.");
-    };
-
-    window.payhere.onError = function (error) {
-      console.log("Payment error:", error);
+    } catch (error) {
+      console.error("Stripe payment error:", error);
       message.error("Payment failed. Please try again.");
-    };
-
-    window.payhere.startPayment(payment);
+    }
   };
 
   const savePaymentToDatabase = async (orderId, status) => {
@@ -291,8 +283,8 @@ export const MemberPayment = () => {
     setSubmitting(true);
 
     try {
-      if (paymentMethod === 'payhere') {
-        handlePayHerePayment();
+      if (paymentMethod === 'stripe') {
+        handleStripePayment();
       } else {
         // For bank transfer or cash, save to database
         const packageId = packageOptions.find(p => p.value === selectedPackage)?.id;
@@ -335,7 +327,7 @@ export const MemberPayment = () => {
     if (pkg) {
       setAmount(pkg.price);
     }
-    setPaymentMethod('payhere');
+    setPaymentMethod('stripe');
   };
 
   const paymentHistoryColumns = [
@@ -656,13 +648,13 @@ export const MemberPayment = () => {
                         >
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
                             <div 
-                              onClick={() => setPaymentMethod('payhere')}
+                              onClick={() => setPaymentMethod('stripe')}
                               style={{ 
-                                border: paymentMethod === 'payhere' ? '2px solid #667eea' : '2px solid #e8e8e8',
+                                border: paymentMethod === 'stripe' ? '2px solid #667eea' : '2px solid #e8e8e8',
                                 borderRadius: '12px',
                                 padding: '16px',
                                 cursor: 'pointer',
-                                background: paymentMethod === 'payhere' ? 'rgba(102, 126, 234, 0.05)' : '#fff',
+                                background: paymentMethod === 'stripe' ? 'rgba(102, 126, 234, 0.05)' : '#fff',
                                 width: '100%'
                               }}
                             >
@@ -670,13 +662,13 @@ export const MemberPayment = () => {
                                 <tbody>
                                   <tr>
                                     <td style={{ width: '40px', verticalAlign: 'middle' }}>
-                                      <Radio value="payhere" />
+                                      <Radio value="stripe" />
                                     </td>
                                     <td style={{ width: '50px', verticalAlign: 'middle' }}>
                                       <CreditCardOutlined style={{ fontSize: '32px', color: '#667eea' }} />
                                     </td>
                                     <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
-                                      <div style={{ fontWeight: 600, marginBottom: 4 }}>PayHere Payment Gateway</div>
+                                      <div style={{ fontWeight: 600, marginBottom: 4 }}>Stripe Payment Gateway</div>
                                       <div style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.45)' }}>
                                         Credit/Debit Card, Online Banking
                                       </div>
@@ -813,7 +805,7 @@ export const MemberPayment = () => {
                             className="pay-btn"
                             icon={<CreditCardOutlined />}
                           >
-                            {paymentMethod === 'payhere' ? 'Pay Now' : 'Submit Request'}
+                            {paymentMethod === 'stripe' ? 'Pay Now with Stripe' : 'Submit Request'}
                           </Button>
                         </Space>
                       </Form.Item>

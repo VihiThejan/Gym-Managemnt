@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const prisma = new PrismaClient();
 
 // Configure multer for file upload
@@ -140,11 +141,104 @@ const confirmPayment = async (req, res) => {
     }
 }
 
+// Create Stripe Payment Intent
+const createStripePaymentIntent = async (req, res) => {
+    try {
+        const { amount, memberId, packageId, currency = 'lkr' } = req.body;
+
+        if (!amount || !memberId || !packageId) {
+            return res.status(400).json({
+                code: 400,
+                message: 'Amount, memberId, and packageId are required'
+            });
+        }
+
+        // Create a PaymentIntent with Stripe
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(amount * 100), // Stripe expects amount in cents
+            currency: currency,
+            metadata: {
+                memberId: memberId.toString(),
+                packageId: packageId.toString()
+            },
+            automatic_payment_methods: {
+                enabled: true,
+            },
+        });
+
+        res.status(200).json({
+            code: 200,
+            clientSecret: paymentIntent.client_secret,
+            paymentIntentId: paymentIntent.id
+        });
+    } catch (ex) {
+        console.error('Error creating Stripe payment intent:', ex);
+        res.status(500).json({
+            code: 500,
+            message: 'Failed to create payment intent',
+            error: ex.message
+        });
+    }
+};
+
+// Stripe Webhook Handler
+const handleStripeWebhook = async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    } catch (err) {
+        console.error('Webhook signature verification failed:', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            console.log('PaymentIntent was successful!', paymentIntent.id);
+            
+            // Save payment to database
+            try {
+                await prisma.payment.create({
+                    data: {
+                        Member_Id: parseInt(paymentIntent.metadata.memberId),
+                        Package_ID: parseInt(paymentIntent.metadata.packageId),
+                        Amount: paymentIntent.amount / 100, // Convert from cents
+                        Date: new Date(),
+                        Payment_Method: 'stripe',
+                        Transaction_ID: paymentIntent.id,
+                        Status: 'Completed'
+                    }
+                });
+                console.log('Payment saved to database');
+            } catch (dbError) {
+                console.error('Error saving payment to database:', dbError);
+            }
+            break;
+
+        case 'payment_intent.payment_failed':
+            const failedPayment = event.data.object;
+            console.log('PaymentIntent failed:', failedPayment.id);
+            break;
+
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
+
+    res.json({ received: true });
+};
+
 
 module.exports = {
     paymentHandling,
     paymentList,
     confirmPayment,
+    createStripePaymentIntent,
+    handleStripeWebhook,
     upload, // Export upload middleware
 };
 
