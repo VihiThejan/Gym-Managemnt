@@ -26,6 +26,7 @@ import {MemberTable  } from "./MemberTable";
 import {EditMember  } from "./EditMember";
 import {MemberProfile  } from "./MemberProfile";
 import {MemberPayment  } from "./MemberPayment";
+import PaymentSuccess from "./PaymentSuccess";
 import {MemberAnnouncements  } from "./MemberAnnouncements";
 import {MemberAttendance  } from "./MemberAttendance";
 import MemberAppointment from "./MemberAppointment";
@@ -127,6 +128,7 @@ function App() {
         <Route path="/MemberDashboard" element={<MemberDashboard />} />
         <Route path="/MemberProfile" element={<MemberProfile />} />
         <Route path="/MemberPayment" element={<MemberPayment />} />
+        <Route path="/PaymentSuccess" element={<PaymentSuccess />} />
         <Route path="/MemberAnnouncements" element={<MemberAnnouncements />} />
         
         

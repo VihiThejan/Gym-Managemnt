@@ -24,7 +24,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: ["http://localhost:3000", "http://localhost:3001"],
         methods: ["GET", "POST"]
     }
 });
@@ -45,7 +45,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
@@ -59,7 +59,7 @@ app.post('/api/v1/chat/upload', upload.single('file'), (req, res) => {
                 message: 'No file uploaded'
             });
         }
-        
+
         const fileUrl = `/uploads/${req.file.filename}`;
         res.json({
             code: 200,
@@ -94,10 +94,10 @@ app.get('/api/v1/messages/:userId/:receiverId', async (req, res) => {
     try {
         const { PrismaClient } = require('@prisma/client');
         const prisma = new PrismaClient();
-        
+
         const userId = parseInt(req.params.userId);
         const receiverId = parseInt(req.params.receiverId);
-        
+
         const messages = await prisma.messages.findMany({
             where: {
                 OR: [
@@ -109,9 +109,9 @@ app.get('/api/v1/messages/:userId/:receiverId', async (req, res) => {
                 timestamp: 'asc'
             }
         });
-        
+
         await prisma.$disconnect();
-        
+
         res.json({
             code: 200,
             message: 'Messages fetched successfully',
@@ -134,11 +134,11 @@ io.on('connection', (socket) => {
     // Handle incoming messages
     socket.on('sendMessage', async (data) => {
         console.log('Message received:', data);
-        
+
         try {
             const { PrismaClient } = require('@prisma/client');
             const prisma = new PrismaClient();
-            
+
             // Save message to messages table (not chat table)
             await prisma.messages.create({
                 data: {
@@ -149,9 +149,9 @@ io.on('connection', (socket) => {
                     voice_url: data.voice_url || null,
                 }
             });
-            
+
             await prisma.$disconnect();
-            
+
             // Broadcast message to all connected clients
             io.emit('receiveMessage', data);
         } catch (error) {
@@ -170,7 +170,7 @@ async function startServer() {
     try {
         // Initialize database (will create if not exists)
         await initializeDatabase();
-        
+
         // Start the server
         const PORT = process.env.PORT || 5000;
         server.listen(PORT, () => {
@@ -199,3 +199,5 @@ process.on('SIGINT', async () => {
 
 // Start the server
 startServer();
+
+// Database reset trigger 1 - forcing restart

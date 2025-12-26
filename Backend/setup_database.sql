@@ -124,8 +124,8 @@ CREATE TABLE `attendance` (
   `Attendance_ID` INT NOT NULL AUTO_INCREMENT,
   `Member_Id` INT NOT NULL,
   `Current_date` DATE NOT NULL,
-  `In_time` TIME NOT NULL,
-  `Out_time` TIME,
+  `In_time` DATETIME NOT NULL,
+  `Out_time` DATETIME,
   `Duration_Minutes` INT,
   `Notes` TEXT,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -528,11 +528,11 @@ INSERT INTO `payment` (`Member_Id`, `Package_ID`, `Amount`, `Date`, `Status`, `P
 
 -- Sample Attendance Records
 INSERT INTO `attendance` (`Member_Id`, `Current_date`, `In_time`, `Out_time`, `Duration_Minutes`) VALUES
-(1, '2024-06-01', '07:00:00', '09:00:00', 120),
-(2, '2024-06-01', '08:00:00', '10:30:00', 150),
-(3, '2024-06-01', '18:00:00', '20:00:00', 120),
-(1, '2024-06-02', '07:15:00', '09:15:00', 120),
-(2, '2024-06-02', '08:30:00', '10:30:00', 120);
+(1, '2024-06-01', '2024-06-01 07:00:00', '2024-06-01 09:00:00', 120),
+(2, '2024-06-01', '2024-06-01 08:00:00', '2024-06-01 10:30:00', 150),
+(3, '2024-06-01', '2024-06-01 18:00:00', '2024-06-01 20:00:00', 120),
+(1, '2024-06-02', '2024-06-02 07:15:00', '2024-06-02 09:15:00', 120),
+(2, '2024-06-02', '2024-06-02 08:30:00', '2024-06-02 10:30:00', 120);
 
 -- Sample Announcements
 INSERT INTO `announcement` (`Staff_ID`, `Message`, `Title`, `Date_Time`) VALUES
@@ -751,15 +751,13 @@ END;
 CREATE PROCEDURE `sp_mark_attendance`(
     IN p_member_id INT,
     IN p_date DATE,
-    IN p_in_time TIME,
-    IN p_out_time TIME
+    IN p_in_time DATETIME,
+    IN p_out_time DATETIME
 )
 BEGIN
     DECLARE v_duration INT;
     
-    SET v_duration = TIMESTAMPDIFF(MINUTE, 
-        CONCAT(p_date, ' ', p_in_time), 
-        CONCAT(p_date, ' ', p_out_time));
+    SET v_duration = TIMESTAMPDIFF(MINUTE, p_in_time, p_out_time);
     
     INSERT INTO attendance (Member_Id, `Current_date`, In_time, Out_time, Duration_Minutes)
     VALUES (p_member_id, p_date, p_in_time, p_out_time, v_duration);

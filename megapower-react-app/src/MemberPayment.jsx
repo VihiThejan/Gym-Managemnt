@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import moment from "moment";
-import { 
-  Button, Select, message, Form, Input, 
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import {
+  Button, Select, message, Form, Input,
   Card, Layout, Menu, Avatar, Typography, Row, Col, Divider, Space, Dropdown,
   Steps, Radio, Descriptions, Badge, Spin, Alert, Table, Upload
 } from 'antd';
-import { 
-  SaveOutlined, DollarOutlined, UserOutlined, 
+import {
+  SaveOutlined, DollarOutlined, UserOutlined,
   CalendarOutlined, CreditCardOutlined, CheckCircleOutlined,
   CloseCircleOutlined, GiftOutlined, MenuUnfoldOutlined, MenuFoldOutlined,
   LogoutOutlined, DashboardOutlined, NotificationOutlined, MessageOutlined,
@@ -24,6 +26,9 @@ const { Option } = Select;
 const { Title, Text, Paragraph } = Typography;
 const { Step } = Steps;
 
+// Initialize Stripe
+const stripePromise = loadStripe('pk_test_51QtmecJf7sJP9Ed7zp9Yn6oCt25TDBKPKlHkkDxbMtXySgptOR9LA8GjP0eYxLXJ59essWPwkDo9VSKE9UNkOXV000FCFBZhkj');
+
 const items = [
   { label: 'Dashboard', icon: <DashboardOutlined />, key: '1', path: '/MemberDashboard' },
   { label: 'My Profile', icon: <UserOutlined />, key: '2', path: '/MemberProfile' },
@@ -37,28 +42,164 @@ const items = [
 ];
 
 const packageOptions = [
-  { 
-    value: "Gold", 
-    label: "🥇 Gold Package", 
+  {
+    value: "Gold",
+    label: "🥇 Gold Package",
     price: 12000,
     id: 1,
     features: ["All equipment access", "Personal trainer", "Nutrition plan", "Priority booking"]
   },
-  { 
-    value: "Silver", 
-    label: "🥈 Silver Package", 
+  {
+    value: "Silver",
+    label: "🥈 Silver Package",
     price: 8000,
     id: 2,
     features: ["All equipment access", "Group classes", "Locker facility"]
   },
-  { 
-    value: "Bronze", 
-    label: "🥉 Bronze Package", 
+  {
+    value: "Bronze",
+    label: "🥉 Bronze Package",
     price: 5000,
     id: 3,
     features: ["Basic equipment access", "Locker facility"]
   },
 ];
+
+// Stripe Card Form Component
+const StripeCardForm = ({ amount, memberId, selectedPackage, packageOptions, onSuccess, onError, navigate }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [processing, setProcessing] = useState(false);
+
+  const handleStripeSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!stripe || !elements) {
+      message.error("Stripe is not loaded yet. Please wait.");
+      return;
+    }
+
+    if (processing) {
+      return; // Prevent multiple submissions
+    }
+
+    setProcessing(true);
+
+    try {
+      // Create payment intent
+      const packageData = packageOptions.find(p => p.value === selectedPackage);
+      const packageId = packageData ? packageData.id : 1;
+
+      console.log('🔄 Creating payment intent...', { amount, memberId, packageId });
+
+      const response = await axios.post("http://localhost:5000/api/v1/payment/create-payment-intent", {
+        amount: amount,
+        memberId: parseInt(memberId),
+        packageId: packageId,
+        currency: 'lkr'
+      });
+
+      const { clientSecret } = response.data;
+      console.log('✅ Payment intent created, confirming payment...');
+
+      // Confirm the payment
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+        },
+      });
+
+      if (error) {
+        console.error('❌ Payment error:', error);
+        message.error(error.message);
+        setProcessing(false);
+        if (onError) onError(error);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        console.log('🎉 Payment succeeded!', paymentIntent);
+        message.success("Payment Successful!", 2);
+
+        // Keep processing state true while transitioning
+        if (onSuccess) onSuccess();
+
+      } else {
+        console.warn('⚠️ Unexpected payment status:', paymentIntent?.status);
+        message.warning('Payment status unclear. Please check your payment history.');
+        setProcessing(false);
+      }
+    } catch (error) {
+      console.error("❌ Stripe payment error:", error);
+      message.error(error.response?.data?.message || "Payment failed. Please try again.");
+      setProcessing(false);
+      if (onError) onError(error);
+    }
+  };
+
+  const cardElementOptions = {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#424770',
+        '::placeholder': {
+          color: '#aab7c4',
+        },
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      },
+      invalid: {
+        color: '#9e2146',
+      },
+    },
+  };
+
+  return (
+    <div style={{ width: '100%' }}>
+      <div style={{
+        padding: '20px',
+        border: '1px solid #e8e8e8',
+        borderRadius: '8px',
+        marginBottom: '20px',
+        background: '#fafafa'
+      }}>
+        <div style={{ marginBottom: '12px', fontWeight: 600, fontSize: '14px' }}>
+          <CreditCardOutlined /> Card Information
+        </div>
+        <div style={{
+          padding: '12px',
+          border: '1px solid #d9d9d9',
+          borderRadius: '6px',
+          background: 'white'
+        }}>
+          <CardElement options={cardElementOptions} />
+        </div>
+        <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+          Your card details are secure and encrypted
+        </div>
+      </div>
+
+      <Button
+        type="primary"
+        size="large"
+        loading={processing}
+        disabled={!stripe || processing}
+        className="pay-btn"
+        icon={<CreditCardOutlined />}
+        block
+        onClick={(e) => {
+          console.log('💳 Pay button clicked');
+          handleStripeSubmit(e);
+        }}
+      >
+        {processing ? 'Processing Payment...' : `Pay Rs. ${amount.toLocaleString()}`}
+      </Button>
+
+      {!stripe && (
+        <div style={{ marginTop: '12px', textAlign: 'center', color: '#666', fontSize: '13px' }}>
+          <Spin size="small" /> Loading payment system...
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const MemberPayment = () => {
   const navigate = useNavigate();
@@ -82,7 +223,7 @@ export const MemberPayment = () => {
       return { memberId: null, memberName: '' };
     }
   };
-  
+
   const { memberId, memberName } = getLoginData();
 
   // State variables
@@ -106,19 +247,7 @@ export const MemberPayment = () => {
     fetchPaymentHistory();
   }, [memberId]);
 
-  // Load Stripe.js
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://js.stripe.com/v3/';
-    script.async = true;
-    document.body.appendChild(script);
 
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
 
   const fetchMemberData = async () => {
     try {
@@ -127,13 +256,13 @@ export const MemberPayment = () => {
       const member = response.data.data;
       setMemberData(member);
       setSelectedPackage(member.Package || '');
-      
+
       // Set amount based on current package
       const pkg = packageOptions.find(p => p.value === member.Package);
       if (pkg) {
         setAmount(pkg.price);
       }
-      
+
       setLoading(false);
     } catch (error) {
       console.error(`Error fetching member data: ${error.message}`);
@@ -147,12 +276,12 @@ export const MemberPayment = () => {
       setLoadingHistory(true);
       const response = await axios.get('http://localhost:5000/api/v1/payment/list');
       const allPayments = response.data?.data || [];
-      
+
       // Filter payments for current member
       const memberPayments = allPayments.filter(
         payment => payment.memberid === parseInt(memberId)
       );
-      
+
       setPaymentHistory(memberPayments);
       setLoadingHistory(false);
     } catch (error) {
@@ -194,56 +323,7 @@ export const MemberPayment = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  const handleStripePayment = async () => {
-    if (!window.Stripe) {
-      message.error("Stripe is not loaded. Please refresh the page.");
-      return;
-    }
 
-    if (!memberData) {
-      message.error("Member information not loaded. Please refresh the page.");
-      return;
-    }
-
-    try {
-      // Create payment intent
-      const packageData = packageOptions.find(p => p.value === selectedPackage);
-      const packageId = packageData ? packageData.id : 1;
-
-      const response = await axios.post("http://localhost:5000/api/v1/payment/create-payment-intent", {
-        amount: amount,
-        memberId: parseInt(memberId),
-        packageId: packageId,
-        currency: 'lkr'
-      });
-
-      const { clientSecret } = response.data;
-
-      // Initialize Stripe
-      const stripe = window.Stripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_51QaVRvP0f7H4rE6bNl7W5yE9bMmqWdw6zxYQh3qH4pC0mNtFjZ1KvvNO0fXjZx9oNR8K1vWjZ7hB6kMqWzXyZ0007vQtQnZy');
-      
-      // Redirect to Stripe Checkout
-      const { error } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: {
-            // This would typically be a card element
-            // For now, we'll redirect to a checkout page
-          },
-        },
-      });
-
-      if (error) {
-        message.error(error.message);
-      } else {
-        message.success("Payment Successful! Your membership has been updated.");
-        setCurrentStep(2);
-        fetchPaymentHistory();
-      }
-    } catch (error) {
-      console.error("Stripe payment error:", error);
-      message.error("Payment failed. Please try again.");
-    }
-  };
 
   const savePaymentToDatabase = async (orderId, status) => {
     // Get package ID from package name
@@ -284,11 +364,14 @@ export const MemberPayment = () => {
 
     try {
       if (paymentMethod === 'stripe') {
-        handleStripePayment();
+        // Stripe payment will be handled by StripeCardForm component
+        // This just prevents the form from submitting here
+        setSubmitting(false);
+        return;
       } else {
         // For bank transfer or cash, save to database
         const packageId = packageOptions.find(p => p.value === selectedPackage)?.id;
-        
+
         const formData = new FormData();
         formData.append('memberId', memberId);
         formData.append('packageId', packageId);
@@ -306,11 +389,12 @@ export const MemberPayment = () => {
             'Content-Type': 'multipart/form-data',
           },
         });
-        
+
         message.success("Payment request submitted successfully!");
-        setCurrentStep(2);
+
         setFileList([]); // Clear uploaded file
         fetchPaymentHistory();
+        setCurrentStep(2);
       }
     } catch (error) {
       console.error("Error processing payment:", error);
@@ -342,7 +426,7 @@ export const MemberPayment = () => {
       dataIndex: 'packageid',
       key: 'packageid',
       render: (pkg) => (
-        <Badge 
+        <Badge
           color={pkg === 'Gold' ? 'gold' : pkg === 'Silver' ? 'silver' : 'bronze'}
           text={pkg}
         />
@@ -359,7 +443,7 @@ export const MemberPayment = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
-        <Badge 
+        <Badge
           status={status === 'completed' ? 'success' : status === 'pending' ? 'warning' : 'error'}
           text={status || 'Completed'}
         />
@@ -439,10 +523,10 @@ export const MemberPayment = () => {
             </Menu.Item>
           ))}
         </Menu>
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -489,7 +573,7 @@ export const MemberPayment = () => {
               }
               trigger={['click']}
             >
-              <Avatar 
+              <Avatar
                 size="large"
                 icon={<UserOutlined />}
                 className="user-avatar"
@@ -538,20 +622,20 @@ export const MemberPayment = () => {
                         style={{ marginBottom: 24 }}
                       />
 
-                      <Form.Item 
+                      <Form.Item
                         label={<span className="form-label"><GiftOutlined /> Membership Package</span>}
                         name="package"
                         rules={[{ required: true, message: 'Please select a package' }]}
                         initialValue={selectedPackage}
                       >
-                        <Radio.Group 
+                        <Radio.Group
                           onChange={(e) => handlePackageChange(e.target.value)}
                           value={selectedPackage}
                           className="package-radio-group"
                         >
                           <Space direction="vertical" style={{ width: '100%' }} size="large">
                             {packageOptions.map((pkg) => (
-                              <Card 
+                              <Card
                                 key={pkg.value}
                                 className={`package-card ${selectedPackage === pkg.value ? 'selected' : ''}`}
                                 hoverable
@@ -638,18 +722,18 @@ export const MemberPayment = () => {
                         style={{ marginBottom: 24 }}
                       />
 
-                      <Form.Item 
+                      <Form.Item
                         label={<span className="form-label"><WalletOutlined /> Payment Method</span>}
                       >
-                        <Radio.Group 
+                        <Radio.Group
                           onChange={(e) => setPaymentMethod(e.target.value)}
                           value={paymentMethod}
                           style={{ width: '100%', display: 'block' }}
                         >
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
-                            <div 
+                            <div
                               onClick={() => setPaymentMethod('stripe')}
-                              style={{ 
+                              style={{
                                 border: paymentMethod === 'stripe' ? '2px solid #667eea' : '2px solid #e8e8e8',
                                 borderRadius: '12px',
                                 padding: '16px',
@@ -681,9 +765,9 @@ export const MemberPayment = () => {
                               </table>
                             </div>
 
-                            <div 
+                            <div
                               onClick={() => setPaymentMethod('bank')}
-                              style={{ 
+                              style={{
                                 border: paymentMethod === 'bank' ? '2px solid #667eea' : '2px solid #e8e8e8',
                                 borderRadius: '12px',
                                 padding: '16px',
@@ -712,9 +796,9 @@ export const MemberPayment = () => {
                               </table>
                             </div>
 
-                            <div 
+                            <div
                               onClick={() => setPaymentMethod('cash')}
-                              style={{ 
+                              style={{
                                 border: paymentMethod === 'cash' ? '2px solid #667eea' : '2px solid #e8e8e8',
                                 borderRadius: '12px',
                                 padding: '16px',
@@ -777,6 +861,27 @@ export const MemberPayment = () => {
                         </Form.Item>
                       )}
 
+                      {paymentMethod === 'stripe' && (
+                        <div style={{ marginTop: 24 }}>
+                          <Elements stripe={stripePromise}>
+                            <StripeCardForm
+                              amount={amount}
+                              memberId={memberId}
+                              selectedPackage={selectedPackage}
+                              packageOptions={packageOptions}
+                              navigate={navigate}
+                              onSuccess={() => {
+                                fetchPaymentHistory();
+                                setCurrentStep(2);
+                              }}
+                              onError={(error) => {
+                                console.error('Payment error:', error);
+                              }}
+                            />
+                          </Elements>
+                        </div>
+                      )}
+
                       <Divider />
 
                       <Alert
@@ -788,8 +893,32 @@ export const MemberPayment = () => {
                         style={{ marginBottom: 24 }}
                       />
 
-                      <Form.Item className="form-actions">
-                        <Space size="middle">
+                      {paymentMethod !== 'stripe' && (
+                        <Form.Item className="form-actions">
+                          <Space size="middle">
+                            <Button
+                              size="large"
+                              onClick={prevStep}
+                              icon={<CloseCircleOutlined />}
+                            >
+                              Back
+                            </Button>
+                            <Button
+                              type="primary"
+                              size="large"
+                              onClick={handleSubmit}
+                              loading={submitting}
+                              className="pay-btn"
+                              icon={<CreditCardOutlined />}
+                            >
+                              Submit Request
+                            </Button>
+                          </Space>
+                        </Form.Item>
+                      )}
+
+                      {paymentMethod === 'stripe' && (
+                        <Form.Item className="form-actions">
                           <Button
                             size="large"
                             onClick={prevStep}
@@ -797,55 +926,146 @@ export const MemberPayment = () => {
                           >
                             Back
                           </Button>
-                          <Button
-                            type="primary"
-                            size="large"
-                            onClick={handleSubmit}
-                            loading={submitting}
-                            className="pay-btn"
-                            icon={<CreditCardOutlined />}
-                          >
-                            {paymentMethod === 'stripe' ? 'Pay Now with Stripe' : 'Submit Request'}
-                          </Button>
-                        </Space>
-                      </Form.Item>
+                        </Form.Item>
+                      )}
                     </Form>
                   </Card>
                 )}
 
                 {/* Step 2: Success */}
                 {currentStep === 2 && (
-                  <Card className="payment-card success-card">
-                    <div className="success-content">
-                      <CheckCircleOutlined className="success-icon" />
-                      <Title level={2} className="success-title">
-                        Payment Successful!
+                  <Card className="payment-card success-card" style={{
+                    animation: 'fadeIn 0.6s ease-in',
+                    border: '2px solid #52c41a'
+                  }}>
+                    <div className="success-content" style={{
+                      background: 'linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%)',
+                      borderRadius: '12px',
+                      padding: '60px 40px'
+                    }}>
+                      <div style={{
+                        background: 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)',
+                        width: '120px',
+                        height: '120px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 32px',
+                        animation: 'scaleIn 0.5s ease-out',
+                        boxShadow: '0 10px 40px rgba(82, 196, 26, 0.3)'
+                      }}>
+                        <CheckCircleOutlined style={{
+                          fontSize: '72px',
+                          color: '#fff'
+                        }} />
+                      </div>
+
+                      <Title level={2} style={{
+                        color: '#1a1f3a',
+                        marginBottom: '16px',
+                        fontSize: '36px',
+                        fontWeight: 700
+                      }}>
+                        🎉 Payment Successful!
                       </Title>
-                      <Paragraph className="success-text">
-                        Your payment has been processed successfully. Your membership has been updated.
+
+                      <Paragraph style={{
+                        fontSize: '18px',
+                        color: 'rgba(0, 0, 0, 0.65)',
+                        marginBottom: '40px',
+                        lineHeight: 1.8
+                      }}>
+                        Thank you! Your payment has been processed successfully.<br />
+                        Your <strong>{selectedPackage}</strong> membership has been activated.
                       </Paragraph>
 
-                      <Descriptions bordered column={1} className="success-details">
-                        <Descriptions.Item label="Package">
-                          <strong>{selectedPackage} Package</strong>
+                      <Descriptions
+                        bordered
+                        column={1}
+                        style={{
+                          margin: '32px auto',
+                          maxWidth: '600px',
+                          textAlign: 'left',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          background: '#fff'
+                        }}
+                      >
+                        <Descriptions.Item
+                          label={<span style={{ fontWeight: 600, fontSize: '15px' }}>📦 Package</span>}
+                        >
+                          <strong style={{ fontSize: '15px' }}>{selectedPackage} Package</strong>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Amount Paid">
-                          <strong style={{ color: '#52c41a' }}>Rs. {amount.toLocaleString()}</strong>
+                        <Descriptions.Item
+                          label={<span style={{ fontWeight: 600, fontSize: '15px' }}>💰 Amount Paid</span>}
+                        >
+                          <strong style={{ color: '#52c41a', fontSize: '20px', fontWeight: 700 }}>
+                            Rs. {amount.toLocaleString()}
+                          </strong>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Date">
-                          {moment().format('YYYY-MM-DD HH:mm')}
+                        <Descriptions.Item
+                          label={<span style={{ fontWeight: 600, fontSize: '15px' }}>📅 Date</span>}
+                        >
+                          <span style={{ fontSize: '15px' }}>{moment().format('MMMM DD, YYYY [at] hh:mm A')}</span>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Status">
-                          <Badge status="success" text="Completed" />
+                        <Descriptions.Item
+                          label={<span style={{ fontWeight: 600, fontSize: '15px' }}>✅ Status</span>}
+                        >
+                          <Badge
+                            status="success"
+                            text={<span style={{ fontSize: '15px', fontWeight: 600 }}>Completed</span>}
+                          />
+                        </Descriptions.Item>
+                        <Descriptions.Item
+                          label={<span style={{ fontWeight: 600, fontSize: '15px' }}>💳 Payment Method</span>}
+                        >
+                          <span style={{ fontSize: '15px' }}>{paymentMethod === 'stripe' ? 'Stripe (Card Payment)' : paymentMethod === 'bank' ? 'Bank Transfer' : 'Cash Payment'}</span>
                         </Descriptions.Item>
                       </Descriptions>
 
-                      <div className="success-actions">
+                      <Alert
+                        message="🎯 What's Next?"
+                        description={
+                          <div style={{ fontSize: '14px', lineHeight: 1.8 }}>
+                            • Your membership is now active<br />
+                            • Check your email for payment receipt<br />
+                            • Start enjoying all the benefits of your {selectedPackage} package<br />
+                            • Visit the gym and show your membership ID
+                          </div>
+                        }
+                        type="info"
+                        showIcon
+                        style={{
+                          marginTop: '32px',
+                          borderRadius: '8px',
+                          border: '1px solid #91d5ff'
+                        }}
+                      />
+
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: '16px',
+                        flexWrap: 'wrap',
+                        marginTop: '40px'
+                      }}>
                         <Button
                           type="primary"
                           size="large"
                           onClick={() => navigate('/MemberDashboard')}
                           icon={<DashboardOutlined />}
+                          style={{
+                            height: '52px',
+                            padding: '0 40px',
+                            borderRadius: '8px',
+                            fontWeight: 600,
+                            fontSize: '16px',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+                          }}
                         >
                           Go to Dashboard
                         </Button>
@@ -853,6 +1073,15 @@ export const MemberPayment = () => {
                           size="large"
                           onClick={resetForm}
                           icon={<SaveOutlined />}
+                          style={{
+                            height: '52px',
+                            padding: '0 40px',
+                            borderRadius: '8px',
+                            fontWeight: 600,
+                            fontSize: '16px',
+                            borderColor: '#667eea',
+                            color: '#667eea'
+                          }}
                         >
                           Make Another Payment
                         </Button>
@@ -870,7 +1099,7 @@ export const MemberPayment = () => {
                     <Descriptions.Item label="Name">{memberData?.FName}</Descriptions.Item>
                     <Descriptions.Item label="Email">{memberData?.Email}</Descriptions.Item>
                     <Descriptions.Item label="Current Package">
-                      <Badge 
+                      <Badge
                         color={memberData?.Package === 'Gold' ? 'gold' : memberData?.Package === 'Silver' ? 'silver' : 'bronze'}
                         text={memberData?.Package || 'None'}
                       />
@@ -890,12 +1119,12 @@ export const MemberPayment = () => {
                 </Card>
 
                 {/* Payment History */}
-                <Card 
-                  className="info-card" 
+                <Card
+                  className="info-card"
                   title={<><HistoryOutlined /> Payment History</>}
                   extra={
-                    <Button 
-                      type="link" 
+                    <Button
+                      type="link"
                       size="small"
                       onClick={fetchPaymentHistory}
                     >
