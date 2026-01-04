@@ -264,7 +264,7 @@ export const Trainerrate = () => {
     { label: 'Announcements', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
     { label: 'My Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
     { label: 'Appointments', icon: <ScheduleOutlined />, key: '/staffAppointment' },
-    { label: 'Chat', icon: <MessageOutlined />, key: '/chat' },
+    { label: 'Chat', icon: <MessageOutlined />, key: '/staffChat' },
     { label: 'Rate Trainer', icon: <StarOutlined />, key: '/Trainerrate' },
     { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '/WorkoutTracker' },
   ];
@@ -285,9 +285,9 @@ export const Trainerrate = () => {
   return (
     <Layout hasSider className="trainerrate-layout">
       <Sider
+        trigger={null}
         collapsible
         collapsed={collapsed}
-        onCollapse={(collapsed) => setCollapsed(collapsed)}
         width={250}
         style={siderStyle}
         className="dashboard-sider"

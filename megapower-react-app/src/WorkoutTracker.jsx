@@ -59,17 +59,7 @@ const siderStyle = {
   background: 'linear-gradient(180deg, #1a1f3a 0%, #2d1b4e 100%)',
 };
 
-const items = [
-  { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '1', path: '/MemberDashboard' },
-  { label: 'My Profile', icon: <UserOutlined />, key: '2', path: '/MemberProfile' },
-  { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/MemberPayment' },
-  { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/MemberAnnouncements' },
-  { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/MemberAttendance' },
-  { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/MemberAppointment' },
-  { label: 'Chat', icon: <MessageOutlined />, key: '8', path: '/chat' },
-  { label: 'Rate Trainer', icon: <StarOutlined />, key: '9', path: '/Trainerrate' },
-  { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '10', path: '/WorkoutTracker' },
-];
+
 
 const exerciseCategories = [
   'Cardio',
@@ -112,12 +102,58 @@ export const WorkoutTracker = () => {
   });
   const navigate = useNavigate();
 
+  // Determine user type and ID from localStorage
+  const getLoginData = () => {
+    try {
+      const loginData = localStorage.getItem('login');
+      if (loginData) {
+        const parsedData = JSON.parse(loginData);
+        if (parsedData.Member_Id) {
+          return { userId: parsedData.Member_Id, userType: 'member' };
+        } else if (parsedData.Staff_ID || parsedData.Staff_Id || parsedData.id) {
+          return { userId: parsedData.Staff_ID || parsedData.Staff_Id || parsedData.id, userType: 'staff' };
+        }
+      }
+      return { userId: null, userType: null };
+    } catch (error) {
+      return { userId: null, userType: null };
+    }
+  };
+
+  const { userId, userType } = getLoginData();
+
+  const memberItems = [
+    { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '1', path: '/MemberDashboard' },
+    { label: 'My Profile', icon: <UserOutlined />, key: '2', path: '/MemberProfile' },
+    { label: 'Payment', icon: <DollarOutlined />, key: '3', path: '/MemberPayment' },
+    { label: 'Announcements', icon: <NotificationOutlined />, key: '4', path: '/MemberAnnouncements' },
+    { label: 'My Attendance', icon: <CalendarOutlined />, key: '5', path: '/MemberAttendance' },
+    { label: 'Appointments', icon: <ScheduleOutlined />, key: '7', path: '/MemberAppointment' },
+    { label: 'Chat', icon: <MessageOutlined />, key: '8', path: '/chat' },
+    { label: 'Rate Trainer', icon: <StarOutlined />, key: '9', path: '/Trainerrate' },
+    { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '10', path: '/WorkoutTracker' },
+  ];
+
+  const staffItems = [
+    { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '/staffDashboard', path: '/staffDashboard' },
+    { label: 'My Profile', icon: <UserOutlined />, key: '/staffProfile', path: '/staffProfile' },
+    { label: 'Payment', icon: <DollarOutlined />, key: '/staffPayment', path: '/staffPayment' },
+    { label: 'Announcements', icon: <NotificationOutlined />, key: '/staffAnnouncement', path: '/staffAnnouncement' },
+    { label: 'My Attendance', icon: <CalendarOutlined />, key: '/staffAttendance', path: '/staffAttendance' },
+    { label: 'Appointments', icon: <ScheduleOutlined />, key: '/staffAppointment', path: '/staffAppointment' },
+    { label: 'Chat', icon: <MessageOutlined />, key: '/staffChat', path: '/staffChat' }, // Fixed Chat Link
+    { label: 'Rate Trainer', icon: <StarOutlined />, key: '/Trainerrate', path: '/Trainerrate' },
+    { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '/WorkoutTracker', path: '/WorkoutTracker' },
+  ];
+
+  const menuItems = userType === 'staff' ? staffItems : memberItems;
+
   useEffect(() => {
     fetchWorkouts();
-  }, []);
+  }, [userId]); // Add userId to dependency
 
   const handleMenuClick = ({ key }) => {
-    const selectedItem = items.find(item => item.key === key);
+    const selectedItem = menuItems.find(item => item.key === key);
     if (selectedItem) {
       navigate(selectedItem.path);
     }
@@ -126,10 +162,7 @@ export const WorkoutTracker = () => {
   const fetchWorkouts = async () => {
     try {
       setLoading(true);
-      const loginData = localStorage.getItem('login');
-      if (loginData) {
-        const user = JSON.parse(loginData);
-        const memberId = user.Member_Id;
+      if (userId) { // Use userId from helper
 
         // Mock data for now - replace with actual API call
         const mockWorkouts = [
@@ -368,9 +401,9 @@ export const WorkoutTracker = () => {
   return (
     <Layout hasSider className="workout-tracker-layout">
       <Sider
+        trigger={null}
         collapsible
         collapsed={collapsed}
-        onCollapse={(collapsed) => setCollapsed(collapsed)}
         width={250}
         style={siderStyle}
         className="dashboard-sider"
@@ -381,10 +414,10 @@ export const WorkoutTracker = () => {
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={['10']}
+          selectedKeys={userType === 'staff' ? ['/WorkoutTracker'] : ['10']}
           onClick={handleMenuClick}
           className="dashboard-menu"
-          items={items.map(item => ({
+          items={menuItems.map(item => ({
             key: item.key,
             icon: item.icon,
             label: item.label

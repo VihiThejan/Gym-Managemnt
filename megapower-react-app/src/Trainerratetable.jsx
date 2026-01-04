@@ -260,17 +260,16 @@ export const Trainerratetable = () => {
           <Menu
             theme="dark"
             mode="inline"
-            selectedKeys={['/Trainerratetable']} // Highlight depending on where we are
+            selectedKeys={['/Trainerrate']} // Highlight depending on where we are
             items={[
-              { label: 'Dashboard', icon: <DashboardOutlined />, key: '/staffDashboard' },
+              { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '/staffDashboard' },
               { label: 'My Profile', icon: <UserOutlined />, key: '/staffProfile' },
               { label: 'Payment', icon: <DollarOutlined />, key: '/staffPayment' },
               { label: 'Announcements', icon: <NotificationOutlined />, key: '/staffAnnouncement' },
               { label: 'My Attendance', icon: <CalendarOutlined />, key: '/staffAttendance' },
               { label: 'Appointments', icon: <ScheduleOutlined />, key: '/staffAppointment' },
-              { label: 'Chat', icon: <MessageOutlined />, key: '/chat' },
-              // Highlighting current page for ratings
-              { label: 'My Ratings', icon: <StarOutlined />, key: '/Trainerratetable' },
+              { label: 'Chat', icon: <MessageOutlined />, key: '/staffChat' },
+              { label: 'Rate Trainer', icon: <StarOutlined />, key: '/Trainerrate' },
               { label: 'Workout Tracker', icon: <TrophyOutlined />, key: '/WorkoutTracker' },
               { label: 'Logout', icon: <LogoutOutlined />, key: 'logout', onClick: handleLogout, danger: true }
             ]}
