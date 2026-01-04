@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  Layout, 
-  Card, 
-  Button, 
-  Input, 
-  Avatar, 
-  Badge, 
-  message as antMessage, 
+import {
+  Layout,
+  Card,
+  Button,
+  Input,
+  Avatar,
+  Badge,
+  message as antMessage,
   Select,
   Row,
   Col,
   Menu
 } from "antd";
-import { 
-  SendOutlined, 
-  PaperClipOutlined, 
+import {
+  SendOutlined,
+  PaperClipOutlined,
   UserOutlined,
   MessageOutlined,
   CloseOutlined,
@@ -322,10 +322,10 @@ function StaffChat() {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -344,7 +344,7 @@ function StaffChat() {
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="info-header" style={{ background: 'white' }}>
           <div className="header-left">
-            <div 
+            <div
               className="trigger-button"
               onClick={() => setCollapsed(!collapsed)}
             >
@@ -362,8 +362,8 @@ function StaffChat() {
                 {currentUser.name} ({currentUser.role})
               </span>
             )}
-            <Avatar 
-              className="user-avatar" 
+            <Avatar
+              className="user-avatar"
               icon={<UserOutlined />}
               onClick={handleLogout}
               style={{ cursor: 'pointer' }}

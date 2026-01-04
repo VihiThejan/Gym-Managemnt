@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { 
+import {
   DollarOutlined,
-  TeamOutlined, 
-  UserOutlined, 
+  TeamOutlined,
+  UserOutlined,
   SearchOutlined,
   DashboardOutlined,
   NotificationOutlined,
@@ -54,8 +54,8 @@ const getMenuItems = () => [
 
 const StaffAppointmentView = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); 
-  const [filteredData, setFilteredData] = useState([]); 
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [stats, setStats] = useState({
@@ -74,22 +74,22 @@ const StaffAppointmentView = () => {
       setLoading(true);
       const res = await axios.get("http://localhost:5000/api/v1/appointment/list");
       const appointments = res?.data?.data || [];
-      
+
       console.log('Fetched appointments:', appointments);
-      
+
       setData(appointments);
       setFilteredData(appointments);
-      
+
       // Count based on actual status values from database
       const now = moment();
-      const scheduled = appointments.filter(a => 
+      const scheduled = appointments.filter(a =>
         (a.Status === 'Scheduled' || !a.Status) && moment(a.Date_and_Time).isAfter(now)
       ).length;
-      const completed = appointments.filter(a => 
+      const completed = appointments.filter(a =>
         a.Status === 'Completed' || moment(a.Date_and_Time).isBefore(now)
       ).length;
       const confirmed = appointments.filter(a => a.Status === 'Confirmed').length;
-      
+
       setStats({
         total: appointments.length,
         pending: scheduled,
@@ -106,7 +106,7 @@ const StaffAppointmentView = () => {
 
   const handleSearch = (value) => {
     if (value) {
-      const filtered = data.filter((item) => 
+      const filtered = data.filter((item) =>
         String(item.App_ID).toLowerCase().includes(value.toLowerCase()) ||
         String(item.Member_Id || '').toLowerCase().includes(value.toLowerCase()) ||
         String(item.Staff_ID || '').toLowerCase().includes(value.toLowerCase()) ||
@@ -248,10 +248,10 @@ const StaffAppointmentView = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -269,7 +269,7 @@ const StaffAppointmentView = () => {
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="info-header" style={{ background: 'white' }}>
           <div className="header-left">
-            <div 
+            <div
               className="trigger-button"
               onClick={() => setCollapsed(!collapsed)}
             >
@@ -282,8 +282,8 @@ const StaffAppointmentView = () => {
           </div>
 
           <div className="header-right">
-            <Avatar 
-              className="user-avatar" 
+            <Avatar
+              className="user-avatar"
               icon={<UserOutlined />}
               onClick={handleLogout}
               style={{ cursor: 'pointer' }}

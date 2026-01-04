@@ -69,10 +69,13 @@ html {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 0.15;
   }
+
   50% {
     transform: translate(-50%, -50%) scale(1.3);
     opacity: 0.25;
@@ -424,7 +427,8 @@ html {
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 100%;
+  /* Increased min-height for better vertical spacing */
+  min-height: 280px;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.5);
   will-change: transform;
@@ -446,6 +450,8 @@ html {
 .stat-card:focus-within {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  /* Ensure it floats above others */
 }
 
 .stat-card:hover::before,
@@ -470,10 +476,10 @@ html {
 }
 
 .stat-card .ant-card-body {
-  padding: 24px;
+  padding: 20px;
   position: relative;
   z-index: 2;
-  min-height: 200px;
+  /* Removed min-height to allow content to fit naturally */
   display: flex;
   flex-direction: column;
 }
@@ -481,22 +487,24 @@ html {
 .stat-card-content {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  /* Take available space */
   gap: 0;
 }
 
 .stat-icon-wrapper {
   flex-shrink: 0;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  /* Slightly smaller icon wrapper */
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.25);
-  border-radius: 14px;
+  border-radius: 12px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .stat-details {
@@ -507,29 +515,27 @@ html {
 }
 
 .stat-suffix {
-  font-size: 16px;
+  font-size: 14px;
   opacity: 0.85;
   font-weight: 500;
   margin-left: 6px;
 }
 
 .stat-trend {
-  margin-top: auto;
-  padding-top: 12px;
+  margin-top: 12px;
+  padding-top: 0;
 }
 
+/* ... existing trend styles ... */
 .trend-positive,
 .trend-neutral {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.25);
-  display: inline-block;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  font-size: 11px;
+  /* ... */
+  padding: 4px 8px;
+  /* ... */
 }
 
+/* ... existing trend colors ... */
 .trend-positive {
   color: rgba(255, 255, 255, 1);
 }
@@ -553,7 +559,8 @@ html {
 
 .stat-icon {
   color: white !important;
-  font-size: 26px;
+  font-size: 22px;
+  /* Slightly smaller icon */
   opacity: 0.95;
 }
 
@@ -563,17 +570,19 @@ html {
   font-weight: 700 !important;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-bottom: 8px !important;
+  margin-bottom: 4px !important;
 }
 
 .stat-card .ant-statistic-content {
   color: #ffffff !important;
-  margin: 16px 0 !important;
+  margin: 8px 0 !important;
+  /* Reduced margin */
 }
 
 .stat-card .ant-statistic-content-value {
   color: #ffffff !important;
-  font-size: 48px !important;
+  font-size: 36px !important;
+  /* Reduced to fit better */
   font-weight: 700 !important;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   line-height: 1.1 !important;
@@ -1329,7 +1338,7 @@ html {
   padding: 24px;
 }
 
-.ant-skeleton-paragraph > li {
+.ant-skeleton-paragraph>li {
   border-radius: 8px;
 }
 
@@ -1339,6 +1348,7 @@ html {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1350,6 +1360,7 @@ html {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1421,6 +1432,7 @@ html {
 
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -1432,6 +1444,7 @@ html {
 
 /* Print Styles */
 @media print {
+
   .dashboard-sider,
   .dashboard-header,
   .dashboard-footer,
@@ -1571,6 +1584,7 @@ html {
 
 /* Reduced Motion Support for Accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -1579,7 +1593,7 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .stat-card,
   .action-tile,
   .action-card,

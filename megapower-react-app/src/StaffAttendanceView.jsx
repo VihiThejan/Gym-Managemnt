@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { 
+import {
   DollarOutlined,
-  TeamOutlined, 
-  UserOutlined, 
+  TeamOutlined,
+  UserOutlined,
   SearchOutlined,
   DashboardOutlined,
   NotificationOutlined,
@@ -55,8 +55,8 @@ const getMenuItems = () => [
 
 const StaffAttendanceView = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); 
-  const [filteredData, setFilteredData] = useState([]); 
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [stats, setStats] = useState({
@@ -77,15 +77,15 @@ const StaffAttendanceView = () => {
       const attendance = res?.data?.data || [];
       setData(attendance);
       setFilteredData(attendance);
-      
+
       const today = moment().format('YYYY-MM-DD');
       const weekStart = moment().startOf('week');
       const monthStart = moment().startOf('month');
-      
+
       const todayCount = attendance.filter(a => moment(a.Current_date).format('YYYY-MM-DD') === today).length;
       const weekCount = attendance.filter(a => moment(a.Current_date).isSameOrAfter(weekStart)).length;
       const monthCount = attendance.filter(a => moment(a.Current_date).isSameOrAfter(monthStart)).length;
-      
+
       setStats({
         total: attendance.length,
         today: todayCount,
@@ -101,7 +101,7 @@ const StaffAttendanceView = () => {
 
   const handleSearch = (value) => {
     if (value) {
-      const filtered = data.filter((item) => 
+      const filtered = data.filter((item) =>
         String(item.Attendance_ID).toLowerCase().includes(value.toLowerCase()) ||
         String(item.Member_Id || '').toLowerCase().includes(value.toLowerCase()) ||
         moment(item.Current_date).format('YYYY-MM-DD').includes(value.toLowerCase())
@@ -208,7 +208,7 @@ const StaffAttendanceView = () => {
         const recordDate = moment(record.Current_date).format('YYYY-MM-DD');
         const isToday = today === recordDate;
         const hasCheckedOut = record.Out_time;
-        
+
         if (isToday && !hasCheckedOut) {
           return <Tag color="processing">Active</Tag>;
         } else if (hasCheckedOut) {
@@ -241,10 +241,10 @@ const StaffAttendanceView = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -262,7 +262,7 @@ const StaffAttendanceView = () => {
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="staff-attendance-header">
           <div className="header-left">
-            <div 
+            <div
               className="trigger-button"
               onClick={() => setCollapsed(!collapsed)}
             >
@@ -279,8 +279,8 @@ const StaffAttendanceView = () => {
               <BellOutlined className="notification-icon" />
               <span className="badge-count">{stats.today}</span>
             </div>
-            <Avatar 
-              className="user-avatar" 
+            <Avatar
+              className="user-avatar"
               icon={<UserOutlined />}
               onClick={handleLogout}
               style={{ cursor: 'pointer' }}
@@ -334,7 +334,7 @@ const StaffAttendanceView = () => {
               </Col>
             </Row>
 
-            <Card 
+            <Card
               className="attendance-card"
               title={
                 <div className="card-title-wrapper">

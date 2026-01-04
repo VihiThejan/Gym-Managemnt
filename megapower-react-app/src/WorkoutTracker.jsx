@@ -130,7 +130,7 @@ export const WorkoutTracker = () => {
       if (loginData) {
         const user = JSON.parse(loginData);
         const memberId = user.Member_Id;
-        
+
         // Mock data for now - replace with actual API call
         const mockWorkouts = [
           {
@@ -170,7 +170,7 @@ export const WorkoutTracker = () => {
             notes: 'New PR!',
           },
         ];
-        
+
         setWorkouts(mockWorkouts);
         calculateStats(mockWorkouts);
       }
@@ -214,7 +214,7 @@ export const WorkoutTracker = () => {
       setLoading(true);
       const loginData = localStorage.getItem('login');
       const user = JSON.parse(loginData);
-      
+
       const workoutData = {
         ...values,
         memberId: user.Member_Id,
@@ -228,18 +228,18 @@ export const WorkoutTracker = () => {
 
       // TODO: Replace with actual API call
       // await axios.post('http://localhost:5000/api/v1/workout/create', workoutData);
-      
+
       // Mock implementation
       const newWorkout = {
         id: workouts.length + 1,
         ...workoutData,
         date: workoutData.date,
       };
-      
+
       const updatedWorkouts = [newWorkout, ...workouts];
       setWorkouts(updatedWorkouts);
       calculateStats(updatedWorkouts);
-      
+
       message.success('Workout logged successfully!');
       handleCancel();
     } catch (error) {
@@ -384,17 +384,16 @@ export const WorkoutTracker = () => {
           selectedKeys={['10']}
           onClick={handleMenuClick}
           className="dashboard-menu"
-        >
-          {items.map(({ label, icon, key }) => (
-            <Menu.Item key={key} icon={icon}>
-              {label}
-            </Menu.Item>
-          ))}
-        </Menu>
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+          items={items.map(item => ({
+            key: item.key,
+            icon: item.icon,
+            label: item.label
+          }))}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -483,60 +482,74 @@ export const WorkoutTracker = () => {
 
           {/* Main Content Tabs */}
           <Card className="main-content-card">
-            <Tabs defaultActiveKey="1" className="workout-tabs">
-              <TabPane tab="Workout History" key="1">
-                <Table
-                  columns={columns}
-                  dataSource={workouts}
-                  rowKey="id"
-                  loading={loading}
-                  pagination={{ pageSize: 10 }}
-                />
-              </TabPane>
-
-              <TabPane tab="Progress Charts" key="2">
-                <Row gutter={[24, 24]}>
-                  <Col xs={24}>
-                    <Card title="Calories Burned (Last 30 Days)" className="chart-card">
-                      <div style={{ height: '300px' }}>
-                        <Line data={getChartData()} options={chartOptions} />
-                      </div>
-                    </Card>
-                  </Col>
-                </Row>
-              </TabPane>
-
-              <TabPane tab="Personal Records" key="3">
-                <Row gutter={[16, 16]}>
-                  {getPersonalRecords().map((record, index) => (
-                    <Col xs={24} sm={12} lg={8} key={index}>
-                      <Card className="pr-card">
-                        <div className="pr-header">
-                          <TrophyOutlined style={{ fontSize: '32px', color: '#ffd700' }} />
-                          <Tag color="gold">PR</Tag>
-                        </div>
-                        <h3>{record.exercise}</h3>
-                        <p className="pr-weight">{record.weight} kg</p>
-                        <p className="pr-details">
-                          {record.sets} sets × {record.reps} reps
-                        </p>
-                        <p className="pr-date">
-                          {dayjs(record.date).format('MMM DD, YYYY')}
-                        </p>
-                      </Card>
-                    </Col>
-                  ))}
-                  {getPersonalRecords().length === 0 && (
-                    <Col span={24}>
-                      <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-                        <TrophyOutlined style={{ fontSize: '64px', marginBottom: '16px' }} />
-                        <p>No personal records yet. Start logging workouts to track your PRs!</p>
-                      </div>
-                    </Col>
-                  )}
-                </Row>
-              </TabPane>
-            </Tabs>
+            <Tabs
+              defaultActiveKey="1"
+              className="workout-tabs"
+              items={[
+                {
+                  key: '1',
+                  label: 'Workout History',
+                  children: (
+                    <Table
+                      columns={columns}
+                      dataSource={workouts}
+                      rowKey="id"
+                      loading={loading}
+                      pagination={{ pageSize: 10 }}
+                    />
+                  )
+                },
+                {
+                  key: '2',
+                  label: 'Progress Charts',
+                  children: (
+                    <Row gutter={[24, 24]}>
+                      <Col xs={24}>
+                        <Card title="Calories Burned (Last 30 Days)" className="chart-card">
+                          <div style={{ height: '300px' }}>
+                            <Line data={getChartData()} options={chartOptions} />
+                          </div>
+                        </Card>
+                      </Col>
+                    </Row>
+                  )
+                },
+                {
+                  key: '3',
+                  label: 'Personal Records',
+                  children: (
+                    <Row gutter={[16, 16]}>
+                      {getPersonalRecords().map((record, index) => (
+                        <Col xs={24} sm={12} lg={8} key={index}>
+                          <Card className="pr-card">
+                            <div className="pr-header">
+                              <TrophyOutlined style={{ fontSize: '32px', color: '#ffd700' }} />
+                              <Tag color="gold">PR</Tag>
+                            </div>
+                            <h3>{record.exercise}</h3>
+                            <p className="pr-weight">{record.weight} kg</p>
+                            <p className="pr-details">
+                              {record.sets} sets × {record.reps} reps
+                            </p>
+                            <p className="pr-date">
+                              {dayjs(record.date).format('MMM DD, YYYY')}
+                            </p>
+                          </Card>
+                        </Col>
+                      ))}
+                      {getPersonalRecords().length === 0 && (
+                        <Col span={24}>
+                          <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                            <TrophyOutlined style={{ fontSize: '64px', marginBottom: '16px' }} />
+                            <p>No personal records yet. Start logging workouts to track your PRs!</p>
+                          </div>
+                        </Col>
+                      )}
+                    </Row>
+                  )
+                }
+              ]}
+            />
           </Card>
         </Content>
       </Layout>

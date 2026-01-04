@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, theme, Typography, Input, Badge, Avatar, Button, Card, Row, Col, Statistic, Menu } from 'antd';
-import { 
+import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  UserOutlined, 
-  DollarOutlined, 
-  NotificationOutlined, 
-  CalendarOutlined, 
-  BellOutlined, 
-  PhoneOutlined, 
-  MessageOutlined, 
-  TeamOutlined, 
-  CheckCircleOutlined, 
+  UserOutlined,
+  DollarOutlined,
+  NotificationOutlined,
+  CalendarOutlined,
+  BellOutlined,
+  PhoneOutlined,
+  MessageOutlined,
+  TeamOutlined,
+  CheckCircleOutlined,
   ClockCircleOutlined,
   DashboardOutlined,
   UserSwitchOutlined,
@@ -73,15 +73,15 @@ export const StaffDashboard = () => {
   const fetchStaffDashboardStats = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch attendance
       const attendanceRes = await axios.get('http://localhost:5000/api/v1/attendance/list');
       const todayAttendance = attendanceRes.data?.data?.length || 0;
-      
+
       // Fetch appointments
       const appointmentsRes = await axios.get('http://localhost:5000/api/v1/appointment/list');
       const totalAppointments = appointmentsRes.data?.data?.length || 0;
-      
+
       // Fetch schedules for completed sessions
       const schedulesRes = await axios.get('http://localhost:5000/api/v1/schedule/list');
       const completedSessions = schedulesRes.data?.data?.length || 0;
@@ -92,7 +92,7 @@ export const StaffDashboard = () => {
         pendingTasks: Math.floor(totalAppointments * 0.3), // Mock calculation
         completedSessions
       });
-      
+
       setLoading(false);
     } catch (error) {
       console.error('Error fetching staff dashboard stats:', error);
@@ -131,10 +131,10 @@ export const StaffDashboard = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -149,10 +149,10 @@ export const StaffDashboard = () => {
         </div>
       </Sider>
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
-        <Header 
-          className="dashboard-header" 
-          style={{ 
-            padding: '0 24px', 
+        <Header
+          className="dashboard-header"
+          style={{
+            padding: '0 24px',
             background: colorBgContainer,
             height: '64px',
             lineHeight: '64px'
@@ -176,16 +176,16 @@ export const StaffDashboard = () => {
           </div>
 
           <div className="header-right">
-            <Search 
-              placeholder="Search..." 
-              onSearch={handleSearch} 
+            <Search
+              placeholder="Search..."
+              onSearch={handleSearch}
               className="header-search"
             />
             <Badge count={5} className="notification-badge">
               <BellOutlined className="notification-icon" />
             </Badge>
-            <Avatar 
-              className="user-avatar" 
+            <Avatar
+              className="user-avatar"
               icon={<UserOutlined />}
               onClick={handleLogout}
               style={{ cursor: 'pointer' }}
@@ -205,7 +205,7 @@ export const StaffDashboard = () => {
                 </Typography.Text>
               </div>
             </div>
-            
+
             {/* Statistics Cards */}
             <Row gutter={[16, 16]} className="stats-row">
               <Col xs={24} sm={12} lg={6}>
@@ -289,24 +289,24 @@ export const StaffDashboard = () => {
             {/* Quick Actions & Summary */}
             <Row gutter={[16, 16]} className="action-row">
               <Col xs={24} md={16}>
-                <Card 
+                <Card
                   title={
                     <div style={{ color: '#ffffff !important' }}>
-                      <div style={{ 
-                        color: '#ffffff', 
-                        fontSize: '16px', 
+                      <div style={{
+                        color: '#ffffff',
+                        fontSize: '16px',
                         fontWeight: 600,
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
                         marginBottom: '4px'
                       }}>
-                        <CalendarOutlined style={{ color: '#ffffff' }} /> 
+                        <CalendarOutlined style={{ color: '#ffffff' }} />
                         <span style={{ color: '#ffffff' }}>Quick Actions</span>
                       </div>
-                      <div style={{ 
-                        color: '#ffffff', 
-                        fontSize: '14px', 
+                      <div style={{
+                        color: '#ffffff',
+                        fontSize: '14px',
                         fontWeight: 400,
                         opacity: 0.9
                       }}>
@@ -316,16 +316,18 @@ export const StaffDashboard = () => {
                   }
                   bordered={false}
                   className="action-card"
-                  headStyle={{ 
-                    background: '#1e293b', 
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff'
+                  styles={{
+                    header: {
+                      background: '#1e293b',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff'
+                    }
                   }}
                 >
                   <Row gutter={[16, 16]} className="action-grid">
                     <Col xs={24} sm={12}>
-                      <div 
-                        className="action-tile action-tile-purple" 
+                      <div
+                        className="action-tile action-tile-purple"
                         onClick={() => navigate('/staffAttendance')}
                         role="button"
                         tabIndex={0}
@@ -342,8 +344,8 @@ export const StaffDashboard = () => {
                       </div>
                     </Col>
                     <Col xs={24} sm={12}>
-                      <div 
-                        className="action-tile action-tile-pink" 
+                      <div
+                        className="action-tile action-tile-pink"
                         onClick={() => navigate('/staffAppointment')}
                         role="button"
                         tabIndex={0}
@@ -360,8 +362,8 @@ export const StaffDashboard = () => {
                       </div>
                     </Col>
                     <Col xs={24} sm={12}>
-                      <div 
-                        className="action-tile action-tile-blue" 
+                      <div
+                        className="action-tile action-tile-blue"
                         onClick={() => navigate('/staffAnnouncement')}
                         role="button"
                         tabIndex={0}
@@ -378,8 +380,8 @@ export const StaffDashboard = () => {
                       </div>
                     </Col>
                     <Col xs={24} sm={12}>
-                      <div 
-                        className="action-tile action-tile-green" 
+                      <div
+                        className="action-tile action-tile-green"
                         onClick={() => navigate('/chat')}
                         role="button"
                         tabIndex={0}
@@ -399,24 +401,24 @@ export const StaffDashboard = () => {
                 </Card>
               </Col>
               <Col xs={24} md={8}>
-                <Card 
+                <Card
                   title={
                     <div>
-                      <div style={{ 
-                        color: '#ffffff', 
-                        fontSize: '16px', 
+                      <div style={{
+                        color: '#ffffff',
+                        fontSize: '16px',
                         fontWeight: 600,
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
                         marginBottom: '4px'
                       }}>
-                        <ClockCircleOutlined style={{ color: '#ffffff' }} /> 
+                        <ClockCircleOutlined style={{ color: '#ffffff' }} />
                         <span style={{ color: '#ffffff' }}>Activity Timeline</span>
                       </div>
-                      <div style={{ 
-                        color: '#ffffff', 
-                        fontSize: '14px', 
+                      <div style={{
+                        color: '#ffffff',
+                        fontSize: '14px',
                         fontWeight: 400,
                         opacity: 0.9
                       }}>
@@ -426,10 +428,12 @@ export const StaffDashboard = () => {
                   }
                   bordered={false}
                   className="timeline-card"
-                  headStyle={{ 
-                    background: '#1e293b', 
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff'
+                  styles={{
+                    header: {
+                      background: '#1e293b',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff'
+                    }
                   }}
                 >
                   <div className="timeline-container">
@@ -469,8 +473,8 @@ export const StaffDashboard = () => {
                       </div>
                     </div>
                   </div>
-                  <Button 
-                    type="link" 
+                  <Button
+                    type="link"
                     className="view-all-link"
                     block
                   >
@@ -493,8 +497,8 @@ export const StaffDashboard = () => {
                   <div className="info-card-content">
                     <h3>Attendance Tracking</h3>
                     <p>Keep member check-ins updated and monitor daily attendance patterns for better service.</p>
-                    <Button 
-                      type="text" 
+                    <Button
+                      type="text"
                       icon={<CalendarOutlined />}
                       onClick={() => navigate('/staffAttendance')}
                       className="info-card-link"
@@ -515,8 +519,8 @@ export const StaffDashboard = () => {
                   <div className="info-card-content">
                     <h3>Appointments</h3>
                     <p>Review and manage upcoming training sessions and member appointments effectively.</p>
-                    <Button 
-                      type="text" 
+                    <Button
+                      type="text"
                       icon={<CalendarOutlined />}
                       onClick={() => navigate('/staffAppointment')}
                       className="info-card-link"
@@ -537,8 +541,8 @@ export const StaffDashboard = () => {
                   <div className="info-card-content">
                     <h3>Member Communication</h3>
                     <p>Stay connected with members through chat and respond to their queries promptly.</p>
-                    <Button 
-                      type="text" 
+                    <Button
+                      type="text"
                       icon={<MessageOutlined />}
                       onClick={() => navigate('/chat')}
                       className="info-card-link"

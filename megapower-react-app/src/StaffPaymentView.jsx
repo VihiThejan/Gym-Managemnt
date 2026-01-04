@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { 
+import {
   DollarOutlined,
-  TeamOutlined, 
-  UserOutlined, 
+  TeamOutlined,
+  UserOutlined,
   SearchOutlined,
   DashboardOutlined,
   NotificationOutlined,
@@ -55,8 +55,8 @@ const getMenuItems = () => [
 
 const StaffPaymentView = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); 
-  const [filteredData, setFilteredData] = useState([]); 
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [stats, setStats] = useState({
@@ -77,11 +77,11 @@ const StaffPaymentView = () => {
       const payments = res?.data?.data || [];
       setData(payments);
       setFilteredData(payments);
-      
+
       const completed = payments.filter(p => p.Payment_Status === 'Completed').length;
       const pending = payments.filter(p => p.Payment_Status === 'Pending').length;
       const totalAmount = payments.reduce((sum, p) => sum + (parseFloat(p.Amount) || 0), 0);
-      
+
       setStats({
         total: payments.length,
         completed,
@@ -97,7 +97,7 @@ const StaffPaymentView = () => {
 
   const handleSearch = (value) => {
     if (value) {
-      const filtered = data.filter((item) => 
+      const filtered = data.filter((item) =>
         String(item.Payment_ID).toLowerCase().includes(value.toLowerCase()) ||
         String(item.Member_ID || '').toLowerCase().includes(value.toLowerCase()) ||
         String(item.Payment_Method || '').toLowerCase().includes(value.toLowerCase()) ||
@@ -186,8 +186,8 @@ const StaffPaymentView = () => {
       key: "status",
       width: 120,
       render: (status) => {
-        const color = status === 'Completed' ? 'success' : 
-                     status === 'Pending' ? 'warning' : 'default';
+        const color = status === 'Completed' ? 'success' :
+          status === 'Pending' ? 'warning' : 'default';
         const icon = status === 'Completed' ? <CheckCircleOutlined /> : <ClockCircleOutlined />;
         return (
           <Tag color={color} icon={icon}>
@@ -227,10 +227,10 @@ const StaffPaymentView = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -248,7 +248,7 @@ const StaffPaymentView = () => {
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="staff-payment-header">
           <div className="header-left">
-            <div 
+            <div
               className="trigger-button"
               onClick={() => setCollapsed(!collapsed)}
             >
@@ -265,8 +265,8 @@ const StaffPaymentView = () => {
               <BellOutlined className="notification-icon" />
               <span className="badge-count">{stats.pending}</span>
             </div>
-            <Avatar 
-              className="user-avatar" 
+            <Avatar
+              className="user-avatar"
               icon={<UserOutlined />}
               onClick={handleLogout}
               style={{ cursor: 'pointer' }}
@@ -320,7 +320,7 @@ const StaffPaymentView = () => {
               </Col>
             </Row>
 
-            <Card 
+            <Card
               className="payment-card"
               title={
                 <div className="card-title-wrapper">
@@ -334,7 +334,7 @@ const StaffPaymentView = () => {
               extra={
                 <Search
                   placeholder="Search payments..."
-                  
+
                 />
               }
             >

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { 
+import {
   DollarOutlined,
-  TeamOutlined, 
-  UserOutlined, 
+  TeamOutlined,
+  UserOutlined,
   SearchOutlined,
   DashboardOutlined,
   NotificationOutlined,
@@ -55,8 +55,8 @@ const getMenuItems = () => [
 
 const StaffAnnouncementView = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); 
-  const [filteredData, setFilteredData] = useState([]); 
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [stats, setStats] = useState({
@@ -76,16 +76,16 @@ const StaffAnnouncementView = () => {
       const announcements = res?.data?.data || [];
       setData(announcements);
       setFilteredData(announcements);
-      
+
       // Calculate stats
-      const newAnnouncements = announcements.filter(a => 
+      const newAnnouncements = announcements.filter(a =>
         moment().diff(moment(a.Date_Time), 'days') <= 7
       ).length;
-      
-      const latestDate = announcements.length > 0 
+
+      const latestDate = announcements.length > 0
         ? moment(announcements[0]?.Date_Time).format('MMM DD, YYYY')
         : 'N/A';
-      
+
       setStats({
         total: announcements.length,
         newAnnouncements,
@@ -100,7 +100,7 @@ const StaffAnnouncementView = () => {
 
   const handleSearch = (value) => {
     if (value) {
-      const filtered = data.filter((item) => 
+      const filtered = data.filter((item) =>
         String(item.Announcement_ID).toLowerCase().includes(value.toLowerCase()) ||
         String(item.Staff_ID || '').toLowerCase().includes(value.toLowerCase()) ||
         String(item.Message || '').toLowerCase().includes(value.toLowerCase())
@@ -207,10 +207,10 @@ const StaffAnnouncementView = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -228,7 +228,7 @@ const StaffAnnouncementView = () => {
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="main-layout">
         <Header className="staff-announcement-header">
           <div className="header-left">
-            <div 
+            <div
               className="trigger-button"
               onClick={() => setCollapsed(!collapsed)}
             >
@@ -245,8 +245,8 @@ const StaffAnnouncementView = () => {
               <BellOutlined className="notification-icon" />
               <span className="badge-count">{stats.newAnnouncements}</span>
             </div>
-            <Avatar 
-              className="user-avatar" 
+            <Avatar
+              className="user-avatar"
               icon={<UserOutlined />}
               onClick={handleLogout}
               style={{ cursor: 'pointer' }}
@@ -290,7 +290,7 @@ const StaffAnnouncementView = () => {
               </Col>
             </Row>
 
-            <Card 
+            <Card
               className="announcement-card"
               title={
                 <div className="card-title-wrapper">

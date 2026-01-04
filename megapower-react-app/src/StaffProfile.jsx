@@ -4,12 +4,12 @@ import axios from "axios";
 import moment from "moment";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import { 
-  Button, Radio, Select, DatePicker, message, Form, Input, 
-  Card, Layout, Menu, Avatar, Typography, Row, Col, Divider, Space, Dropdown 
+import {
+  Button, Radio, Select, DatePicker, message, Form, Input,
+  Card, Layout, Menu, Avatar, Typography, Row, Col, Divider, Space, Dropdown
 } from 'antd';
-import { 
-  SaveOutlined, CloseOutlined, UserOutlined, HomeOutlined, 
+import {
+  SaveOutlined, CloseOutlined, UserOutlined, HomeOutlined,
   CalendarOutlined, MailOutlined, PhoneOutlined, IdcardOutlined,
   LockOutlined, ManOutlined, DashboardOutlined,
   NotificationOutlined, MessageOutlined, StarOutlined, ScheduleOutlined,
@@ -54,7 +54,7 @@ export const StaffProfile = () => {
       return null;
     }
   };
-  
+
   const staffId = getLoginData();
 
   // State variables
@@ -103,7 +103,7 @@ export const StaffProfile = () => {
       setAddress(profileData.address);
       setMobile(profileData.mobile);
       setJobRole(profileData.jobRole);
-      
+
       form.setFieldsValue(profileData);
       setLoading(false);
     } catch (error) {
@@ -166,7 +166,7 @@ export const StaffProfile = () => {
         return;
       }
     }
-    
+
     try {
       setSubmitting(true);
 
@@ -186,12 +186,12 @@ export const StaffProfile = () => {
 
       await axios.put(`http://localhost:5000/api/v1/staffmember/update/${staffId}`, body);
       message.success("Profile updated successfully!");
-      
+
       // Reset password fields
       setShowPasswordFields(false);
       setNewPassword('');
       setConfirmPassword('');
-      
+
       setSubmitting(false);
     } catch (error) {
       console.error("Error updating profile:", error.response?.data || error.message);
@@ -270,10 +270,10 @@ export const StaffProfile = () => {
           className="dashboard-menu"
           style={{ background: 'transparent', border: 'none' }}
         />
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -320,7 +320,7 @@ export const StaffProfile = () => {
               }
               trigger={['click']}
             >
-              <Avatar 
+              <Avatar
                 size="large"
                 icon={<UserOutlined />}
                 className="user-avatar"
@@ -557,8 +557,8 @@ export const StaffProfile = () => {
                               className="profile-input"
                               suffix={
                                 confirmPassword && (
-                                  passwordsMatch ? 
-                                    <CheckCircleOutlined style={{ color: '#52c41a' }} /> : 
+                                  passwordsMatch ?
+                                    <CheckCircleOutlined style={{ color: '#52c41a' }} /> :
                                     <CloseCircleOutlined style={{ color: '#ff4d4f' }} />
                                 )
                               }

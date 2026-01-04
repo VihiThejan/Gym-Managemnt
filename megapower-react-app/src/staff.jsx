@@ -2,13 +2,13 @@
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { Button, Form, Select, DatePicker, message, Input, Radio } from 'antd';
-import { 
-  UserOutlined, 
-  EnvironmentOutlined, 
-  CalendarOutlined, 
-  MailOutlined, 
-  PhoneOutlined, 
-  LockOutlined, 
+import {
+  UserOutlined,
+  EnvironmentOutlined,
+  CalendarOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  LockOutlined,
   IdcardOutlined,
   ManOutlined,
   WomanOutlined,
@@ -72,19 +72,20 @@ export const Staff = () => {
     try {
       const res = await axios.post('http://localhost:5000/api/v1/staffmember/create', body);
       console.log(res?.data?.data);
-      
+
       setShowSuccess(true);
       message.success("Staff member registered successfully!");
-      
+
       form.resetFields();
       setMobile('');
-      
+
       setTimeout(() => {
         navigate('/');
       }, 2000);
     } catch (error) {
-      console.log(error.message);
-      message.error("Failed to register staff member. Please try again.");
+      console.log(error);
+      const errorMsg = error.response?.data?.message || "Failed to register staff member. Please try again.";
+      message.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -175,7 +176,8 @@ export const Staff = () => {
                   label={<span className="input-label"><PhoneOutlined />Mobile Number</span>}
                   rules={[
                     { required: true, message: 'Please enter mobile number' },
-                    { validator: (_, value) => {
+                    {
+                      validator: (_, value) => {
                         const cleanedMobile = mobile.replace(/\D/g, '');
                         return cleanedMobile.length >= 11 ? Promise.resolve() : Promise.reject(new Error('Invalid mobile number'));
                       }
