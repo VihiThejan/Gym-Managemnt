@@ -25,7 +25,7 @@ import {Member  } from "./Member";
 import {MemberTable  } from "./MemberTable";
 import {EditMember  } from "./EditMember";
 import {MemberProfile  } from "./MemberProfile";
-import {MemberPayment  } from "./MemberPayment";
+import MemberPayment from "./MemberPayment";
 import PaymentSuccess from "./PaymentSuccess";
 import {MemberAnnouncements  } from "./MemberAnnouncements";
 import {MemberAttendance  } from "./MemberAttendance";

@@ -20,11 +20,11 @@ model admin {
 
 model announcement {
   Announcement_ID Int         @id @default(autoincrement())
-  Staff_ID        Int
   Message         String      @db.Text
-  Title           String?     @db.VarChar(255)
   Date_Time       DateTime    @db.DateTime(0)
+  Staff_ID        Int
   Status          String?     @default("Active") @db.VarChar(50)
+  Title           String?     @db.VarChar(255)
   created_at      DateTime?   @default(now()) @db.Timestamp(0)
   admin           staffmember @relation(fields: [Staff_ID], references: [Staff_ID], onDelete: Cascade, map: "Announcement_User_ID_fkey")
 
@@ -38,9 +38,9 @@ model appointment {
   Staff_ID      Int
   Date_and_Time DateTime    @db.DateTime(0)
   Contact       String      @db.VarChar(100)
+  Notes         String?     @db.Text
   Purpose       String?     @db.VarChar(255)
   Status        String?     @default("Scheduled") @db.VarChar(50)
-  Notes         String?     @db.Text
   created_at    DateTime?   @default(now()) @db.Timestamp(0)
   updated_at    DateTime?   @default(now()) @updatedAt @db.Timestamp(0)
   member        member      @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "Appointment_Member_Id_fkey")
@@ -54,11 +54,11 @@ model appointment {
 
 model attendance {
   Attendance_ID    Int       @id @default(autoincrement())
-  Member_Id        Int
   Current_date     DateTime  @db.Date
   In_time          DateTime  @db.DateTime(0)
   Out_time         DateTime? @db.DateTime(0)
   Duration_Minutes Int?
+  Member_Id        Int
   Notes            String?   @db.Text
   created_at       DateTime? @default(now()) @db.Timestamp(0)
   member           member    @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "fk_attendance_member")
@@ -71,11 +71,11 @@ model attendance {
 model chat {
   Chat_ID    Int       @id @default(autoincrement())
   User_ID    Int
-  User_Type  String    @db.VarChar(50)
   Message    String    @db.Text
   Date       DateTime  @db.Date
   Time       DateTime  @db.Time(0)
   Room_ID    String?   @db.VarChar(100)
+  User_Type  String    @db.VarChar(50)
   created_at DateTime? @default(now()) @db.Timestamp(0)
 
   @@index([Date, Time], map: "idx_date_time")
@@ -90,9 +90,9 @@ model equipment {
   Vendor           String    @db.VarChar(255)
   Description      String    @db.Text
   Date             DateTime  @db.DateTime(0)
+  Maintenance_Date DateTime? @db.Date
   Purchase_Cost    Decimal?  @db.Decimal(10, 2)
   Status           String?   @default("Active") @db.VarChar(50)
-  Maintenance_Date DateTime? @db.Date
   created_at       DateTime? @default(now()) @db.Timestamp(0)
   updated_at       DateTime? @default(now()) @db.Timestamp(0)
 
@@ -101,14 +101,14 @@ model equipment {
 
 model feedback {
   Feedback_ID   Int       @id @default(autoincrement())
-  Member_Id     Int
   Message       String    @db.Text
-  Date          DateTime  @db.DateTime(0)
-  Rating        Int?
   Category      String?   @db.VarChar(100)
-  Status        String?   @default("Pending") @db.VarChar(50)
+  Date          DateTime  @db.DateTime(0)
+  Member_Id     Int
+  Rating        Int?
   Response      String?   @db.Text
   Response_Date DateTime? @db.DateTime(0)
+  Status        String?   @default("Pending") @db.VarChar(50)
   created_at    DateTime? @default(now()) @db.Timestamp(0)
   admin         member    @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "Feedback_User_ID_fkey")
 
@@ -119,7 +119,6 @@ model feedback {
 model member {
   Member_Id         Int                @id @default(autoincrement())
   FName             String             @db.VarChar(255)
-  LName             String?            @db.VarChar(255)
   DOB               DateTime           @db.DateTime(0)
   Gender            String             @db.VarChar(50)
   Email             String             @unique(map: "Email") @db.VarChar(255)
@@ -128,9 +127,10 @@ model member {
   Package           String             @db.VarChar(100)
   Weight            Float              @db.Float
   Height            Float              @db.Float
+  Status            String?            @default("Active") @db.VarChar(50)
   UName             String             @unique(map: "UName") @db.VarChar(255)
   Password          String             @db.VarChar(255)
-  Status            String?            @default("Active") @db.VarChar(50)
+  LName             String?            @db.VarChar(255)
   Registration_Date DateTime?          @default(now()) @db.DateTime(0)
   created_at        DateTime?          @default(now()) @db.Timestamp(0)
   updated_at        DateTime?          @default(now()) @db.Timestamp(0)
@@ -149,17 +149,17 @@ model member {
 
 model payment {
   Payment_ID     Int       @id @default(autoincrement())
-  Member_Id      Int
   Package_ID     Int
   Amount         Decimal   @db.Decimal(10, 2)
   Date           DateTime  @db.DateTime(0)
-  Status         String?   @default("Pending") @db.VarChar(50)
+  Due_Date       DateTime? @db.Date
+  Member_Id      Int
+  Notes          String?   @db.Text
   Payment_Method String?   @db.VarChar(50)
   Payment_Slip   String?   @db.VarChar(255)
-  Transaction_ID String?   @db.VarChar(255)
   Receipt_Number String?   @db.VarChar(100)
-  Notes          String?   @db.Text
-  Due_Date       DateTime? @db.Date
+  Status         String?   @default("Pending") @db.VarChar(50)
+  Transaction_ID String?   @db.VarChar(255)
   created_at     DateTime? @default(now()) @db.Timestamp(0)
   updated_at     DateTime? @default(now()) @db.Timestamp(0)
   admin          member    @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "Payment_User_ID_fkey")
@@ -172,19 +172,19 @@ model payment {
 
 model schedule {
   Schedule_ID      Int         @id @default(autoincrement())
-  Staff_ID         Int
-  Member_ID        Int
-  EName            String      @db.VarChar(255)
   Equipment        String      @db.VarChar(255)
   Quantity         Int
+  Staff_ID         Int
   Date_Time        DateTime    @db.DateTime(0)
   Duration_Minutes Int?
-  Status           String?     @default("Scheduled") @db.VarChar(50)
+  EName            String      @db.VarChar(255)
+  Member_ID        Int
   Notes            String?     @db.Text
+  Status           String?     @default("Scheduled") @db.VarChar(50)
   created_at       DateTime?   @default(now()) @db.Timestamp(0)
   updated_at       DateTime?   @default(now()) @db.Timestamp(0)
-  member           member      @relation(fields: [Member_ID], references: [Member_Id], onDelete: Cascade, map: "fk_schedule_member")
   staffmember      staffmember @relation(fields: [Staff_ID], references: [Staff_ID], onDelete: Cascade, map: "Schedule_Staff_ID_fkey")
+  member           member      @relation(fields: [Member_ID], references: [Member_Id], onDelete: Cascade, map: "fk_schedule_member")
   trainer          trainer[]
 
   @@index([Date_Time], map: "idx_date_time")
@@ -195,7 +195,6 @@ model schedule {
 model staffmember {
   Staff_ID                                               Int            @id @default(autoincrement())
   FName                                                  String         @db.VarChar(255)
-  LName                                                  String?        @db.VarChar(255)
   DOB                                                    DateTime       @db.DateTime(0)
   Address                                                String         @db.VarChar(255)
   Gender                                                 String         @db.VarChar(50)
@@ -204,9 +203,10 @@ model staffmember {
   Job_Role                                               String         @db.VarChar(100)
   UName                                                  String         @unique(map: "UName") @db.VarChar(255)
   Password                                               String         @db.VarChar(255)
-  Status                                                 String?        @default("Active") @db.VarChar(50)
-  Salary                                                 Decimal?       @db.Decimal(10, 2)
   Hire_Date                                              DateTime?      @default(now()) @db.DateTime(0)
+  LName                                                  String?        @db.VarChar(255)
+  Salary                                                 Decimal?       @db.Decimal(10, 2)
+  Status                                                 String?        @default("Active") @db.VarChar(50)
   created_at                                             DateTime?      @default(now()) @db.Timestamp(0)
   updated_at                                             DateTime?      @default(now()) @db.Timestamp(0)
   announcement                                           announcement[]
@@ -222,8 +222,8 @@ model staffmember {
 model trainer {
   Trainer_ID  Int          @id @default(autoincrement())
   Schedule_ID Int
-  Staff_ID    Int?
   Notes       String?      @db.Text
+  Staff_ID    Int?
   created_at  DateTime?    @default(now()) @db.Timestamp(0)
   schedule    schedule     @relation(fields: [Schedule_ID], references: [Schedule_ID], onDelete: Cascade, map: "Trainer_Schedule_ID_fkey")
   staffmember staffmember? @relation(fields: [Staff_ID], references: [Staff_ID], map: "fk_trainer_staff")
@@ -233,15 +233,15 @@ model trainer {
 }
 
 model trainerrate {
-  Rating_ID                                              Int          @id @default(autoincrement())
-  Staff_ID                                               Int
   Member_Id                                              Int
+  Staff_ID                                               Int
   Rating                                                 Int
   Comment                                                String?      @db.Text
-  Reply                                                  String?      @db.Text
-  Reply_Date                                             DateTime?    @db.DateTime(0)
-  Reply_By_Staff_ID                                      Int?
   Date                                                   DateTime?    @default(now()) @db.DateTime(0)
+  Rating_ID                                              Int          @id @default(autoincrement())
+  Reply                                                  String?      @db.Text
+  Reply_By_Staff_ID                                      Int?
+  Reply_Date                                             DateTime?    @db.DateTime(0)
   created_at                                             DateTime?    @default(now()) @db.Timestamp(0)
   updated_at                                             DateTime?    @default(now()) @db.Timestamp(0)
   member                                                 member       @relation(fields: [Member_Id], references: [Member_Id], onDelete: Cascade, map: "fk_trainerrate_member")
@@ -250,7 +250,7 @@ model trainerrate {
 
   @@index([Member_Id], map: "idx_member_id")
   @@index([Reply_By_Staff_ID], map: "idx_reply_by")
-  @@index([Staff_ID], map: "idx_staff_id")
+  @@index([Staff_ID], map: "fk_trainerrate_staff")
 }
 
 model otp {
