@@ -13,24 +13,24 @@ var debug = true, verifySSL = false;
 var client = new ShoutoutClient(apiKey, debug, verifySSL);
 
 const userLogin = async (req, res) => {
-    const {username, password} = req.body;
-    try{
+    const { username, password } = req.body;
+    try {
         const data = await prisma.admin.findFirst({
             select: {
                 User_ID: true,
                 Name: true,
                 Password: true
             },
-            where:{
+            where: {
                 UserName: username
             }
         });
 
-        if(data !== null){
+        if (data !== null) {
             // Compare the provided password with the hashed password
             const isMatch = await bcrypt.compare(password, data.Password);
-            
-            if(isMatch){
+
+            if (isMatch) {
                 // Remove password from response
                 const { Password, ...userData } = data;
                 res.status(200).json({
@@ -38,14 +38,14 @@ const userLogin = async (req, res) => {
                     message: 'Login Success',
                     data: userData
                 })
-            }else{
+            } else {
                 res.status(200).json({
                     code: 400,
                     message: 'Invalid username or password',
                     data: null
                 })
             }
-        }else{
+        } else {
             res.status(200).json({
                 code: 400,
                 message: 'Invalid username or password',
@@ -54,7 +54,7 @@ const userLogin = async (req, res) => {
         }
 
     }
-    catch(ex){
+    catch (ex) {
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
@@ -65,29 +65,29 @@ const userLogin = async (req, res) => {
 };
 
 const userRegister = async (req, res) => {
-    const {name,  password,contact} = req.body;
-    try{
+    const { name, password, contact } = req.body;
+    try {
         console.log('Registration request received:', { name, contact, passwordLength: password?.length });
-        
+
         // Hash the password before storing
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         await prisma.admin.create({
             data: {
                 UserName: contact,
                 Name: name,
                 Password: hashedPassword,
-                Contact:contact,
+                Contact: contact,
             }
         })
-        
+
         console.log('Admin registered successfully');
-        
+
         res.status(200).json({
             code: 200,
             message: 'User created successfully',
         })
-    }catch(ex){
+    } catch (ex) {
         console.error('Registration error:', ex.message);
         console.error('Full error:', ex);
         res.status(500).json({
@@ -99,8 +99,8 @@ const userRegister = async (req, res) => {
 }
 
 const forgetpw = async (req, res) => {
-    const {contact} = req.body;
-    
+    const { contact } = req.body;
+
     // Validate contact field
     if (!contact || contact.trim() === '') {
         return res.status(400).json({
@@ -108,21 +108,21 @@ const forgetpw = async (req, res) => {
             message: 'Contact number is required',
         });
     }
-    
-    try{
+
+    try {
         // Check if user exists in any table before sending OTP
         const adminUser = await prisma.admin.findFirst({
             where: { Contact: contact }
         });
-        
+
         const memberUser = await prisma.member.findFirst({
             where: { Contact: contact }
         });
-        
+
         const staffUser = await prisma.staffmember.findFirst({
             where: { Contact_No: contact }
         });
-        
+
         if (!adminUser && !memberUser && !staffUser) {
             console.log('User not found with contact:', contact);
             return res.status(200).json({
@@ -130,36 +130,36 @@ const forgetpw = async (req, res) => {
                 message: 'No account found with this contact number',
             });
         }
-        
+
         console.log('User found - generating OTP for contact:', contact);
         const otp = crypto.randomInt(100000, 999999);
         console.log('Generated OTP:', otp);
-        
+
         // Set OTP expiration time to 10 minutes from now
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
         console.log('OTP expires at:', expiresAt);
-        
+
         // Save OTP to database first
         const otpRecord = await prisma.otp.create({
             data: {
                 Contact: contact,
-                Otp: otp,
+                Otp: otp.toString(),
                 Expires_At: expiresAt,
             }
         });
-        
+
         console.log('OTP saved to database:', otpRecord);
-        
+
         // Prepare SMS message
         var message = {
             source: 'ShoutDEMO',
             destinations: [contact],
             content: {
-                sms: 'Your OTP is '+otp
+                sms: 'Your OTP is ' + otp
             },
             transports: ['sms']
         };
-        
+
         // Send SMS asynchronously (don't wait for response)
         client.sendMessage(message, (error, result) => {
             if (error) {
@@ -173,7 +173,7 @@ const forgetpw = async (req, res) => {
             code: 200,
             message: 'OTP sent successfully',
         })
-    }catch(ex){
+    } catch (ex) {
         console.error('forgetpw error:', ex);
         console.error('Error stack:', ex.stack);
         res.status(500).json({
@@ -185,8 +185,8 @@ const forgetpw = async (req, res) => {
 }
 
 const verifyOtp = async (req, res) => {
-    const {otp, contact} = req.body;
-    
+    const { otp, contact } = req.body;
+
     // Validate inputs
     if (!otp || !contact) {
         return res.status(400).json({
@@ -194,19 +194,19 @@ const verifyOtp = async (req, res) => {
             message: 'OTP and contact are required',
         });
     }
-    
-    try{
+
+    try {
         const isvalid = await prisma.otp.findFirst({
             select: {
                 ID: true,
                 Expires_At: true,
             },
-            where:{
+            where: {
                 Contact: contact,
-                Otp: parseInt(otp),
+                Otp: otp.toString(),
             }
         });
-        
+
         if (!isvalid) {
             return res.status(200).json({
                 code: 400,
@@ -214,7 +214,7 @@ const verifyOtp = async (req, res) => {
                 data: null
             });
         }
-        
+
         // Check if OTP has expired
         const now = new Date();
         if (isvalid.Expires_At < now) {
@@ -224,13 +224,13 @@ const verifyOtp = async (req, res) => {
                 data: null
             });
         }
-        
+
         res.status(200).json({
             code: 200,
             message: 'User verified successfully',
             data: isvalid
         });
-    }catch(ex){
+    } catch (ex) {
         console.error('verifyOtp error:', ex);
         res.status(500).json({
             code: 500,
@@ -241,10 +241,10 @@ const verifyOtp = async (req, res) => {
 }
 
 const resetPw = async (req, res) => {
-    const {password, confirmPassword, contact} = req.body;
-    
+    const { password, confirmPassword, contact } = req.body;
+
     console.log('Reset password request received:', { contact, passwordLength: password?.length });
-    
+
     // Validate inputs
     if (!password || !confirmPassword || !contact) {
         return res.status(400).json({
@@ -252,19 +252,19 @@ const resetPw = async (req, res) => {
             message: 'Password, confirm password, and contact are required',
         });
     }
-    
-    try{
-        if(password !== confirmPassword){
+
+    try {
+        if (password !== confirmPassword) {
             return res.status(200).json({
                 code: 300,
                 message: 'Passwords do not match',
             });
         }
-        
+
         // Hash the password before storing
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log('Password hashed successfully');
-        
+
         // Try to find user in admin table first
         let adminUser = await prisma.admin.findFirst({
             select: {
@@ -275,7 +275,7 @@ const resetPw = async (req, res) => {
                 Contact: contact
             }
         });
-        
+
         // Try to find user in member table if not found in admin
         let memberUser = await prisma.member.findFirst({
             select: {
@@ -286,7 +286,7 @@ const resetPw = async (req, res) => {
                 Contact: contact
             }
         });
-        
+
         // Try to find user in staffmember table if not found in admin or member
         let staffUser = await prisma.staffmember.findFirst({
             select: {
@@ -297,11 +297,11 @@ const resetPw = async (req, res) => {
                 Contact_No: contact
             }
         });
-        
+
         console.log('Admin user lookup result:', adminUser);
         console.log('Member user lookup result:', memberUser);
         console.log('Staff user lookup result:', staffUser);
-        
+
         if (!adminUser && !memberUser && !staffUser) {
             console.log('User not found with contact:', contact);
             return res.status(200).json({
@@ -310,7 +310,7 @@ const resetPw = async (req, res) => {
                 data: null
             });
         }
-        
+
         // Update password based on user type
         if (adminUser) {
             console.log('Updating password for admin user:', adminUser.User_ID);
@@ -346,22 +346,22 @@ const resetPw = async (req, res) => {
             });
             console.log('Staff password updated successfully');
         }
-        
+
         // Delete the OTP after successful password reset
         const deleteOtpResult = await prisma.otp.deleteMany({
             where: {
                 Contact: contact
             }
         });
-        
+
         console.log('OTPs deleted:', deleteOtpResult.count);
-        
+
         res.status(200).json({
             code: 200,
             message: 'Password reset successfully'
         });
-       
-    }catch(ex){
+
+    } catch (ex) {
         console.error('resetPw error:', ex);
         console.error('Error stack:', ex.stack);
         res.status(500).json({
@@ -379,8 +379,8 @@ module.exports = {
     forgetpw,
     verifyOtp,
     resetPw
-    
-   
-  
+
+
+
 }
 
