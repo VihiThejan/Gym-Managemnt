@@ -302,12 +302,30 @@ const MemberAppointment = () => {
     }
   };
 
-  const getStatusTag = (dateTime) => {
+  const handleComplete = async (appointmentId) => {
+    try {
+      setLoading(true);
+      await axios.put(
+        `http://localhost:5000/api/v1/appointment/complete/${appointmentId}`
+      );
+      message.success('✅ Appointment marked as completed!');
+      await fetchAppointments(memberId);
+    } catch (error) {
+      console.error('Error completing appointment:', error);
+      message.error('❌ Failed to mark appointment as completed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusTag = (dateTime, status) => {
     const appointmentDate = moment(dateTime);
     const now = moment();
 
-    if (appointmentDate.isBefore(now)) {
-      return <Tag color="default">Completed</Tag>;
+    if (status === 'Completed') {
+      return <Tag color="blue" icon={<CheckCircleOutlined />}>Completed</Tag>;
+    } else if (appointmentDate.isBefore(now)) {
+      return <Tag color="default">Past</Tag>;
     } else if (appointmentDate.diff(now, 'hours') <= 24) {
       return <Tag color="orange">Upcoming Soon</Tag>;
     } else {
@@ -408,17 +426,21 @@ const MemberAppointment = () => {
     {
       title: 'Status',
       key: 'status',
-      render: (_, record) => getStatusTag(record.Date_and_Time)
+      render: (_, record) => getStatusTag(record.Date_and_Time, record.Status)
     },
     {
       title: 'Action',
       key: 'action',
       render: (_, record) => {
-        const isPast = moment(record.Date_and_Time).isBefore(moment());
+        const appointmentTime = moment(record.Date_and_Time);
+        const now = moment();
+        const isPast = appointmentTime.isBefore(now);
+        const isOngoing = appointmentTime.isBefore(now.add(2, 'hours')) && appointmentTime.isAfter(now.subtract(2, 'hours'));
+        const isCompleted = record.Status === 'Completed';
         
         return (
           <Space>
-            {!isPast && (
+            {!isPast && !isCompleted && (
               <>
                 <Button
                   type="primary"
@@ -438,7 +460,18 @@ const MemberAppointment = () => {
                 </Button>
               </>
             )}
-            {isPast && <Text type="secondary">-</Text>}
+            {(isPast || isOngoing) && !isCompleted && (
+              <Button
+                type="primary"
+                size="small"
+                icon={<CheckCircleOutlined />}
+                onClick={() => handleComplete(record.App_ID)}
+                style={{ background: '#52c41a', borderColor: '#52c41a' }}
+              >
+                Complete
+              </Button>
+            )}
+            {isCompleted && <Tag color="blue" icon={<CheckCircleOutlined />}>Done</Tag>}
           </Space>
         );
       }
@@ -448,8 +481,12 @@ const MemberAppointment = () => {
   // Render appointment card
   const renderAppointmentCard = (appointment, index) => {
     const staff = staffMembers.find(s => s.Staff_ID === appointment.Staff_ID);
-    const isPast = moment(appointment.Date_and_Time).isBefore(moment());
-    const isToday = moment(appointment.Date_and_Time).isSame(moment(), 'day');
+    const appointmentTime = moment(appointment.Date_and_Time);
+    const now = moment();
+    const isPast = appointmentTime.isBefore(now);
+    const isToday = appointmentTime.isSame(now, 'day');
+    const isOngoing = appointmentTime.isBefore(now.clone().add(2, 'hours')) && appointmentTime.isAfter(now.clone().subtract(2, 'hours'));
+    const isCompleted = appointment.Status === 'Completed';
     
     return (
       <Card 
@@ -478,7 +515,7 @@ const MemberAppointment = () => {
             </div>
           </div>
           <div className="status-badge">
-            {getStatusTag(appointment.Date_and_Time)}
+            {getStatusTag(appointment.Date_and_Time, appointment.Status)}
           </div>
         </div>
 
@@ -513,38 +550,70 @@ const MemberAppointment = () => {
           </div>
         </div>
 
-        {!isPast && (
+        {!isCompleted && (
           <div className="appointment-actions">
-            <Tooltip title="Edit appointment details">
-              <Button 
-                type="primary" 
-                icon={<EditOutlined />}
-                onClick={() => showEditModal(appointment)}
-                className="action-btn"
-                loading={loading}
-              >
-                Edit
-              </Button>
-            </Tooltip>
-            <Popconfirm
-              title="Cancel Appointment"
-              description="Are you sure you want to cancel this appointment?"
-              onConfirm={() => handleDelete(appointment.App_ID)}
-              okText="Yes, Cancel"
-              cancelText="No"
-              okButtonProps={{ danger: true }}
-            >
-              <Tooltip title="Cancel this appointment">
-                <Button 
-                  danger 
-                  icon={<DeleteOutlined />}
-                  className="action-btn"
-                  loading={loading}
+            {!isPast && (
+              <>
+                <Tooltip title="Edit appointment details">
+                  <Button 
+                    type="primary" 
+                    icon={<EditOutlined />}
+                    onClick={() => showEditModal(appointment)}
+                    className="action-btn"
+                    loading={loading}
+                  >
+                    Edit
+                  </Button>
+                </Tooltip>
+                <Popconfirm
+                  title="Cancel Appointment"
+                  description="Are you sure you want to cancel this appointment?"
+                  onConfirm={() => handleDelete(appointment.App_ID)}
+                  okText="Yes, Cancel"
+                  cancelText="No"
+                  okButtonProps={{ danger: true }}
                 >
-                  Cancel
-                </Button>
-              </Tooltip>
-            </Popconfirm>
+                  <Tooltip title="Cancel this appointment">
+                    <Button 
+                      danger 
+                      icon={<DeleteOutlined />}
+                      className="action-btn"
+                      loading={loading}
+                    >
+                      Cancel
+                    </Button>
+                  </Tooltip>
+                </Popconfirm>
+              </>
+            )}
+            {(isPast || isOngoing) && (
+              <Popconfirm
+                title="Mark as Completed"
+                description="Confirm that this appointment has been completed?"
+                onConfirm={() => handleComplete(appointment.App_ID)}
+                okText="Yes, Complete"
+                cancelText="No"
+              >
+                <Tooltip title="Mark appointment as completed">
+                  <Button 
+                    type="primary"
+                    icon={<CheckCircleOutlined />}
+                    className="action-btn"
+                    loading={loading}
+                    style={{ background: '#52c41a', borderColor: '#52c41a' }}
+                  >
+                    Complete
+                  </Button>
+                </Tooltip>
+              </Popconfirm>
+            )}
+          </div>
+        )}
+        {isCompleted && (
+          <div className="appointment-actions">
+            <Tag color="blue" icon={<CheckCircleOutlined />} style={{ fontSize: '14px', padding: '8px 16px' }}>
+              Appointment Completed
+            </Tag>
           </div>
         )}
       </Card>

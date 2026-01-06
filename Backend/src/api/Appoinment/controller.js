@@ -160,11 +160,37 @@ const AppoinmentGet = async (req, res) => {
     }
   };
 
+const AppoinmentComplete = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const updatedAppointment = await prisma.appointment.update({
+        where: { App_ID: parseInt(id) },
+        data: {
+          Status: 'Completed'
+        },
+      });
+  
+      res.status(200).json({ 
+        code: 200, 
+        message: 'Appointment marked as completed successfully', 
+        data: updatedAppointment 
+      });
+    } catch (ex) {
+      console.error("Error completing appointment:", ex.message);
+      res.status(500).json({ 
+        code: 500, 
+        message: 'Server error.', 
+        error: ex.message 
+      });
+    }
+};
+
 module.exports = {
     Appoinmenthandling,
     AppoinmentList,
     AppoinmentDelete,
     AppoinmentEdit,
-    AppoinmentGet
+    AppoinmentGet,
+    AppoinmentComplete
     
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic, Menu } from "antd";
+import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Statistic, Menu, Modal, Form, Button, Space, Popconfirm } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -21,7 +21,10 @@ import {
   LogoutOutlined,
   ScheduleOutlined,
   StarOutlined,
-  TrophyOutlined
+  TrophyOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import Logo from './components/Logo';
@@ -30,6 +33,7 @@ import './staffDashboard.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Search } = Input;
+const { TextArea } = Input;
 
 const siderStyle = {
   overflow: 'auto',
@@ -59,11 +63,25 @@ const StaffAnnouncementView = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [form] = Form.useForm();
   const [stats, setStats] = useState({
     total: 0,
     newAnnouncements: 0,
     latestDate: 'N/A'
   });
+
+  // Get staff ID from localStorage
+  const getStaffId = () => {
+    const loginData = localStorage.getItem('login');
+    if (loginData) {
+      const userData = JSON.parse(loginData);
+      return userData.Staff_ID || null;
+    }
+    return null;
+  };
 
   useEffect(() => {
     fetchData();
@@ -114,6 +132,86 @@ const StaffAnnouncementView = () => {
   const handleLogout = () => {
     message.success('Logged out successfully');
     navigate('/');
+  };
+
+  const showModal = () => {
+    setIsEditMode(false);
+    setEditingRecord(null);
+    form.resetFields();
+    setIsModalVisible(true);
+  };
+
+  const showEditModal = (record) => {
+    setIsEditMode(true);
+    setEditingRecord(record);
+    form.setFieldsValue({
+      message: record.Message,
+      date_time: moment(record.Date_Time)
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setIsEditMode(false);
+    setEditingRecord(null);
+    form.resetFields();
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true);
+      const staffId = getStaffId();
+
+      if (!staffId) {
+        message.error('Staff ID not found. Please login again.');
+        return;
+      }
+
+      if (isEditMode && editingRecord) {
+        // Update announcement
+        await axios.put(
+          `http://localhost:5000/api/v1/announcement/Update/${editingRecord.Announcement_ID}`,
+          {
+            Staff_ID: staffId,
+            Message: values.message,
+            Date_Time: moment().toISOString()
+          }
+        );
+        message.success('Announcement updated successfully!');
+      } else {
+        // Create new announcement
+        await axios.post('http://localhost:5000/api/v1/announcement/create', {
+          staff_id: staffId,
+          message: values.message,
+          date_time: moment().toISOString()
+        });
+        message.success('Announcement created successfully!');
+      }
+
+      setIsModalVisible(false);
+      form.resetFields();
+      fetchData();
+    } catch (error) {
+      console.error('Error saving announcement:', error);
+      message.error('Failed to save announcement');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      setLoading(true);
+      await axios.delete(`http://localhost:5000/api/v1/announcement/delete/${id}`);
+      message.success('Announcement deleted successfully!');
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+      message.error('Failed to delete announcement');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const columns = [
@@ -173,7 +271,6 @@ const StaffAnnouncementView = () => {
       dataIndex: "Date_Time",
       key: "status",
       width: 120,
-      fixed: "right",
       render: (date) => {
         const isNew = moment().diff(moment(date), 'days') <= 7;
         return (
@@ -182,6 +279,40 @@ const StaffAnnouncementView = () => {
           </Tag>
         );
       },
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 150,
+      fixed: "right",
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="primary"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => showEditModal(record)}
+          >
+            Edit
+          </Button>
+          <Popconfirm
+            title="Delete Announcement"
+            description="Are you sure you want to delete this announcement?"
+            onConfirm={() => handleDelete(record.Announcement_ID)}
+            okText="Yes"
+            cancelText="No"
+            okButtonProps={{ danger: true }}
+          >
+            <Button
+              danger
+              size="small"
+              icon={<DeleteOutlined />}
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 
@@ -302,16 +433,30 @@ const StaffAnnouncementView = () => {
                 </div>
               }
               extra={
-                <Search
-                  placeholder="Search by ID, admin, or message..."
-                  allowClear
-                  enterButton={<SearchOutlined />}
-                  size="large"
-                  onSearch={handleSearch}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="search-input"
-                  style={{ maxWidth: 400, width: '100%' }}
-                />
+                <Space>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={showModal}
+                    size="large"
+                    style={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      border: 'none'
+                    }}
+                  >
+                    Create Announcement
+                  </Button>
+                  <Search
+                    placeholder="Search by ID, admin, or message..."
+                    allowClear
+                    enterButton={<SearchOutlined />}
+                    size="large"
+                    onSearch={handleSearch}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="search-input"
+                    style={{ maxWidth: 400, width: '100%' }}
+                  />
+                </Space>
               }
             >
               <Table
@@ -319,7 +464,7 @@ const StaffAnnouncementView = () => {
                 dataSource={filteredData}
                 rowKey="Announcement_ID"
                 loading={loading}
-                scroll={{ x: 1000, y: 500 }}
+                scroll={{ x: 1200, y: 500 }}
                 className="staff-announcement-table"
                 sticky
                 pagination={{
@@ -332,6 +477,68 @@ const StaffAnnouncementView = () => {
                 }}
               />
             </Card>
+
+            {/* Create/Edit Announcement Modal */}
+            <Modal
+              title={
+                <Space>
+                  {isEditMode ? <EditOutlined /> : <PlusOutlined />}
+                  <span style={{ fontSize: '20px', fontWeight: 600 }}>
+                    {isEditMode ? 'Edit Announcement' : 'Create New Announcement'}
+                  </span>
+                </Space>
+              }
+              open={isModalVisible}
+              onCancel={handleCancel}
+              footer={null}
+              width={600}
+              destroyOnClose
+            >
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSubmit}
+                style={{ marginTop: 24 }}
+              >
+                <Form.Item
+                  name="message"
+                  label={<span style={{ fontWeight: 600, fontSize: 15 }}>Announcement Message</span>}
+                  rules={[
+                    { required: true, message: 'Please enter the announcement message' },
+                    { min: 10, message: 'Message must be at least 10 characters' }
+                  ]}
+                >
+                  <TextArea
+                    rows={6}
+                    placeholder="Enter your announcement message here..."
+                    maxLength={500}
+                    showCount
+                  />
+                </Form.Item>
+
+                <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+                  <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+                    <Button size="large" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                    <Button
+                      type="primary"
+                      size="large"
+                      htmlType="submit"
+                      loading={loading}
+                      icon={isEditMode ? <EditOutlined /> : <PlusOutlined />}
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        minWidth: 120
+                      }}
+                    >
+                      {isEditMode ? 'Update' : 'Create'}
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Form>
+            </Modal>
           </div>
         </Content>
 
