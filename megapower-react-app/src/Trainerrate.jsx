@@ -234,6 +234,15 @@ export const Trainerrate = () => {
       ),
     },
     {
+      title: userType === 'staff' ? 'Member ID' : 'Staff ID',
+      dataIndex: userType === 'staff' ? 'Member_Id' : 'Staff_ID',
+      key: userType === 'staff' ? 'Member_Id' : 'Staff_ID',
+      width: 120,
+      render: (id) => (
+        <Tag color="blue">{id}</Tag>
+      ),
+    },
+    {
       title: 'Rating',
       dataIndex: 'Rating',
       key: 'Rating',
@@ -253,6 +262,21 @@ export const Trainerrate = () => {
           {comment || 'No comment'}
         </div>
       ),
+    },
+    {
+      title: 'Date',
+      dataIndex: 'Date',
+      key: 'Date',
+      width: 150,
+      render: (date) => (
+        <span>{date ? new Date(date).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric' 
+        }) : 'N/A'}</span>
+      ),
+      sorter: (a, b) => new Date(a.Date) - new Date(b.Date),
+      defaultSortOrder: 'descend',
     },
   ];
 

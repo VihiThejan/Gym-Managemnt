@@ -160,9 +160,12 @@ function Chat() {
             socket = io.connect("http://localhost:5000");
             
             socket.on("receiveMessage", (data) => {
-                // Only add message if it's from someone else (not the current user)
+                // Only add message if it's from someone else (not sent by current user)
                 if (data.sender_id !== userId) {
-                    setChatMessages((prev) => [...prev, data]);
+                    // Add message if current user is the receiver
+                    if (data.receiver_id === userId) {
+                        setChatMessages((prev) => [...prev, data]);
+                    }
                 }
             });
 

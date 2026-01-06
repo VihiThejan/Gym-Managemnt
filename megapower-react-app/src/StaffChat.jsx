@@ -170,10 +170,24 @@ function StaffChat() {
     }
   };
 
-  const handleReceiverChange = (value) => {
+  const handleReceiverChange = async (value) => {
     setReceiverId(value);
     const receiver = userList.find(u => u.id.toString() === value);
     setSelectedReceiver(receiver);
+    
+    // Load message history when receiver is selected
+    if (currentUser && currentUser.id) {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/v1/messages/${currentUser.id}/${value}`);
+        if (response.data.code === 200) {
+          setChatMessages(response.data.data || []);
+        }
+      } catch (error) {
+        console.error('Error loading message history:', error);
+        // Don't show error message, just start with empty chat
+        setChatMessages([]);
+      }
+    }
   };
 
   const initializeSocket = (userId) => {
@@ -181,8 +195,12 @@ function StaffChat() {
       socket = io.connect("http://localhost:5000");
 
       socket.on("receiveMessage", (data) => {
+        // Only add message if it's from someone else (not sent by current user)
         if (data.sender_id !== userId) {
-          setChatMessages((prev) => [...prev, data]);
+          // Add message if current user is the receiver
+          if (data.receiver_id === userId) {
+            setChatMessages((prev) => [...prev, data]);
+          }
         }
       });
 

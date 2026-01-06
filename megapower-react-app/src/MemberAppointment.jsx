@@ -425,7 +425,6 @@ const MemberAppointment = () => {
                   size="small"
                   icon={<EditOutlined />}
                   onClick={() => showEditModal(record)}
-                  disabled={new Date(record.date) - new Date() < 24 * 60 * 60 * 1000} // Disable if less than 24 hours
                 >
                   Edit
                 </Button>
@@ -523,7 +522,6 @@ const MemberAppointment = () => {
                 onClick={() => showEditModal(appointment)}
                 className="action-btn"
                 loading={loading}
-                disabled={new Date(appointment.Date_and_Time) - new Date() < 24 * 60 * 60 * 1000} // Disable if less than 24 hours
               >
                 Edit
               </Button>

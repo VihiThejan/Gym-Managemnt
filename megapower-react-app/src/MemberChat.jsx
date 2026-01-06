@@ -109,7 +109,13 @@ export const MemberChat = () => {
 
     // Listen for incoming messages
     socket.on('receiveMessage', (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
+      // Only add message if it's from someone else (not sent by current user)
+      if (data.sender_id !== currentUser) {
+        // Add message if current user is the receiver
+        if (data.receiver_id === currentUser) {
+          setMessages((prevMessages) => [...prevMessages, data]);
+        }
+      }
     });
 
     // Cleanup
@@ -299,7 +305,7 @@ export const MemberChat = () => {
           <div className="header-content">
             <h2 style={{ margin: 0, color: 'white', fontSize: '28px', fontWeight: '700' }}>
               <MessageOutlined style={{ marginRight: 12 }} />
-              Chat with Trainers & Staff
+              Member Chat
             </h2>
           </div>
         </Header>

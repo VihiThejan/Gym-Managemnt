@@ -43,6 +43,7 @@ const trainerrateList = async (req, res) => {
                 Member_Id: true,
                 Rating: true,
                 Comment: true,
+                Date: true,
         
         },
         })
