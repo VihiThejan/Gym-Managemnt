@@ -189,9 +189,17 @@ export const MemberAttendance = () => {
   const handleCheckIn = async (values) => {
     const today = moment().format('YYYY-MM-DD');
     // If no time is selected, use current device time
-    const inTime = values?.inTime 
-      ? moment(values.inTime).format('HH:mm:ss')
-      : moment().format('HH:mm:ss');
+    // Extract time components directly to avoid timezone conversion
+    let inTime;
+    if (values?.inTime) {
+      const timeObj = moment(values.inTime);
+      const hours = String(timeObj.hours()).padStart(2, '0');
+      const minutes = String(timeObj.minutes()).padStart(2, '0');
+      const seconds = String(timeObj.seconds()).padStart(2, '0');
+      inTime = `${hours}:${minutes}:${seconds}`;
+    } else {
+      inTime = moment().format('HH:mm:ss');
+    }
 
     console.log('Checking in with:', { memberId, today, inTime });
 
@@ -230,16 +238,40 @@ export const MemberAttendance = () => {
       }
 
       const currentDate = moment(todayAttendance.Current_date).format('YYYY-MM-DD');
-      const inTime = moment(todayAttendance.In_time).format('HH:mm:ss');
+      
+      // Get the actual check-in time from the database record
+      const checkInTime = moment(todayAttendance.In_time);
+      const inTime = checkInTime.format('HH:mm:ss');
+      
+      console.log('Today attendance record:', {
+        Current_date: todayAttendance.Current_date,
+        In_time: todayAttendance.In_time,
+        In_time_formatted: checkInTime.format('YYYY-MM-DD HH:mm:ss')
+      });
       
       // If no time is selected, use current device time
-      const outTime = values?.outTime 
-        ? moment(values.outTime).format('HH:mm:ss')
-        : moment().format('HH:mm:ss');
+      // Extract time components directly to avoid timezone conversion
+      let outTime;
+      if (values?.outTime) {
+        const timeObj = moment(values.outTime);
+        const hours = String(timeObj.hours()).padStart(2, '0');
+        const minutes = String(timeObj.minutes()).padStart(2, '0');
+        const seconds = String(timeObj.seconds()).padStart(2, '0');
+        outTime = `${hours}:${minutes}:${seconds}`;
+      } else {
+        outTime = moment().format('HH:mm:ss');
+      }
       
       // Validate that check-out time is after check-in time
+      // Build full datetime for accurate comparison
       const checkInMoment = moment(todayAttendance.In_time);
       const checkOutMoment = moment(`${currentDate} ${outTime}`, 'YYYY-MM-DD HH:mm:ss');
+      
+      console.log('Time comparison:', {
+        checkIn: checkInMoment.format('YYYY-MM-DD HH:mm:ss'),
+        checkOut: checkOutMoment.format('YYYY-MM-DD HH:mm:ss'),
+        isAfter: checkOutMoment.isAfter(checkInMoment)
+      });
       
       if (checkOutMoment.isSameOrBefore(checkInMoment)) {
         message.error('Check-out time must be after check-in time!');
@@ -248,6 +280,12 @@ export const MemberAttendance = () => {
       
       // Calculate duration for confirmation
       const duration = checkOutMoment.diff(checkInMoment, 'minutes');
+      
+      if (duration <= 0) {
+        message.error('Check-out time must be after check-in time!');
+        return;
+      }
+      
       const hours = Math.floor(duration / 60);
       const minutes = duration % 60;
 
