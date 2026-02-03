@@ -90,6 +90,15 @@ const userRegister = async (req, res) => {
     } catch (ex) {
         console.error('Registration error:', ex.message);
         console.error('Full error:', ex);
+        
+        // Handle unique constraint violation
+        if (ex.code === 'P2002') {
+            return res.status(400).json({
+                code: 400,
+                message: 'This contact number is already registered. Please use a different contact number.',
+            });
+        }
+        
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
