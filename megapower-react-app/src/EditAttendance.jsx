@@ -28,8 +28,15 @@ export const EditAttendance = () => {
         const response = await axios.get(`http://localhost:5000/api/v1/attendance/${id}`);
         const attendance = response.data.data;
 
+        console.log('Fetched attendance:', attendance);
+        
         setMemberId(Number(attendance.Member_Id));
-        setDate(attendance.Current_date ? moment(attendance.Current_date) : null);
+        
+        // Parse date properly - ensure it's a valid moment object
+        const parsedDate = attendance.Current_date ? moment(attendance.Current_date).utc() : null;
+        console.log('Parsed date:', parsedDate ? parsedDate.format('YYYY-MM-DD') : 'null');
+        setDate(parsedDate);
+        
         // Parse time from datetime object correctly
         setInTime(attendance.In_time ? moment(attendance.In_time) : null);
         setOutTime(attendance.Out_time ? moment(attendance.Out_time) : null);
@@ -63,11 +70,13 @@ export const EditAttendance = () => {
         Out_time: formattedOutTime,
       };
 
-      await axios.put(`http://localhost:5000/api/v1/attendance/update/${id}`, body);
+      console.log('Updating attendance with:', body);
+      const response = await axios.put(`http://localhost:5000/api/v1/attendance/update/${id}`, body);
+      console.log('Update response:', response.data);
       message.success("Attendance updated successfully!");
       
       setTimeout(() => {
-        navigate('/Attendancetable');
+        navigate('/Attendancetable', { state: { refresh: true } });
       }, 1500);
     } catch (Err) {
       console.error("Error updating attendance:", Err.response?.data || Err.message);
@@ -131,6 +140,9 @@ export const EditAttendance = () => {
                   size="large"
                   className="form-input"
                   format="YYYY-MM-DD"
+                  picker="date"
+                  showToday
+                  allowClear={false}
                   required
                 />
               </Form.Item>
