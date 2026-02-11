@@ -9,7 +9,8 @@ import {
   CreditCardOutlined,
   FilePdfOutlined,
   DownloadOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  CloseCircleOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import jsPDF from 'jspdf';
@@ -49,9 +50,9 @@ export const Paymenttable = () => {
   const handleSearch = (value) => {
     setSearchText(value);
     if (value) {
-      const filtered = data.filter((item) => 
+      const filtered = data.filter((item) =>
         String(item.Payment_ID).toLowerCase().includes(value.toLowerCase()) ||
-        String(item.Member_Id).toLowerCase().includes(value.toLowerCase()) ||
+        String(item.Member_ID).toLowerCase().includes(value.toLowerCase()) ||
         String(item.Package_ID).toLowerCase().includes(value.toLowerCase()) ||
         String(item.Amount).toLowerCase().includes(value.toLowerCase())
       );
@@ -75,12 +76,26 @@ export const Paymenttable = () => {
     }
   };
 
+  const rejectPayment = async (paymentId) => {
+    try {
+      setLoading(true);
+      await axios.put(`http://localhost:5000/api/v1/payment/reject/${paymentId}`);
+      message.success('Payment declined successfully');
+      fetchData();
+    } catch (error) {
+      console.error(`Error declining payment: ${error.message}`);
+      message.error('Failed to decline payment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const generatePDF = async (payment) => {
     try {
       // Fetch member details
       const memberResponse = await axios.get(`http://localhost:5000/api/v1/member/list`);
       const members = memberResponse?.data?.data || [];
-      const member = members.find(m => m.Mem_ID === payment.Member_Id);
+      const member = members.find(m => m.Mem_ID === payment.Member_ID);
 
       const doc = new jsPDF();
       
@@ -123,7 +138,7 @@ export const Paymenttable = () => {
       doc.setFont(undefined, 'bold');
       doc.text('Date:', 130, yPos);
       doc.setFont(undefined, 'normal');
-      doc.text(moment(payment.Date).format('DD MMM YYYY'), 150, yPos);
+      doc.text(moment(payment.Payment_Date).format('DD MMM YYYY'), 150, yPos);
       
       yPos += 15;
       
@@ -140,7 +155,7 @@ export const Paymenttable = () => {
       doc.setFont(undefined, 'bold');
       doc.text('Member ID:', 25, yPos);
       doc.setFont(undefined, 'normal');
-      doc.text(String(payment.Member_Id), 65, yPos);
+      doc.text(String(payment.Member_ID), 65, yPos);
       
       if (member) {
         yPos += 8;
@@ -244,7 +259,7 @@ export const Paymenttable = () => {
       doc.text('Mega Power Gym & Fitness | Contact: +94 XX XXX XXXX | Email: info@megapower.com', 105, yPos, { align: 'center' });
       
       // Save the PDF
-      doc.save(`Payment_Receipt_${payment.Payment_ID}_${moment(payment.Date).format('YYYYMMDD')}.pdf`);
+      doc.save(`Payment_Receipt_${payment.Payment_ID}_${moment(payment.Payment_Date).format('YYYYMMDD')}.pdf`);
       message.success('Payment receipt generated successfully!');
       
     } catch (error) {
@@ -264,7 +279,7 @@ export const Paymenttable = () => {
     },
     {
       title: "Member ID",
-      dataIndex: "Member_Id",
+      dataIndex: "Member_ID",
       key: "member_id",
       width: 120,
       render: (id) => <Tag color="blue" className="member-id-tag">{id}</Tag>,
@@ -313,20 +328,21 @@ export const Paymenttable = () => {
     },
     {
       title: "Payment Date",
-      dataIndex: "Date",
+      dataIndex: "Payment_Date",
       key: "date",
       width: 150,
       render: (date) => moment(date).format("YYYY-MM-DD"),
     },
     {
       title: "Status",
-      dataIndex: "Status",
+      dataIndex: "Payment_Status",
       key: "status",
       width: 120,
       render: (status) => {
         const statusMap = {
           "Completed": { color: "success" },
           "Pending": { color: "warning" },
+          "Rejected": { color: "error" },
           "Failed": { color: "error" }
         };
         const statusInfo = statusMap[status] || { color: "default" };
@@ -356,23 +372,33 @@ export const Paymenttable = () => {
     {
       title: "Action",
       key: "action",
-      width: 180,
+      width: 250,
       fixed: "right",
       render: (_, record) => (
         <Space size="small">
-          {record.Status === 'Pending' && (
-            <Button
-              type="primary"
-              icon={<CheckCircleOutlined />}
-              onClick={() => confirmPayment(record.Payment_ID)}
-              size="small"
-              style={{ 
-                background: '#52c41a',
-                border: 'none'
-              }}
-            >
-              Confirm
-            </Button>
+          {record.Payment_Status === 'Pending' && (
+            <>
+              <Button
+                type="primary"
+                icon={<CheckCircleOutlined />}
+                onClick={() => confirmPayment(record.Payment_ID)}
+                size="small"
+                style={{ 
+                  background: '#52c41a',
+                  border: 'none'
+                }}
+              >
+                Confirm
+              </Button>
+              <Button
+                danger
+                icon={<CloseCircleOutlined />}
+                onClick={() => rejectPayment(record.Payment_ID)}
+                size="small"
+              >
+                Decline
+              </Button>
+            </>
           )}
           <Button
             type="primary"

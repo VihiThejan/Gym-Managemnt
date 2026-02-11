@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, Input, Modal, message } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { 
   PlusOutlined, 
@@ -23,22 +23,51 @@ const { Content } = Layout;
 
 export const Attendancetable = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [data, setData] = useState([]); 
   const [filteredData, setFilteredData] = useState([]); 
-  const [searchText, setSearchText] = useState(""); 
+  const [searchText, setSearchText] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const fetchData = async () => {
+    try {
+      // Add timestamp to prevent caching
+      const response = await axios.get(`http://localhost:5000/api/v1/attendance/list?_t=${Date.now()}`);
+      const fetchedData = response?.data?.data || [];
+      console.log('Fetched attendance data:', fetchedData);
+      setData(fetchedData);
+      
+      // Reapply search filter if there's an active search
+      if (searchText) {
+        const searchLower = searchText.toLowerCase();
+        setFilteredData(fetchedData.filter((item) => 
+          String(item.Attendance_ID).includes(searchText) ||
+          String(item.Member_Id).includes(searchText) ||
+          (item.Current_date && moment(item.Current_date).format("YYYY-MM-DD").includes(searchLower)) ||
+          (item.In_time && moment(item.In_time).format("hh:mm A").toLowerCase().includes(searchLower)) ||
+          (item.Out_time && moment(item.Out_time).format("hh:mm A").toLowerCase().includes(searchLower))
+        ));
+      } else {
+        setFilteredData(fetchedData);
+      }
+    } catch (error) {
+      console.error(`Error fetching data: ${error.message}`);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/v1/attendance/list");
-        setData(response?.data?.data || []);
-        setFilteredData(response?.data?.data || []);
-      } catch (error) {
-        console.error(`Error fetching data: ${error.message}`);
-      }
-    };
     fetchData();
-  }, []);
+  }, [refreshKey]);
+
+  // Refresh data when navigating back from edit page
+  useEffect(() => {
+    if (location.state?.refresh) {
+      console.log('Refresh triggered from navigation');
+      setRefreshKey(prev => prev + 1);
+      // Clear the state to prevent refetching on other updates
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]);
 
   const handleEdit = (attendanceid) => {
     console.log(`Edit record with Attendance ID: ${attendanceid}`);
@@ -56,10 +85,9 @@ export const Attendancetable = () => {
         try {
           await axios.delete(`http://localhost:5000/api/v1/attendance/delete/${attendanceid}`);
           message.success(`Attendance record #${attendanceid} deleted successfully`);
-
-          const response = await axios.get("http://localhost:5000/api/v1/attendance/list");
-          setData(response?.data?.data);
-          setFilteredData(response?.data?.data);
+          
+          // Refresh the data after deletion
+          await fetchData();
         } catch (error) {
           console.error(`Error deleting record: ${error.message}`);
           message.error('Failed to delete attendance record');

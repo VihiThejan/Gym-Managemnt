@@ -86,7 +86,7 @@ const paymentHandling = async (req, res) => {
 
 const paymentList = async (req, res) => {
     try{
-        const data = await prisma.payment.findMany(
+        const payments = await prisma.payment.findMany(
             {select: {
               Payment_ID:true,
               Member_Id: true,
@@ -98,6 +98,19 @@ const paymentList = async (req, res) => {
               Status: true,
         },
         })
+        
+        // Map the fields to match frontend expectations
+        const data = payments.map(payment => ({
+            Payment_ID: payment.Payment_ID,
+            Member_ID: payment.Member_Id,
+            Package_ID: payment.Package_ID,
+            Amount: payment.Amount,
+            Payment_Date: payment.Date,
+            Payment_Method: payment.Payment_Method,
+            Payment_Slip: payment.Payment_Slip,
+            Payment_Status: payment.Status,
+        }));
+        
         res.status(200).json({
             code: 200,
             message: 'Payment fetched successfully',
@@ -133,6 +146,35 @@ const confirmPayment = async (req, res) => {
         });
     } catch (ex) {
         console.error('Error confirming payment:', ex);
+        res.status(500).json({
+            code: 500,
+            message: 'Internal Server Error',
+            error: ex.message
+        });
+    }
+}
+
+const rejectPayment = async (req, res) => {
+    try {
+        const paymentId = parseInt(req.params.id);
+        
+        // Update payment status to Rejected
+        const updatedPayment = await prisma.payment.update({
+            where: {
+                Payment_ID: paymentId
+            },
+            data: {
+                Status: 'Rejected'
+            }
+        });
+        
+        res.status(200).json({
+            code: 200,
+            message: 'Payment declined successfully',
+            data: updatedPayment
+        });
+    } catch (ex) {
+        console.error('Error declining payment:', ex);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
@@ -237,6 +279,7 @@ module.exports = {
     paymentHandling,
     paymentList,
     confirmPayment,
+    rejectPayment,
     createStripePaymentIntent,
     handleStripeWebhook,
     upload, // Export upload middleware
