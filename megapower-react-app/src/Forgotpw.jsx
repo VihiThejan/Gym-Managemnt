@@ -26,20 +26,63 @@ export const ForgotPassword = () => {
     
     setSendingOtp(true);
     
-    antMessage.info(phoneNumber);
-    axios.post('http://localhost:5000/api/v1/auth/forgetpw', {contact: phoneNumber})
-    .then(async (data) => {
-        console.log(data);
-        if (data?.data?.code === 400) {
-            antMessage.error(data?.data?.message);
-        } else if (data?.data?.code === 200) {
-          antMessage.success('OTP sent successfully');
+    // Format phone number: ensure it starts with country code
+    const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+    
+    console.log('Sending OTP to:', formattedPhone);
+    
+    axios.post('http://localhost:5000/api/v1/auth/forgetpw', {contact: formattedPhone})
+    .then((response) => {
+        console.log('OTP Response:', response.data);
+        if (response?.data?.code === 400) {
+            antMessage.error(response?.data?.message || 'Failed to send OTP');
+        } else if (response?.data?.code === 200) {
+          const data = response.data;
+          
+          // Check if OTP is provided in response (development mode or SMS failed)
+          if (data.otp) {
+            // Show OTP in a prominent alert
+            antMessage.success({
+              content: (
+                <div>
+                  <strong>OTP Generated!</strong>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '10px 0', color: '#1890ff' }}>
+                    {data.otp}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#666' }}>
+                    {data.smsDelivered ? 'Also sent to your phone' : 'SMS delivery failed - use this code'}
+                  </div>
+                </div>
+              ),
+              duration: 0, // Don't auto-close
+              style: { marginTop: '20vh' }
+            });
+            console.log('🔑 YOUR OTP:', data.otp);
+          } else if (data.smsDelivered) {
+            antMessage.success('OTP sent successfully! Check your phone.');
+          } else {
+            antMessage.warning(data.message || 'OTP generated. Check backend console.');
+          }
+          
           setOtpSent(true);
+        } else {
+          antMessage.warning('Unexpected response from server');
+          console.warn('Unexpected response:', response.data);
         }
     })
     .catch(err => {
-        console.error(err.message);
-        antMessage.error('Failed to send OTP. Please try again.');
+        console.error('OTP Error Details:', err);
+        console.error('Error Response:', err.response?.data);
+        
+        if (err.response?.data?.message) {
+            antMessage.error(err.response.data.message);
+        } else if (err.response?.status === 500) {
+            antMessage.error('Server error. Please try again later.');
+        } else if (err.message === 'Network Error') {
+            antMessage.error('Cannot connect to server. Please check if the backend is running.');
+        } else {
+            antMessage.error('Failed to send OTP. Please try again.');
+        }
     })
     .finally(() => {
         setSendingOtp(false);
@@ -54,24 +97,42 @@ export const ForgotPassword = () => {
       return;
     }
     
-    setVerifyingOtp(true);
-    localStorage.setItem('contact', phoneNumber);
+    if (otp.length !== 6) {
+      antMessage.error("OTP must be 6 digits.");
+      return;
+    }
     
-    axios.post('http://localhost:5000/api/v1/auth/verify', {contact: phoneNumber, otp: otp})
-    .then(async (data) => {
-        console.log(data);
-        if (data?.data?.code === 400) {
-            antMessage.error(data?.data?.message);
-        } else if (data?.data?.code === 200 && data?.data?.data != null) {
+    setVerifyingOtp(true);
+    
+    // Use the same formatted phone number
+    const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+    localStorage.setItem('contact', formattedPhone);
+    
+    console.log('Verifying OTP for:', formattedPhone);
+    
+    axios.post('http://localhost:5000/api/v1/auth/verify', {contact: formattedPhone, otp: otp})
+    .then((response) => {
+        console.log('Verify Response:', response.data);
+        if (response?.data?.code === 400) {
+            antMessage.error(response?.data?.message || 'Invalid OTP');
+        } else if (response?.data?.code === 200 && response?.data?.data != null) {
           antMessage.success('OTP verified successfully');
           setTimeout(() => {
             navigate('/Resetpw');
           }, 1000);
+        } else {
+          antMessage.error('Verification failed. Please try again.');
         }
     })
     .catch(err => {
-        console.error(err.message);
-        antMessage.error('Failed to verify OTP. Please try again.');
+        console.error('Verify Error:', err);
+        console.error('Error Response:', err.response?.data);
+        
+        if (err.response?.data?.message) {
+            antMessage.error(err.response.data.message);
+        } else {
+            antMessage.error('Failed to verify OTP. Please try again.');
+        }
     })
     .finally(() => {
         setVerifyingOtp(false);

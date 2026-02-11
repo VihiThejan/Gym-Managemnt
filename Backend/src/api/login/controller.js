@@ -110,8 +110,12 @@ const userRegister = async (req, res) => {
 const forgetpw = async (req, res) => {
     const { contact } = req.body;
 
+    console.log('=== Forget Password Request ===');
+    console.log('Received contact:', contact);
+
     // Validate contact field
     if (!contact || contact.trim() === '') {
+        console.log('❌ Contact number is missing');
         return res.status(400).json({
             code: 400,
             message: 'Contact number is required',
@@ -119,76 +123,136 @@ const forgetpw = async (req, res) => {
     }
 
     try {
+        // Normalize phone number: try both with and without '+' prefix
+        const normalizedContact = contact.replace(/\s+/g, ''); // Remove spaces
+        const contactVariants = [
+            normalizedContact,
+            normalizedContact.startsWith('+') ? normalizedContact.substring(1) : `+${normalizedContact}`
+        ];
+
+        console.log('Searching for user with contact variants:', contactVariants);
+
         // Check if user exists in any table before sending OTP
         const adminUser = await prisma.admin.findFirst({
-            where: { Contact: contact }
+            where: { 
+                Contact: { in: contactVariants }
+            }
         });
 
         const memberUser = await prisma.member.findFirst({
-            where: { Contact: contact }
+            where: { 
+                Contact: { in: contactVariants }
+            }
         });
 
         const staffUser = await prisma.staffmember.findFirst({
-            where: { Contact_No: contact }
+            where: { 
+                Contact_No: { in: contactVariants }
+            }
         });
 
+        console.log('Search results - Admin:', !!adminUser, 'Member:', !!memberUser, 'Staff:', !!staffUser);
+
         if (!adminUser && !memberUser && !staffUser) {
-            console.log('User not found with contact:', contact);
+            console.log('❌ User not found with contact:', contact);
             return res.status(200).json({
                 code: 400,
-                message: 'No account found with this contact number',
+                message: 'No account found with this contact number. Please check the number and try again.',
             });
         }
 
-        console.log('User found - generating OTP for contact:', contact);
+        console.log('✅ User found - generating OTP for contact:', normalizedContact);
         const otp = crypto.randomInt(100000, 999999);
-        console.log('Generated OTP:', otp);
+        console.log('\n🔑 ═══════════════════════════════════════');
+        console.log('🔑  YOUR OTP CODE: ' + otp);
+        console.log('🔑 ═══════════════════════════════════════\n');
 
         // Set OTP expiration time to 10 minutes from now
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
         console.log('OTP expires at:', expiresAt);
 
+        // Delete any existing OTP for this contact to avoid confusion
+        await prisma.otp.deleteMany({
+            where: { 
+                Contact: { in: contactVariants }
+            }
+        });
+        console.log('Deleted old OTP records');
+
         // Save OTP to database first
         const otpRecord = await prisma.otp.create({
             data: {
-                Contact: contact,
+                Contact: normalizedContact,
                 Otp: otp.toString(),
                 Expires_At: expiresAt,
             }
         });
 
-        console.log('OTP saved to database:', otpRecord);
+        console.log('✅ OTP saved to database with ID:', otpRecord.ID);
 
-        // Prepare SMS message
+        // Prepare SMS message - ensure phone number is in correct format
+        const smsDestination = normalizedContact.startsWith('+') ? normalizedContact : `+${normalizedContact}`;
+        
         var message = {
             source: 'ShoutDEMO',
-            destinations: [contact],
+            destinations: [smsDestination],
             content: {
-                sms: 'Your OTP is ' + otp
+                sms: `Your Gym Management OTP is ${otp}. Valid for 10 minutes. Do not share this code.`
             },
             transports: ['sms']
         };
 
-        // Send SMS asynchronously (don't wait for response)
+        console.log('Attempting to send SMS to:', smsDestination);
+
+        // Track SMS delivery status
+        let smsDelivered = false;
+        let smsError = null;
+
+        // Send SMS asynchronously
         client.sendMessage(message, (error, result) => {
             if (error) {
-                console.error('SMS sending error:', error);
+                console.error('❌ SMS sending error:', error);
+                console.error('SMS error details:', JSON.stringify(error, null, 2));
+                console.warn('⚠️  SMS delivery failed. Use OTP from console logs above.');
+                smsError = error;
             } else {
-                console.log('SMS sent successfully. Result:', result);
+                console.log('✅ SMS sent successfully');
+                console.log('SMS Result:', JSON.stringify(result, null, 2));
+                smsDelivered = true;
             }
         });
 
+        // Wait a moment to check SMS status
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Return success even if SMS fails (OTP is saved in DB)
+        console.log('✅ Returning success response to client\n');
+        
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        const smsHasError = smsError !== null;
+        
         res.status(200).json({
             code: 200,
-            message: 'OTP sent successfully',
+            message: smsDelivered 
+                ? 'OTP sent successfully to your phone.' 
+                : 'OTP generated. ' + (isDevelopment ? 'Check console for OTP code.' : 'Please contact support if you did not receive it.'),
+            smsDelivered: smsDelivered,
+            // Always show OTP in development mode OR when SMS fails
+            otp: (isDevelopment || smsHasError) ? otp : undefined,
+            // Additional info for development
+            debug: isDevelopment ? {
+                smsStatus: smsDelivered ? 'sent' : 'failed',
+                smsError: smsError ? (smsError.message?.description || 'Unknown error') : null,
+                note: 'OTP is visible because NODE_ENV=development or SMS failed'
+            } : undefined
         })
     } catch (ex) {
-        console.error('forgetpw error:', ex);
+        console.error('❌ forgetpw error:', ex);
         console.error('Error stack:', ex.stack);
         res.status(500).json({
             code: 500,
-            message: 'Internal Server Error',
-            error: ex.message
+            message: 'Internal Server Error. Please try again later.',
+            error: process.env.NODE_ENV === 'development' ? ex.message : undefined
         })
     }
 }
@@ -196,8 +260,12 @@ const forgetpw = async (req, res) => {
 const verifyOtp = async (req, res) => {
     const { otp, contact } = req.body;
 
+    console.log('=== Verify OTP Request ===');
+    console.log('Contact:', contact, 'OTP:', otp);
+
     // Validate inputs
     if (!otp || !contact) {
+        console.log('❌ Missing OTP or contact');
         return res.status(400).json({
             code: 400,
             message: 'OTP and contact are required',
@@ -205,28 +273,45 @@ const verifyOtp = async (req, res) => {
     }
 
     try {
+        // Normalize phone number to match what was stored
+        const normalizedContact = contact.replace(/\s+/g, '');
+        const contactVariants = [
+            normalizedContact,
+            normalizedContact.startsWith('+') ? normalizedContact.substring(1) : `+${normalizedContact}`
+        ];
+
+        console.log('Searching for OTP with contact variants:', contactVariants);
+
         const isvalid = await prisma.otp.findFirst({
             select: {
                 ID: true,
                 Expires_At: true,
+                Contact: true,
             },
             where: {
-                Contact: contact,
+                Contact: { in: contactVariants },
                 Otp: otp.toString(),
+            },
+            orderBy: {
+                Expires_At: 'desc' // Get the most recent OTP
             }
         });
 
         if (!isvalid) {
+            console.log('❌ Invalid OTP or contact mismatch');
             return res.status(200).json({
                 code: 400,
-                message: 'Invalid OTP',
+                message: 'Invalid OTP. Please check and try again.',
                 data: null
             });
         }
 
+        console.log('Found OTP record:', isvalid);
+
         // Check if OTP has expired
         const now = new Date();
         if (isvalid.Expires_At < now) {
+            console.log('❌ OTP has expired');
             return res.status(200).json({
                 code: 400,
                 message: 'OTP has expired. Please request a new OTP.',
@@ -234,17 +319,26 @@ const verifyOtp = async (req, res) => {
             });
         }
 
+        console.log('✅ OTP verified successfully');
+
+        // Delete the used OTP to prevent reuse
+        await prisma.otp.delete({
+            where: { ID: isvalid.ID }
+        });
+        console.log('Used OTP deleted');
+
         res.status(200).json({
             code: 200,
             message: 'User verified successfully',
-            data: isvalid
+            data: { verified: true }
         });
     } catch (ex) {
-        console.error('verifyOtp error:', ex);
+        console.error('❌ verifyOtp error:', ex);
+        console.error('Error stack:', ex.stack);
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
-            error: ex.message
+            error: process.env.NODE_ENV === 'development' ? ex.message : undefined
         })
     }
 }
