@@ -177,6 +177,24 @@ CREATE TABLE `feedback` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
+-- Table: packages
+-- Description: Membership packages available
+-- ============================================================
+CREATE TABLE `packages` (
+  `Package_ID` INT NOT NULL AUTO_INCREMENT,
+  `Package_Name` VARCHAR(100) NOT NULL,
+  `Duration_Months` INT NOT NULL,
+  `Price` DECIMAL(10,2) NOT NULL,
+  `Description` TEXT,
+  `Features` TEXT,
+  `Status` VARCHAR(50) DEFAULT 'Active',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Package_ID`),
+  INDEX `idx_status` (`Status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- Table: payment
 -- Description: Payment records (FIXED: Now references member table + added Status)
 -- ============================================================
@@ -199,7 +217,9 @@ CREATE TABLE `payment` (
   INDEX `idx_member_id` (`Member_Id`),
   INDEX `idx_date` (`Date`),
   INDEX `idx_status` (`Status`),
-  CONSTRAINT `fk_payment_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE
+  INDEX `idx_package_id` (`Package_ID`),
+  CONSTRAINT `fk_payment_member` FOREIGN KEY (`Member_Id`) REFERENCES `member` (`Member_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_payment_package` FOREIGN KEY (`Package_ID`) REFERENCES `packages` (`Package_ID`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -422,24 +442,6 @@ CREATE TABLE `messages` (
   INDEX `idx_receiver` (`receiver_id`),
   INDEX `idx_timestamp` (`timestamp`),
   INDEX `idx_conversation` (`sender_id`, `receiver_id`, `timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ============================================================
--- Table: packages
--- Description: Membership packages available
--- ============================================================
-CREATE TABLE `packages` (
-  `Package_ID` INT NOT NULL AUTO_INCREMENT,
-  `Package_Name` VARCHAR(100) NOT NULL,
-  `Duration_Months` INT NOT NULL,
-  `Price` DECIMAL(10,2) NOT NULL,
-  `Description` TEXT,
-  `Features` TEXT,
-  `Status` VARCHAR(50) DEFAULT 'Active',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`Package_ID`),
-  INDEX `idx_status` (`Status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
