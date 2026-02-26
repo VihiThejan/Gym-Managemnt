@@ -131,6 +131,15 @@ app.get('/api/v1/messages/:userId/:receiverId', async (req, res) => {
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
+    // Allow clients to join a room based on their user ID
+    socket.on('joinRoom', (data) => {
+        if (data && data.userId) {
+            const room = `user_${data.userId}`;
+            socket.join(room);
+            console.log(`Socket ${socket.id} joined room: ${room}`);
+        }
+    });
+
     // Handle incoming messages
     socket.on('sendMessage', async (data) => {
         console.log('Message received:', data);
@@ -139,21 +148,33 @@ io.on('connection', (socket) => {
             const { PrismaClient } = require('@prisma/client');
             const prisma = new PrismaClient();
 
-            // Save message to messages table (not chat table)
+            const senderId = parseInt(data.sender_id);
+            const receiverId = parseInt(data.receiver_id);
+
+            // Save message to messages table with sender info
             await prisma.messages.create({
                 data: {
-                    sender_id: parseInt(data.sender_id),
-                    receiver_id: parseInt(data.receiver_id),
+                    sender_id: senderId,
+                    receiver_id: receiverId,
                     message: data.message || '',
                     file_url: data.file_url || null,
                     voice_url: data.voice_url || null,
+                    sender_name: data.sender_name || null,
+                    sender_role: data.sender_role || null,
                 }
             });
 
             await prisma.$disconnect();
 
+            // Build the broadcast payload with normalized IDs
+            const broadcastData = {
+                ...data,
+                sender_id: senderId,
+                receiver_id: receiverId,
+            };
+
             // Broadcast message to all connected clients
-            io.emit('receiveMessage', data);
+            io.emit('receiveMessage', broadcastData);
         } catch (error) {
             console.error('Error saving message:', error);
             socket.emit('messageError', { error: 'Failed to save message' });
@@ -173,7 +194,7 @@ async function startServer() {
 
         // Start the server
         const PORT = process.env.PORT || 5000;
-        
+
         // Add error handler for server
         server.on('error', (error) => {
             if (error.code === 'EADDRINUSE') {
@@ -195,7 +216,7 @@ async function startServer() {
                 process.exit(1);
             }
         });
-        
+
         server.listen(PORT, () => {
             console.log('═══════════════════════════════════════════════');
             console.log('🏋️  Mega Power Gym Management System');

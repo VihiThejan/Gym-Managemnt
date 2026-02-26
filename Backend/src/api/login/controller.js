@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 
 
 
-var apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMWVlZTJjMC03N2UzLTExZWYtOWFlNy1kOWUyMGU0YjE1ZTIiLCJzdWIiOiJTSE9VVE9VVF9BUElfVVNFUiIsImlhdCI6MTcyNjkwMDI4OCwiZXhwIjoyMDQyNDMzMDg4LCJzY29wZXMiOnsiYWN0aXZpdGllcyI6WyJyZWFkIiwid3JpdGUiXSwibWVzc2FnZXMiOlsicmVhZCIsIndyaXRlIl0sImNvbnRhY3RzIjpbInJlYWQiLCJ3cml0ZSJdfSwic29fdXNlcl9pZCI6IjU3NTMwOSIsInNvX3VzZXJfcm9sZSI6InVzZXIiLCJzb19wcm9maWxlIjoiYWxsIiwic29fdXNlcl9uYW1lIjoiIiwic29fYXBpa2V5Ijoibm9uZSJ9.uG9ZYAx5lpWKi-JR1h_pYfhBGxIaFQDHxp4xHUrGXcA';
+var apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjM2E5ZWJjMC0xMzNhLTExZjEtODBmZC00YmQ2NTA1NjgzY2IiLCJzdWIiOiJTSE9VVE9VVF9BUElfVVNFUiIsImlhdCI6MTc3MjEyNzg1MywiZXhwIjoyMDg3NjYwNjUzLCJzY29wZXMiOnsiYWN0aXZpdGllcyI6WyJyZWFkIiwid3JpdGUiXSwibWVzc2FnZXMiOlsicmVhZCIsIndyaXRlIl0sImNvbnRhY3RzIjpbInJlYWQiLCJ3cml0ZSJdfSwic29fdXNlcl9pZCI6IjU3NzUwMiIsInNvX3VzZXJfcm9sZSI6InVzZXIiLCJzb19wcm9maWxlIjoiYWxsIiwic29fdXNlcl9uYW1lIjoiIiwic29fYXBpa2V5Ijoibm9uZSJ9.CLkLCRM4k24Nj_NTnTI_5dY42FP3KL5aAxCTzpwkRqc';
 
 var debug = true, verifySSL = false;
 
@@ -90,7 +90,7 @@ const userRegister = async (req, res) => {
     } catch (ex) {
         console.error('Registration error:', ex.message);
         console.error('Full error:', ex);
-        
+
         // Handle unique constraint violation
         if (ex.code === 'P2002') {
             return res.status(400).json({
@@ -98,7 +98,7 @@ const userRegister = async (req, res) => {
                 message: 'This contact number is already registered. Please use a different contact number.',
             });
         }
-        
+
         res.status(500).json({
             code: 500,
             message: 'Internal Server Error',
@@ -125,13 +125,13 @@ const forgetpw = async (req, res) => {
     try {
         // Normalize phone number - create multiple variants to match different formats
         const normalizedContact = contact.replace(/\s+/g, '').replace(/[()-]/g, ''); // Remove spaces and special chars
-        
+
         // Generate all possible variants of the phone number
         const contactVariants = [];
-        
+
         // Add the original normalized format
         contactVariants.push(normalizedContact);
-        
+
         // Add version with '+' prefix
         if (!normalizedContact.startsWith('+')) {
             contactVariants.push(`+${normalizedContact}`);
@@ -139,7 +139,7 @@ const forgetpw = async (req, res) => {
             // Add version without '+'
             contactVariants.push(normalizedContact.substring(1));
         }
-        
+
         // For Sri Lankan numbers specifically (94)
         if (normalizedContact.startsWith('94')) {
             contactVariants.push(`+${normalizedContact}`);
@@ -155,7 +155,7 @@ const forgetpw = async (req, res) => {
 
         // Check if user exists in any table before sending OTP - use OR with contains for more flexibility
         const adminUser = await prisma.admin.findFirst({
-            where: { 
+            where: {
                 OR: contactVariants.map(variant => ({
                     Contact: { contains: variant.replace(/^\+/, '') }
                 }))
@@ -163,7 +163,7 @@ const forgetpw = async (req, res) => {
         });
 
         const memberUser = await prisma.member.findFirst({
-            where: { 
+            where: {
                 OR: contactVariants.map(variant => ({
                     Contact: { contains: variant.replace(/^\+/, '') }
                 }))
@@ -171,7 +171,7 @@ const forgetpw = async (req, res) => {
         });
 
         const staffUser = await prisma.staffmember.findFirst({
-            where: { 
+            where: {
                 OR: contactVariants.map(variant => ({
                     Contact_No: { contains: variant.replace(/^\+/, '') }
                 }))
@@ -201,7 +201,7 @@ const forgetpw = async (req, res) => {
 
         // Delete any existing OTP for this contact to avoid confusion - use flexible search
         await prisma.otp.deleteMany({
-            where: { 
+            where: {
                 OR: contactVariants.map(variant => ({
                     Contact: variant
                 }))
@@ -222,7 +222,7 @@ const forgetpw = async (req, res) => {
 
         // Prepare SMS message - ensure phone number is in correct format
         const smsDestination = normalizedContact.startsWith('+') ? normalizedContact : `+${normalizedContact}`;
-        
+
         var message = {
             source: 'ShoutDEMO',
             destinations: [smsDestination],
@@ -257,14 +257,14 @@ const forgetpw = async (req, res) => {
 
         // Return success even if SMS fails (OTP is saved in DB)
         console.log('✅ Returning success response to client\n');
-        
+
         const isDevelopment = process.env.NODE_ENV === 'development';
         const smsHasError = smsError !== null;
-        
+
         res.status(200).json({
             code: 200,
-            message: smsDelivered 
-                ? 'OTP sent successfully to your phone.' 
+            message: smsDelivered
+                ? 'OTP sent successfully to your phone.'
                 : 'OTP generated. ' + (isDevelopment ? 'Check console for OTP code.' : 'Please contact support if you did not receive it.'),
             smsDelivered: smsDelivered,
             // Always show OTP in development mode OR when SMS fails
@@ -305,17 +305,17 @@ const verifyOtp = async (req, res) => {
     try {
         // Normalize phone number - create multiple variants to match different formats
         const normalizedContact = contact.replace(/\s+/g, '').replace(/[()-]/g, '');
-        
+
         // Generate all possible variants
         const contactVariants = [];
         contactVariants.push(normalizedContact);
-        
+
         if (!normalizedContact.startsWith('+')) {
             contactVariants.push(`+${normalizedContact}`);
         } else {
             contactVariants.push(normalizedContact.substring(1));
         }
-        
+
         if (normalizedContact.startsWith('94')) {
             contactVariants.push(`+${normalizedContact}`);
         } else if (normalizedContact.startsWith('+94')) {
@@ -415,17 +415,17 @@ const resetPw = async (req, res) => {
 
         // Normalize phone number - create multiple variants to match different formats
         const normalizedContact = contact.replace(/\s+/g, '').replace(/[()-]/g, '');
-        
+
         // Generate all possible variants of the phone number
         const contactVariants = [];
         contactVariants.push(normalizedContact);
-        
+
         if (!normalizedContact.startsWith('+')) {
             contactVariants.push(`+${normalizedContact}`);
         } else {
             contactVariants.push(normalizedContact.substring(1));
         }
-        
+
         if (normalizedContact.startsWith('94')) {
             contactVariants.push(`+${normalizedContact}`);
         } else if (normalizedContact.startsWith('+94')) {

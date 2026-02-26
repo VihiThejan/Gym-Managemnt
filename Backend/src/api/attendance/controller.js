@@ -8,135 +8,138 @@ const attendanceHandling = async (req, res) => {
   console.log('Check-in request:', { memberId, currentDate, inTime });
 
   try {
-      
-      const existingMember = await prisma.member.findUnique({
-          where: {
-              Member_Id: parseInt(memberId),
-          },
+
+    const existingMember = await prisma.member.findUnique({
+      where: {
+        Member_Id: parseInt(memberId),
+      },
+    });
+
+    if (!existingMember) {
+      return res.status(400).json({
+        code: 400,
+        message: "Error: Member ID does not exist.",
       });
+    }
 
-      if (!existingMember) {
-          return res.status(400).json({
-              code: 400,
-              message: "Error: Member ID does not exist.",
-          });
-      }
+    // Store the date as midnight UTC for consistent date-only comparison
+    const dateOnly = new Date(currentDate + 'T00:00:00.000Z');
 
-      // Use UTC to prevent timezone conversion issues
-      // Input format: YYYY-MM-DD (e.g., "2025-12-22")
-      const dateOnly = new Date(currentDate + 'T00:00:00.000Z');
-      
-      // Use provided time or current time
-      const now = new Date();
-      const timeToUse = inTime || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-      
-      console.log('Input date string:', currentDate);
-      console.log('Input time string:', inTime);
-      console.log('Time to use:', timeToUse);
-      console.log('Parsed date for check-in (UTC):', dateOnly.toISOString());
+    // Use provided time or current local time
+    const now = new Date();
+    const timeToUse = inTime || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-      // Check if member already has an active check-in (not checked out yet)
-      const existingAttendance = await prisma.attendance.findFirst({
-          where: {
-              Member_Id: parseInt(memberId),
-              Current_date: {
-                gte: new Date(currentDate + 'T00:00:00.000Z'),
-                lt: new Date(new Date(currentDate + 'T00:00:00.000Z').getTime() + 24 * 60 * 60 * 1000)
-              },
-              Out_time: null // Only check for records without checkout
-          },
+    console.log('Input date string:', currentDate);
+    console.log('Input time string:', inTime);
+    console.log('Time to use:', timeToUse);
+
+    // Check if member already has an active check-in (not checked out yet)
+    const existingAttendance = await prisma.attendance.findFirst({
+      where: {
+        Member_Id: parseInt(memberId),
+        Current_date: {
+          gte: new Date(currentDate + 'T00:00:00.000Z'),
+          lt: new Date(new Date(currentDate + 'T00:00:00.000Z').getTime() + 24 * 60 * 60 * 1000)
+        },
+        Out_time: null // Only check for records without checkout
+      },
+    });
+
+    if (existingAttendance) {
+      return res.status(200).json({
+        code: 400,
+        message: "You have an active check-in. Please check out first before checking in again.",
       });
+    }
 
-      if (existingAttendance) {
-          return res.status(200).json({
-              code: 400,
-              message: "You have an active check-in. Please check out first before checking in again.",
-          });
-      }
+    // Build the In_time DateTime:
+    // The frontend sends local time as HH:mm:ss. We must NOT append 'Z'
+    // because that would treat local time as UTC.
+    // Instead, use `new Date('YYYY-MM-DDTHH:mm:ss')` without Z — 
+    // JS interprets it as local time on the server.
+    const inDateTime = new Date(currentDate + 'T' + timeToUse);
 
-      // Store time as DateTime using the date + time combination
-      const inDateTime = new Date(currentDate + 'T' + timeToUse + '.000Z');
-      
-      console.log('Combined date-time string:', currentDate + 'T' + timeToUse + '.000Z');
-      console.log('Check-in time parsed:', inDateTime.toISOString());
-      
-      const newAttendance = await prisma.attendance.create({
-          data: {
-              Member_Id: parseInt(memberId),
-              Current_date: dateOnly,
-              In_time: inDateTime,
-              Out_time: null, // No checkout time yet
-          },
-      });
+    console.log('Check-in time (local):', timeToUse);
+    console.log('Check-in DateTime stored:', inDateTime.toISOString());
 
-      console.log('Created attendance:', {
-        id: newAttendance.Attendance_ID,
-        date: newAttendance.Current_date,
-        inTime: newAttendance.In_time
-      });
+    const newAttendance = await prisma.attendance.create({
+      data: {
+        Member_Id: parseInt(memberId),
+        Current_date: dateOnly,
+        In_time: inDateTime,
+        Out_time: null, // No checkout time yet
+      },
+    });
 
-      res.status(200).json({
-          code: 200,
-          message: "Checked in successfully!",
-      });
+    console.log('Created attendance:', {
+      id: newAttendance.Attendance_ID,
+      date: newAttendance.Current_date,
+      inTime: newAttendance.In_time
+    });
+
+    res.status(200).json({
+      code: 200,
+      message: "Checked in successfully!",
+    });
   } catch (ex) {
-      console.error('Check-in error:', ex);
-      res.status(500).json({
-          code: 500,
-          message: "Internal Server Error",
-          error: ex.message,
-      });
+    console.error('Check-in error:', ex);
+    res.status(500).json({
+      code: 500,
+      message: "Internal Server Error",
+      error: ex.message,
+    });
   }
 };
 
 const attendanceList = async (req, res) => {
-    try{
-        const data = await prisma.attendance.findMany(
-            {select: {
-            Attendance_ID:true,
-            Member_Id: true,
-            Current_date: true,
-            In_time: true,
-            Out_time: true,
-            
+  try {
+    const data = await prisma.attendance.findMany(
+      {
+        select: {
+          Attendance_ID: true,
+          Member_Id: true,
+          Current_date: true,
+          In_time: true,
+          Out_time: true,
+
         },
-        })
-        res.status(200).json({
-            code: 200,
-            message: 'Attendance fetched successfully',
-            data
-        })
-    }catch(ex){
-        res.status(500).json({
-            code: 500,
-            message: 'Internal Server Error',
-            error: ex.message
-        })
-    }
+      })
+    res.status(200).json({
+      code: 200,
+      message: 'Attendance fetched successfully',
+      data
+    })
+  } catch (ex) {
+    res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error',
+      error: ex.message
+    })
+  }
 }
 
 const attendanceDelete = async (req, res) => {
-    try{
-        const id = req.params.id
-        const data = await prisma.attendance.delete({
-            where: {
-                Attendance_ID: parseInt(id)
-            },
-           
-        })
-        res.status(200).json({
-            code: 200,
-            message: 'Attendance Delete successfully',
-            data
-        })
-    }catch(ex){
-        res.status(500).json({
-            code: 500,
-            message: 'Internal Server Error',
-            error: ex.message
-        })
-    }
-}   
+  try {
+    const id = req.params.id
+    const data = await prisma.attendance.delete({
+      where: {
+        Attendance_ID: parseInt(id)
+      },
+
+    })
+    res.status(200).json({
+      code: 200,
+      message: 'Attendance Delete successfully',
+      data
+    })
+  } catch (ex) {
+    res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error',
+      error: ex.message
+    })
+  }
+}
 
 const attendanceEdit = async (req, res) => {
   try {
@@ -145,26 +148,27 @@ const attendanceEdit = async (req, res) => {
 
     console.log('Check-out request:', { id, body });
 
-    // Use UTC to prevent timezone conversion
+    // Store date as midnight UTC for consistent date-only storage
     const dateOnly = new Date(body.Current_date + 'T00:00:00.000Z');
-    
-    // Use provided time or current time for checkout
+
+    // Use provided time or current local time for checkout
     const now = new Date();
     const outTimeToUse = body.Out_time || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-    
-    const inDateTime = new Date(body.Current_date + 'T' + body.In_time + '.000Z');
-    const outDateTime = new Date(body.Current_date + 'T' + outTimeToUse + '.000Z');
 
-    console.log('Input strings:', { 
-      date: body.Current_date, 
-      inTime: body.In_time, 
+    // Build DateTimes WITHOUT 'Z' — treats the time string as local time
+    const inDateTime = new Date(body.Current_date + 'T' + body.In_time);
+    const outDateTime = new Date(body.Current_date + 'T' + outTimeToUse);
+
+    console.log('Input strings:', {
+      date: body.Current_date,
+      inTime: body.In_time,
       outTime: body.Out_time,
       outTimeToUse: outTimeToUse
     });
-    console.log('Parsed dates:', { 
-      dateOnly: dateOnly.toISOString(), 
-      inDateTime: inDateTime.toISOString(), 
-      outDateTime: outDateTime.toISOString() 
+    console.log('Parsed dates (ISO):', {
+      dateOnly: dateOnly.toISOString(),
+      inDateTime: inDateTime.toISOString(),
+      outDateTime: outDateTime.toISOString()
     });
 
     const data = await prisma.attendance.update({
@@ -203,26 +207,26 @@ const attendanceEdit = async (req, res) => {
 
 
 const attendanceGet = async (req, res) => {
-    try {
-      const id = req.params.id;
-      const data = await prisma.attendance.findUnique({
-        where: {
-            Attendance_ID: parseInt(id),
-        },
-      });
-      res.status(200).json({
-        code: 200,
-        message: 'Attendance fetched successfully',
-        data,
-      });
-    } catch (ex) {
-      res.status(500).json({
-        code: 500,
-        message: 'Internal Server Error',
-        error: ex.message,
-      });
-    }
-  };
+  try {
+    const id = req.params.id;
+    const data = await prisma.attendance.findUnique({
+      where: {
+        Attendance_ID: parseInt(id),
+      },
+    });
+    res.status(200).json({
+      code: 200,
+      message: 'Attendance fetched successfully',
+      data,
+    });
+  } catch (ex) {
+    res.status(500).json({
+      code: 500,
+      message: 'Internal Server Error',
+      error: ex.message,
+    });
+  }
+};
 
 
 
@@ -230,10 +234,10 @@ const attendanceGet = async (req, res) => {
 
 
 module.exports = {
-    attendanceHandling,
-    attendanceList,
-    attendanceDelete,
-    attendanceEdit,
-    attendanceGet
-    
+  attendanceHandling,
+  attendanceList,
+  attendanceDelete,
+  attendanceEdit,
+  attendanceGet
+
 }

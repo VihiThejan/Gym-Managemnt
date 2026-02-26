@@ -95,7 +95,8 @@ export const Paymenttable = () => {
       // Fetch member details
       const memberResponse = await axios.get(`http://localhost:5000/api/v1/member/list`);
       const members = memberResponse?.data?.data || [];
-      const member = members.find(m => m.Mem_ID === payment.Member_ID);
+      // Try both Member_ID and Mem_ID for compatibility
+      const member = members.find(m => m.Member_Id === payment.Member_ID || m.Mem_ID === payment.Member_ID);
 
       const doc = new jsPDF();
       
@@ -162,19 +163,19 @@ export const Paymenttable = () => {
         doc.setFont(undefined, 'bold');
         doc.text('Name:', 25, yPos);
         doc.setFont(undefined, 'normal');
-        doc.text(member.FName || 'N/A', 65, yPos);
+        doc.text(member.FName || member.name || 'N/A', 65, yPos);
         
         yPos += 8;
         doc.setFont(undefined, 'bold');
         doc.text('Email:', 25, yPos);
         doc.setFont(undefined, 'normal');
-        doc.text(member.email || 'N/A', 65, yPos);
+        doc.text(member.email || member.Email || 'N/A', 65, yPos);
         
         yPos += 8;
         doc.setFont(undefined, 'bold');
         doc.text('Contact:', 25, yPos);
         doc.setFont(undefined, 'normal');
-        doc.text(member.contactNo || 'N/A', 65, yPos);
+        doc.text(member.contactNo || member.Contact || member.contact || 'N/A', 65, yPos);
       }
       
       yPos += 15;

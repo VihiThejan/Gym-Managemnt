@@ -43,14 +43,11 @@ const { TextArea } = Input;
 const { Option } = Select;
 const { Sider, Content, Header } = Layout;
 
-// Socket.IO instance
-let socket = null;
-
 function StaffChat() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [message, setMessage] = useState("");
-  const [receiverId, setReceiverId] = useState("");
+  const [receiverId, setReceiverId] = useState(null);
   const [file, setFile] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -58,6 +55,8 @@ function StaffChat() {
   const [userList, setUserList] = useState([]);
   const [selectedReceiver, setSelectedReceiver] = useState(null);
   const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
+  const currentUserRef = useRef(null);
 
   const getMenuItems = () => [
     { label: 'Dashboard', icon: <MenuUnfoldOutlined />, key: '/staffDashboard' },
@@ -80,45 +79,42 @@ function StaffChat() {
   }, [chatMessages]);
 
   useEffect(() => {
+    let userId = null;
     const loginData = localStorage.getItem('login');
     if (loginData) {
       try {
         const userData = JSON.parse(loginData);
-        let user = {
-          id: null,
-          name: '',
-          role: '',
-          username: ''
-        };
+        let user = null;
 
         // Staff user detection
         if (userData.Staff_ID) {
           user = {
-            id: userData.Staff_ID,
-            name: userData.FName,
+            id: parseInt(userData.Staff_ID),
+            name: `${userData.FName} ${userData.LName || ''}`.trim(),
             role: 'Staff',
             username: `staff_${userData.Staff_ID}`
           };
         } else if (userData.Member_Id) {
           user = {
-            id: userData.Member_Id,
-            name: `${userData.FName} ${userData.LName || ''}`,
+            id: parseInt(userData.Member_Id),
+            name: `${userData.FName} ${userData.LName || ''}`.trim(),
             role: 'Member',
             username: `member_${userData.Member_Id}`
           };
         } else if (userData.User_ID) {
           user = {
-            id: userData.User_ID,
-            name: userData.Name,
+            id: parseInt(userData.User_ID),
+            name: userData.Name || `Admin ${userData.User_ID}`,
             role: 'Admin',
             username: `admin_${userData.User_ID}`
           };
         }
 
-        if (user.id) {
+        if (user && user.id) {
+          userId = user.id;
           setCurrentUser(user);
           setIsLoggedIn(true);
-          initializeSocket(user.id);
+          currentUserRef.current = user;
           fetchAllUsers();
         }
       } catch (error) {
@@ -128,6 +124,45 @@ function StaffChat() {
     } else {
       antMessage.warning('Please login to use chat');
     }
+
+    // Initialize Socket.IO
+    const socket = io.connect("http://localhost:5000");
+    socketRef.current = socket;
+
+    if (userId) {
+      socket.emit('joinRoom', { userId: userId });
+    }
+
+    socket.on("receiveMessage", (data) => {
+      const myUser = currentUserRef.current;
+      if (!myUser) return;
+
+      const senderId = parseInt(data.sender_id);
+      const senderRole = data.sender_role || '';
+      const recvId = parseInt(data.receiver_id);
+
+      // Check if the sender is actually us (same id AND same role)
+      const isFromMe = senderId === myUser.id && senderRole === myUser.role;
+
+      // Only add message if it's NOT from us AND directed to us
+      if (!isFromMe && recvId === myUser.id) {
+        setChatMessages((prev) => [...prev, data]);
+      }
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+      antMessage.error("Chat server connection failed");
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("receiveMessage");
+        socketRef.current.off("connect_error");
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
   }, []);
 
   const fetchAllUsers = async () => {
@@ -139,24 +174,24 @@ function StaffChat() {
 
       const users = [];
 
-      // Add members
       if (membersRes.data.data) {
         membersRes.data.data.forEach(member => {
           users.push({
-            id: member.Member_Id,
-            name: `${member.FName} ${member.LName || ''}`,
+            id: parseInt(member.Member_Id),
+            uniqueKey: `member_${member.Member_Id}`,
+            name: `${member.FName} ${member.LName || ''}`.trim(),
             role: 'Member',
             type: 'member'
           });
         });
       }
 
-      // Add staff
       if (staffRes.data.data) {
         staffRes.data.data.forEach(staff => {
           users.push({
-            id: staff.Staff_ID,
-            name: staff.FName,
+            id: parseInt(staff.Staff_ID),
+            uniqueKey: `staff_${staff.Staff_ID}`,
+            name: `${staff.FName} ${staff.LName || ''}`.trim(),
             role: 'Staff',
             type: 'staff'
           });
@@ -171,54 +206,24 @@ function StaffChat() {
   };
 
   const handleReceiverChange = async (value) => {
+    // value is the uniqueKey like "member_5" or "staff_3"
     setReceiverId(value);
-    const receiver = userList.find(u => u.id.toString() === value);
+    const receiver = userList.find(u => u.uniqueKey === value);
     setSelectedReceiver(receiver);
-    
-    // Load message history when receiver is selected
+    const id = receiver ? receiver.id : parseInt(value);
+
     if (currentUser && currentUser.id) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/messages/${currentUser.id}/${value}`);
+        const response = await axios.get(`http://localhost:5000/api/v1/messages/${currentUser.id}/${id}`);
         if (response.data.code === 200) {
           setChatMessages(response.data.data || []);
         }
       } catch (error) {
         console.error('Error loading message history:', error);
-        // Don't show error message, just start with empty chat
         setChatMessages([]);
       }
     }
   };
-
-  const initializeSocket = (userId) => {
-    if (!socket) {
-      socket = io.connect("http://localhost:5000");
-
-      socket.on("receiveMessage", (data) => {
-        // Only add message if it's from someone else (not sent by current user)
-        if (data.sender_id !== userId) {
-          // Add message if current user is the receiver
-          if (data.receiver_id === userId) {
-            setChatMessages((prev) => [...prev, data]);
-          }
-        }
-      });
-
-      socket.on("connect_error", (error) => {
-        console.error("Socket connection error:", error);
-        antMessage.error("Chat server connection failed");
-      });
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (socket) {
-        socket.off("receiveMessage");
-        socket.off("connect_error");
-      }
-    };
-  }, []);
 
   const sendMessage = async () => {
     if (!isLoggedIn || !currentUser) {
@@ -236,7 +241,7 @@ function StaffChat() {
       return;
     }
 
-    if (!socket) {
+    if (!socketRef.current) {
       antMessage.error("Chat connection not established. Please refresh the page.");
       return;
     }
@@ -256,18 +261,22 @@ function StaffChat() {
         }
       }
 
+      // Resolve receiver's numeric ID from uniqueKey
+      const receiverUser = userList.find(u => u.uniqueKey === receiverId);
+      const receiverNumericId = receiverUser ? receiverUser.id : parseInt(receiverId);
+
       const newMessage = {
-        sender_id: currentUser.id,
+        sender_id: parseInt(currentUser.id),
         sender_name: currentUser.name,
         sender_role: currentUser.role,
-        receiver_id: receiverId,
+        receiver_id: receiverNumericId,
         message,
         file_url: fileUrl,
         voice_url: "",
         timestamp: new Date().toISOString(),
       };
 
-      socket.emit("sendMessage", newMessage);
+      socketRef.current.emit("sendMessage", newMessage);
       setChatMessages((prev) => [...prev, newMessage]);
       setMessage("");
       setFile(null);
@@ -334,7 +343,7 @@ function StaffChat() {
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={['/chat']}
+          selectedKeys={['/staffChat']}
           items={getMenuItems()}
           onClick={({ key }) => navigate(key)}
           className="dashboard-menu"
@@ -414,7 +423,7 @@ function StaffChat() {
                         size="large"
                         filterOption={(input, option) => {
                           const searchText = input.toLowerCase();
-                          const user = userList.find(u => u.id.toString() === option.value);
+                          const user = userList.find(u => u.uniqueKey === option.value);
                           if (!user) return false;
 
                           const fullName = user.name.toLowerCase();
@@ -427,7 +436,7 @@ function StaffChat() {
                         }}
                       >
                         {userList.map((user) => (
-                          <Option key={`${user.type}_${user.id}`} value={user.id.toString()}>
+                          <Option key={`${user.type}_${user.id}`} value={`${user.type}_${user.id}`}>
                             {user.name} - {user.role} (ID: {user.id})
                           </Option>
                         ))}
@@ -472,7 +481,7 @@ function StaffChat() {
                 ) : (
                   <div style={{ padding: '8px' }}>
                     {chatMessages.map((msg, index) => {
-                      const isOwnMessage = msg.sender_id === currentUser.id;
+                      const isOwnMessage = parseInt(msg.sender_id) === parseInt(currentUser.id) && (msg.sender_role || '') === currentUser.role;
                       return (
                         <div
                           key={index}
@@ -583,13 +592,13 @@ function StaffChat() {
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
                   <input
                     type="file"
-                    id="file-upload"
+                    id="file-upload-staff"
                     onChange={handleFileChange}
                     style={{ display: 'none' }}
                   />
                   <Button
                     icon={<PaperClipOutlined />}
-                    onClick={() => document.getElementById('file-upload').click()}
+                    onClick={() => document.getElementById('file-upload-staff').click()}
                     size="large"
                     style={{ flexShrink: 0 }}
                   />

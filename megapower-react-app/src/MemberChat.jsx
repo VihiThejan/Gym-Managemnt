@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Layout, Menu, Card, Input, Button, Avatar, Select, message as antMessage } from 'antd';
-import { 
+import { Layout, Menu, Input, Button, Avatar, Select, message as antMessage } from 'antd';
+import {
   MenuUnfoldOutlined,
-  MenuFoldOutlined, 
-  UserOutlined, 
-  DollarOutlined, 
-  NotificationOutlined, 
-  CalendarOutlined, 
-  MessageOutlined, 
-  StarOutlined, 
+  MenuFoldOutlined,
+  UserOutlined,
+  DollarOutlined,
+  NotificationOutlined,
+  CalendarOutlined,
+  MessageOutlined,
+  StarOutlined,
   ScheduleOutlined,
   SendOutlined,
   PaperClipOutlined,
@@ -21,8 +21,6 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import Logo from './components/Logo';
 import './MemberChat.css';
-
-let socket;
 
 const { Header, Content, Sider } = Layout;
 const { TextArea } = Input;
@@ -60,11 +58,12 @@ const items = [
 export const MemberChat = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  
+
   // Chat state
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserRole, setCurrentUserRole] = useState('');
-  const [receiverId, setReceiverId] = useState('');
+  const [currentUserName, setCurrentUserName] = useState('');
+  const [receiverId, setReceiverId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [allUsers, setAllUsers] = useState([]);
@@ -73,6 +72,8 @@ export const MemberChat = () => {
 
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
+  const socketRef = useRef(null);
+  const currentUserRef = useRef(null);
 
   const handleMenuClick = ({ key }) => {
     const selectedItem = items.find(item => item.key === key);
@@ -83,44 +84,75 @@ export const MemberChat = () => {
 
   // Initialize socket and fetch user data
   useEffect(() => {
-    // Initialize Socket.IO
-    socket = io.connect('http://localhost:5000');
-
     // Get login data from localStorage
     const loginData = localStorage.getItem('login');
+    let userId = null;
+    let userRole = '';
+    let userName = '';
+
     if (loginData) {
       const userData = JSON.parse(loginData);
-      
+
       // Detect user role and ID
       if (userData.Member_Id) {
-        setCurrentUser(userData.Member_Id);
-        setCurrentUserRole('Member');
+        userId = parseInt(userData.Member_Id);
+        userRole = 'Member';
+        userName = `${userData.FName} ${userData.LName || ''}`.trim();
       } else if (userData.User_ID) {
-        setCurrentUser(userData.User_ID);
-        setCurrentUserRole('Admin');
+        userId = parseInt(userData.User_ID);
+        userRole = 'Admin';
+        userName = userData.Name || `Admin ${userData.User_ID}`;
       } else if (userData.Staff_ID) {
-        setCurrentUser(userData.Staff_ID);
-        setCurrentUserRole('Staff');
+        userId = parseInt(userData.Staff_ID);
+        userRole = 'Staff';
+        userName = `${userData.FName} ${userData.LName || ''}`.trim();
       }
+    }
+
+    if (userId) {
+      setCurrentUser(userId);
+      setCurrentUserRole(userRole);
+      setCurrentUserName(userName);
+      currentUserRef.current = { id: userId, role: userRole };
     }
 
     // Fetch all users (members and staff)
     fetchAllUsers();
 
-    // Listen for incoming messages
+    // Initialize Socket.IO
+    const socket = io.connect('http://localhost:5000');
+    socketRef.current = socket;
+
+    // Join a room with the user's ID so the server can target messages
+    if (userId) {
+      socket.emit('joinRoom', { userId: userId, userRole: userRole });
+    }
+
+    // Listen for incoming messages — use ref to avoid stale closure
     socket.on('receiveMessage', (data) => {
-      // Only add message if it's from someone else (not sent by current user)
-      if (data.sender_id !== currentUser) {
-        // Add message if current user is the receiver
-        if (data.receiver_id === currentUser) {
-          setMessages((prevMessages) => [...prevMessages, data]);
-        }
+      const me = currentUserRef.current;
+      if (!me) return;
+
+      const senderId = parseInt(data.sender_id);
+      const senderRole = data.sender_role || '';
+      const recvId = parseInt(data.receiver_id);
+
+      // Check if the sender is actually us (same id AND same role)
+      const isFromMe = senderId === me.id && senderRole === me.role;
+
+      // Only add message if it's NOT from us AND directed to us
+      if (!isFromMe && recvId === me.id) {
+        setMessages((prevMessages) => [...prevMessages, data]);
       }
     });
 
     // Cleanup
     return () => {
-      socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.off('receiveMessage');
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, []);
 
@@ -141,18 +173,18 @@ export const MemberChat = () => {
         axios.get('http://localhost:5000/api/v1/staffmember/list'),
       ]);
 
-      const members = membersRes.data.data.map((member) => ({
-        id: member.Member_Id,
+      const members = (membersRes.data.data || []).map((member) => ({
+        id: parseInt(member.Member_Id),
         uniqueKey: `member_${member.Member_Id}`,
-        name: `${member.FName} ${member.LName}`,
+        name: `${member.FName} ${member.LName || ''}`.trim(),
         role: 'Member',
         email: member.Email,
       }));
 
-      const staff = staffRes.data.data.map((s) => ({
-        id: s.Staff_ID,
+      const staff = (staffRes.data.data || []).map((s) => ({
+        id: parseInt(s.Staff_ID),
         uniqueKey: `staff_${s.Staff_ID}`,
-        name: `${s.FName} ${s.LName}`,
+        name: `${s.FName} ${s.LName || ''}`.trim(),
         role: s.Position || 'Staff',
         email: s.Email,
       }));
@@ -161,6 +193,26 @@ export const MemberChat = () => {
     } catch (error) {
       console.error('Error fetching users:', error);
       antMessage.error('Failed to load users');
+    }
+  };
+
+  // Handle receiver selection and load message history
+  const handleReceiverChange = async (value) => {
+    // value is the uniqueKey like "member_5" or "staff_3"
+    setReceiverId(value);
+    const selectedUser = allUsers.find(u => u.uniqueKey === value);
+    const id = selectedUser ? selectedUser.id : parseInt(value);
+
+    if (currentUser) {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/v1/messages/${currentUser}/${id}`);
+        if (response.data.code === 200) {
+          setMessages(response.data.data || []);
+        }
+      } catch (error) {
+        console.error('Error loading message history:', error);
+        setMessages([]);
+      }
     }
   };
 
@@ -217,27 +269,33 @@ export const MemberChat = () => {
       return;
     }
 
+    if (!socketRef.current) {
+      antMessage.error('Chat connection not established. Please refresh the page.');
+      return;
+    }
+
     let fileUrl = null;
     if (selectedFile) {
       fileUrl = await uploadFile();
       if (!fileUrl) return;
     }
 
-    const loginData = JSON.parse(localStorage.getItem('login'));
-    const senderName = `${loginData.FName} ${loginData.LName}`;
+    // Resolve the receiver's numeric ID from the uniqueKey
+    const receiverUser = allUsers.find(u => u.uniqueKey === receiverId);
+    const receiverNumericId = receiverUser ? receiverUser.id : parseInt(receiverId);
 
     const messageData = {
-      sender_id: currentUser,
-      sender_name: senderName,
+      sender_id: parseInt(currentUser),
+      sender_name: currentUserName,
       sender_role: currentUserRole,
-      receiver_id: receiverId,
+      receiver_id: receiverNumericId,
       message: newMessage.trim(),
       file_url: fileUrl,
       timestamp: new Date().toISOString(),
     };
 
     // Emit message via socket
-    socket.emit('sendMessage', messageData);
+    socketRef.current.emit('sendMessage', messageData);
 
     // Add to local messages
     setMessages((prev) => [...prev, messageData]);
@@ -246,6 +304,9 @@ export const MemberChat = () => {
     setNewMessage('');
     setSelectedFile(null);
     setFilePreview('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // Handle Enter key
@@ -282,10 +343,10 @@ export const MemberChat = () => {
             </Menu.Item>
           ))}
         </Menu>
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -299,7 +360,7 @@ export const MemberChat = () => {
           <MenuFoldOutlined style={{ fontSize: '20px', color: 'white' }} />
         </div>
       </Sider>
-      
+
       <Layout style={{ marginInlineStart: collapsed ? 80 : 250 }} className="dashboard-content-layout">
         <Header className="member-chat-header">
           <div className="header-content">
@@ -317,7 +378,7 @@ export const MemberChat = () => {
               <div className="chat-info-box">
                 <UserOutlined style={{ fontSize: '18px' }} />
                 <span>
-                  Logged in as: <strong>{currentUserRole}</strong> (ID: {currentUser})
+                  Logged in as: <strong>{currentUserName}</strong> ({currentUserRole})
                 </span>
               </div>
             )}
@@ -331,29 +392,13 @@ export const MemberChat = () => {
                   placeholder="Select a trainer or staff member to chat with"
                   className="receiver-select"
                   value={receiverId || undefined}
-                  onChange={async (value) => {
-                    setReceiverId(value);
-                    
-                    // Load message history when receiver is selected
-                    if (currentUser) {
-                      try {
-                        const response = await axios.get(`http://localhost:5000/api/v1/messages/${currentUser}/${value}`);
-                        if (response.data.code === 200) {
-                          setMessages(response.data.data || []);
-                        }
-                      } catch (error) {
-                        console.error('Error loading message history:', error);
-                        // Don't show error message, just start with empty chat
-                        setMessages([]);
-                      }
-                    }
-                  }}
+                  onChange={handleReceiverChange}
                   filterOption={(input, option) =>
                     option.children.toLowerCase().includes(input.toLowerCase())
                   }
                 >
                   {allUsers.map((user) => (
-                    <Option key={user.uniqueKey} value={user.id}>
+                    <Option key={user.uniqueKey} value={user.uniqueKey}>
                       {user.name} ({user.role}) - ID: {user.id}
                     </Option>
                   ))}
@@ -372,13 +417,12 @@ export const MemberChat = () => {
               ) : (
                 <div className="messages-list">
                   {messages.map((msg, index) => {
-                    const isOwnMessage = msg.sender_id === currentUser;
+                    const isOwnMessage = parseInt(msg.sender_id) === parseInt(currentUser) && (msg.sender_role || '') === currentUserRole;
                     return (
                       <div
                         key={index}
-                        className={`message-bubble ${
-                          isOwnMessage ? 'own-message' : 'other-message'
-                        }`}
+                        className={`message-bubble ${isOwnMessage ? 'own-message' : 'other-message'
+                          }`}
                       >
                         <div className="message-header">
                           <Avatar
@@ -388,17 +432,17 @@ export const MemberChat = () => {
                                 : '#10b981',
                             }}
                           >
-                            {msg.sender_name?.charAt(0) || 'U'}
+                            {(msg.sender_name || 'U').charAt(0)}
                           </Avatar>
                           <span className="message-sender">
-                            {msg.sender_name} ({msg.sender_role})
+                            {isOwnMessage ? 'You' : (msg.sender_name || `User ${msg.sender_id}`)} ({msg.sender_role || ''})
                           </span>
                           <span className="message-time">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
+                            {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ''}
                           </span>
                         </div>
                         <div className="message-content">
-                          <p>{msg.message}</p>
+                          {msg.message && <p>{msg.message}</p>}
                           {msg.file_url && (
                             <div className="message-attachment">
                               <PaperClipOutlined />

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Card, Typography, Space, Button, Dropdown, Menu, Avatar, Table, Badge, message, Modal, Form, TimePicker, Statistic, Row, Col } from 'antd';
-import { 
-  UserOutlined, 
+import {
+  UserOutlined,
   LogoutOutlined,
-  MenuUnfoldOutlined, 
+  MenuUnfoldOutlined,
   MenuFoldOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
@@ -89,9 +89,9 @@ export const MemberAttendance = () => {
     try {
       const response = await axios.get("http://localhost:5000/api/v1/attendance/list");
       const allAttendance = response?.data?.data || [];
-      
+
       console.log('All attendance data:', allAttendance);
-      
+
       // Filter for current member
       const memberAttendance = allAttendance.filter(
         att => att.Member_Id === parseInt(memberId)
@@ -100,7 +100,7 @@ export const MemberAttendance = () => {
       console.log('Member attendance:', memberAttendance);
 
       // Sort by date, newest first
-      const sortedData = memberAttendance.sort((a, b) => 
+      const sortedData = memberAttendance.sort((a, b) =>
         moment(b.Current_date).unix() - moment(a.Current_date).unix()
       );
 
@@ -125,48 +125,64 @@ export const MemberAttendance = () => {
       inTime: att.In_time,
       outTime: att.Out_time
     })));
-    
+
     // Get all records for today
     const todayRecords = data.filter(att => {
       const recordDate = moment(att.Current_date).format('YYYY-MM-DD');
       return recordDate === today;
     });
-    
+
     console.log('All today records:', todayRecords);
-    
+
     // Get the most recent record for today (sorted by In_time descending)
-    const todayRecord = todayRecords.length > 0 
+    const todayRecord = todayRecords.length > 0
       ? todayRecords.sort((a, b) => moment(b.In_time).unix() - moment(a.In_time).unix())[0]
       : null;
-    
+
     console.log('Latest today attendance record:', todayRecord);
     console.log('Out_time value:', todayRecord?.Out_time);
     console.log('Out_time type:', typeof todayRecord?.Out_time);
-    
+
     setTodayAttendance(todayRecord || null);
   };
 
   const calculateStats = (data) => {
-    // Only count completed attendance (duration > 5 minutes)
+    // Only count completed attendance (duration > 0)
     const completedData = data.filter(att => {
       if (!att.In_time || !att.Out_time) return false;
-      const duration = moment(att.Out_time).diff(moment(att.In_time), 'minutes');
-      return duration > 5;
+
+      // Parse the time parts correctly using the same method as check-out validation
+      const currentDate = moment(att.Current_date).format('YYYY-MM-DD');
+      const inTimeStr = moment(att.In_time).format('HH:mm:ss');
+      const outTimeStr = moment(att.Out_time).format('HH:mm:ss');
+
+      const inMoment = moment(`${currentDate} ${inTimeStr}`, 'YYYY-MM-DD HH:mm:ss');
+      const outMoment = moment(`${currentDate} ${outTimeStr}`, 'YYYY-MM-DD HH:mm:ss');
+
+      const duration = outMoment.diff(inMoment, 'minutes');
+      return duration > 0;
     });
 
     const totalDays = completedData.length;
-    
-    const thisMonth = completedData.filter(att => 
+
+    const thisMonth = completedData.filter(att =>
       moment(att.Current_date).isSame(moment(), 'month')
     ).length;
 
-    const thisWeek = completedData.filter(att => 
+    const thisWeek = completedData.filter(att =>
       moment(att.Current_date).isSame(moment(), 'week')
     ).length;
 
     // Calculate average duration from completed attendance only
     const totalMinutes = completedData.reduce((sum, att) => {
-      const duration = moment(att.Out_time).diff(moment(att.In_time), 'minutes');
+      const currentDate = moment(att.Current_date).format('YYYY-MM-DD');
+      const inTimeStr = moment(att.In_time).format('HH:mm:ss');
+      const outTimeStr = moment(att.Out_time).format('HH:mm:ss');
+
+      const inMoment = moment(`${currentDate} ${inTimeStr}`, 'YYYY-MM-DD HH:mm:ss');
+      const outMoment = moment(`${currentDate} ${outTimeStr}`, 'YYYY-MM-DD HH:mm:ss');
+
+      const duration = outMoment.diff(inMoment, 'minutes');
       return sum + duration;
     }, 0);
     const avgDuration = totalDays > 0 ? Math.round(totalMinutes / totalDays) : 0;
@@ -238,19 +254,20 @@ export const MemberAttendance = () => {
       }
 
       const currentDate = moment(todayAttendance.Current_date).format('YYYY-MM-DD');
-      
-      // Get the actual check-in time from the database record
-      const checkInTime = moment(todayAttendance.In_time);
-      const inTime = checkInTime.format('HH:mm:ss');
-      
+
+      // Get the check-in time from the database record
+      // moment() will parse the ISO string and convert to local time automatically
+      const checkInMoment = moment(todayAttendance.In_time);
+      // Extract the local time components (HH:mm:ss) for the API call
+      const inTime = checkInMoment.format('HH:mm:ss');
+
       console.log('Today attendance record:', {
         Current_date: todayAttendance.Current_date,
         In_time: todayAttendance.In_time,
-        In_time_formatted: checkInTime.format('YYYY-MM-DD HH:mm:ss')
+        In_time_local: checkInMoment.format('YYYY-MM-DD HH:mm:ss')
       });
-      
-      // If no time is selected, use current device time
-      // Extract time components directly to avoid timezone conversion
+
+      // Get the check-out time: either from user selection or current device time
       let outTime;
       if (values?.outTime) {
         const timeObj = moment(values.outTime);
@@ -261,31 +278,29 @@ export const MemberAttendance = () => {
       } else {
         outTime = moment().format('HH:mm:ss');
       }
-      
-      // Validate that check-out time is after check-in time
-      // Build full datetime for accurate comparison
-      const checkInMoment = moment(todayAttendance.In_time);
+
+      // Build full datetime moments for comparison (both in local time)
       const checkOutMoment = moment(`${currentDate} ${outTime}`, 'YYYY-MM-DD HH:mm:ss');
-      
+
       console.log('Time comparison:', {
         checkIn: checkInMoment.format('YYYY-MM-DD HH:mm:ss'),
         checkOut: checkOutMoment.format('YYYY-MM-DD HH:mm:ss'),
         isAfter: checkOutMoment.isAfter(checkInMoment)
       });
-      
+
       if (checkOutMoment.isSameOrBefore(checkInMoment)) {
         message.error('Check-out time must be after check-in time!');
         return;
       }
-      
+
       // Calculate duration for confirmation
       const duration = checkOutMoment.diff(checkInMoment, 'minutes');
-      
-      if (duration <= 0) {
+
+      if (duration < 0) {
         message.error('Check-out time must be after check-in time!');
         return;
       }
-      
+
       const hours = Math.floor(duration / 60);
       const minutes = duration % 60;
 
@@ -297,7 +312,7 @@ export const MemberAttendance = () => {
         Out_time: outTime,
         Duration: `${hours}h ${minutes}m`
       });
-      
+
       const response = await axios.put(`http://localhost:5000/api/v1/attendance/update/${todayAttendance.Attendance_ID}`, {
         Member_Id: parseInt(memberId),
         Current_date: currentDate,
@@ -372,15 +387,15 @@ export const MemberAttendance = () => {
       render: (_, record) => {
         if (record.In_time && record.Out_time) {
           const duration = moment(record.Out_time).diff(moment(record.In_time), 'minutes');
-          
+
           // Handle negative or zero duration
           if (duration <= 0) {
             return <Text type="secondary">-</Text>;
           }
-          
+
           const hours = Math.floor(duration / 60);
           const minutes = duration % 60;
-          
+
           return (
             <Space>
               <ClockCircleOutlined style={{ color: '#667eea' }} />
@@ -398,18 +413,17 @@ export const MemberAttendance = () => {
         if (!record.In_time) {
           return <Badge status="error" text="Invalid" />;
         }
-        
+
         if (!record.Out_time) {
           return <Badge status="processing" text="In Progress" />;
         }
-        
+
         const duration = moment(record.Out_time).diff(moment(record.In_time), 'minutes');
-        
-        // Handle invalid duration
+
         if (duration < 0) {
           return <Badge status="error" text="Invalid" />;
         }
-        
+
         if (duration === 0) {
           return <Badge status="processing" text="In Progress" />;
         } else {
@@ -421,19 +435,19 @@ export const MemberAttendance = () => {
 
   // Check if member can check in today
   // Can check in if: no attendance today OR last attendance has been checked out
-  const canCheckIn = !todayAttendance || 
-    (todayAttendance && todayAttendance.Out_time && 
-     moment(todayAttendance.Out_time).isValid() && 
-     moment(todayAttendance.Out_time).year() > 2000);
-  
+  const canCheckIn = !todayAttendance ||
+    (todayAttendance && todayAttendance.Out_time &&
+      moment(todayAttendance.Out_time).isValid() &&
+      moment(todayAttendance.Out_time).year() > 2000);
+
   // Check if member can check out (has checked in today but Out_time is null or not set)
   // Handle both null and invalid date strings
-  const canCheckOut = todayAttendance && todayAttendance.In_time && 
-    (!todayAttendance.Out_time || 
-     todayAttendance.Out_time === '' || 
-     !moment(todayAttendance.Out_time).isValid() ||
-     moment(todayAttendance.Out_time).year() < 2000);
-  
+  const canCheckOut = todayAttendance && todayAttendance.In_time &&
+    (!todayAttendance.Out_time ||
+      todayAttendance.Out_time === '' ||
+      !moment(todayAttendance.Out_time).isValid() ||
+      moment(todayAttendance.Out_time).year() < 2000);
+
   console.log('Can check in:', canCheckIn);
   console.log('Can check out:', canCheckOut);
   console.log('Today attendance:', todayAttendance);
@@ -473,10 +487,10 @@ export const MemberAttendance = () => {
             </Menu.Item>
           ))}
         </Menu>
-        <div 
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
             width: '100%',
             padding: '16px',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
@@ -523,7 +537,7 @@ export const MemberAttendance = () => {
               }
               trigger={['click']}
             >
-              <Avatar 
+              <Avatar
                 size="large"
                 icon={<UserOutlined />}
                 className="user-avatar"

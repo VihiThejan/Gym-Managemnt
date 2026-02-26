@@ -275,6 +275,8 @@ model messages {
   message      String?  @db.Text
   file_url     String?  @db.VarChar(255)
   voice_url    String?  @db.VarChar(255)
+  sender_name  String?  @db.VarChar(255)
+  sender_role  String?  @db.VarChar(50)
   message_type String?  @default("text") @db.VarChar(50)
   is_read      Boolean? @default(false)
   timestamp    DateTime @default(now()) @db.Timestamp(0)
