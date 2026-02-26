@@ -123,31 +123,58 @@ const forgetpw = async (req, res) => {
     }
 
     try {
-        // Normalize phone number: try both with and without '+' prefix
-        const normalizedContact = contact.replace(/\s+/g, ''); // Remove spaces
-        const contactVariants = [
-            normalizedContact,
-            normalizedContact.startsWith('+') ? normalizedContact.substring(1) : `+${normalizedContact}`
-        ];
+        // Normalize phone number - create multiple variants to match different formats
+        const normalizedContact = contact.replace(/\s+/g, '').replace(/[()-]/g, ''); // Remove spaces and special chars
+        
+        // Generate all possible variants of the phone number
+        const contactVariants = [];
+        
+        // Add the original normalized format
+        contactVariants.push(normalizedContact);
+        
+        // Add version with '+' prefix
+        if (!normalizedContact.startsWith('+')) {
+            contactVariants.push(`+${normalizedContact}`);
+        } else {
+            // Add version without '+'
+            contactVariants.push(normalizedContact.substring(1));
+        }
+        
+        // For Sri Lankan numbers specifically (94)
+        if (normalizedContact.startsWith('94')) {
+            contactVariants.push(`+${normalizedContact}`);
+        } else if (normalizedContact.startsWith('+94')) {
+            contactVariants.push(normalizedContact.substring(1));
+        } else if (normalizedContact.startsWith('0')) {
+            // Convert 077... to 94...
+            contactVariants.push(`94${normalizedContact.substring(1)}`);
+            contactVariants.push(`+94${normalizedContact.substring(1)}`);
+        }
 
         console.log('Searching for user with contact variants:', contactVariants);
 
-        // Check if user exists in any table before sending OTP
+        // Check if user exists in any table before sending OTP - use OR with contains for more flexibility
         const adminUser = await prisma.admin.findFirst({
             where: { 
-                Contact: { in: contactVariants }
+                OR: contactVariants.map(variant => ({
+                    Contact: { contains: variant.replace(/^\+/, '') }
+                }))
             }
         });
 
         const memberUser = await prisma.member.findFirst({
             where: { 
-                Contact: { in: contactVariants }
+                OR: contactVariants.map(variant => ({
+                    Contact: { contains: variant.replace(/^\+/, '') }
+                }))
             }
         });
 
         const staffUser = await prisma.staffmember.findFirst({
             where: { 
-                Contact_No: { in: contactVariants }
+                OR: contactVariants.map(variant => ({
+                    Contact_No: { contains: variant.replace(/^\+/, '') }
+                }))
             }
         });
 
@@ -155,6 +182,7 @@ const forgetpw = async (req, res) => {
 
         if (!adminUser && !memberUser && !staffUser) {
             console.log('❌ User not found with contact:', contact);
+            console.log('Tried variants:', contactVariants);
             return res.status(200).json({
                 code: 400,
                 message: 'No account found with this contact number. Please check the number and try again.',
@@ -171,10 +199,12 @@ const forgetpw = async (req, res) => {
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
         console.log('OTP expires at:', expiresAt);
 
-        // Delete any existing OTP for this contact to avoid confusion
+        // Delete any existing OTP for this contact to avoid confusion - use flexible search
         await prisma.otp.deleteMany({
             where: { 
-                Contact: { in: contactVariants }
+                OR: contactVariants.map(variant => ({
+                    Contact: variant
+                }))
             }
         });
         console.log('Deleted old OTP records');
@@ -273,12 +303,27 @@ const verifyOtp = async (req, res) => {
     }
 
     try {
-        // Normalize phone number to match what was stored
-        const normalizedContact = contact.replace(/\s+/g, '');
-        const contactVariants = [
-            normalizedContact,
-            normalizedContact.startsWith('+') ? normalizedContact.substring(1) : `+${normalizedContact}`
-        ];
+        // Normalize phone number - create multiple variants to match different formats
+        const normalizedContact = contact.replace(/\s+/g, '').replace(/[()-]/g, '');
+        
+        // Generate all possible variants
+        const contactVariants = [];
+        contactVariants.push(normalizedContact);
+        
+        if (!normalizedContact.startsWith('+')) {
+            contactVariants.push(`+${normalizedContact}`);
+        } else {
+            contactVariants.push(normalizedContact.substring(1));
+        }
+        
+        if (normalizedContact.startsWith('94')) {
+            contactVariants.push(`+${normalizedContact}`);
+        } else if (normalizedContact.startsWith('+94')) {
+            contactVariants.push(normalizedContact.substring(1));
+        } else if (normalizedContact.startsWith('0')) {
+            contactVariants.push(`94${normalizedContact.substring(1)}`);
+            contactVariants.push(`+94${normalizedContact.substring(1)}`);
+        }
 
         console.log('Searching for OTP with contact variants:', contactVariants);
 
@@ -368,14 +413,40 @@ const resetPw = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log('Password hashed successfully');
 
-        // Try to find user in admin table first
+        // Normalize phone number - create multiple variants to match different formats
+        const normalizedContact = contact.replace(/\s+/g, '').replace(/[()-]/g, '');
+        
+        // Generate all possible variants of the phone number
+        const contactVariants = [];
+        contactVariants.push(normalizedContact);
+        
+        if (!normalizedContact.startsWith('+')) {
+            contactVariants.push(`+${normalizedContact}`);
+        } else {
+            contactVariants.push(normalizedContact.substring(1));
+        }
+        
+        if (normalizedContact.startsWith('94')) {
+            contactVariants.push(`+${normalizedContact}`);
+        } else if (normalizedContact.startsWith('+94')) {
+            contactVariants.push(normalizedContact.substring(1));
+        } else if (normalizedContact.startsWith('0')) {
+            contactVariants.push(`94${normalizedContact.substring(1)}`);
+            contactVariants.push(`+94${normalizedContact.substring(1)}`);
+        }
+
+        console.log('Searching for user with contact variants for reset:', contactVariants);
+
+        // Try to find user in admin table first - use flexible search
         let adminUser = await prisma.admin.findFirst({
             select: {
                 User_ID: true,
                 Contact: true
             },
             where: {
-                Contact: contact
+                OR: contactVariants.map(variant => ({
+                    Contact: { contains: variant.replace(/^\+/, '') }
+                }))
             }
         });
 
@@ -386,7 +457,9 @@ const resetPw = async (req, res) => {
                 Contact: true
             },
             where: {
-                Contact: contact
+                OR: contactVariants.map(variant => ({
+                    Contact: { contains: variant.replace(/^\+/, '') }
+                }))
             }
         });
 
@@ -397,7 +470,9 @@ const resetPw = async (req, res) => {
                 Contact_No: true
             },
             where: {
-                Contact_No: contact
+                OR: contactVariants.map(variant => ({
+                    Contact_No: { contains: variant.replace(/^\+/, '') }
+                }))
             }
         });
 
