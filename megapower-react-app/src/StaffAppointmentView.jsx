@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Menu } from "antd";
+import { Layout, Card, Table, Input, Tag, message, Avatar, Row, Col, Menu, Button, Space, Popconfirm } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -20,7 +20,9 @@ import {
   LogoutOutlined,
   ScheduleOutlined,
   StarOutlined,
-  TrophyOutlined
+  TrophyOutlined,
+  PlayCircleOutlined,
+  CloseCircleOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import Logo from './components/Logo';
@@ -118,6 +120,36 @@ const StaffAppointmentView = () => {
     }
   };
 
+  const handleStatusUpdate = async (appointmentId, status, action) => {
+    try {
+      setLoading(true);
+      await axios.put(`http://localhost:5000/api/v1/appointment/${action}/${appointmentId}`);
+      message.success(`Appointment ${status} successfully!`);
+      await fetchData();
+    } catch (error) {
+      console.error(`Error updating appointment to ${status}:`, error);
+      message.error(`Failed to update appointment status`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStartSession = (appointmentId) => {
+    handleStatusUpdate(appointmentId, 'started', 'start');
+  };
+
+  const handleComplete = (appointmentId) => {
+    handleStatusUpdate(appointmentId, 'completed', 'complete');
+  };
+
+  const handleConfirm = (appointmentId) => {
+    handleStatusUpdate(appointmentId, 'confirmed', 'confirm');
+  };
+
+  const handleCancel = (appointmentId) => {
+    handleStatusUpdate(appointmentId, 'cancelled', 'cancel');
+  };
+
   const handleLogout = () => {
     message.success('Logged out successfully');
     navigate('/');
@@ -200,14 +232,14 @@ const StaffAppointmentView = () => {
       dataIndex: "Status",
       key: "status",
       width: 130,
-      fixed: "right",
       render: (status) => {
         const statusConfig = {
           'Scheduled': { color: 'processing', icon: <ClockCircleOutlined /> },
           'Pending': { color: 'warning', icon: <ClockCircleOutlined /> },
           'Confirmed': { color: 'success', icon: <CheckCircleOutlined /> },
           'Completed': { color: 'default', icon: <CheckCircleOutlined /> },
-          'Cancelled': { color: 'error', icon: <ExclamationCircleOutlined /> }
+          'Cancelled': { color: 'error', icon: <ExclamationCircleOutlined /> },
+          'In Progress': { color: 'cyan', icon: <PlayCircleOutlined /> }
         };
         const config = statusConfig[status] || statusConfig['Scheduled'];
         return (
@@ -223,6 +255,84 @@ const StaffAppointmentView = () => {
       key: "notes",
       width: 250,
       ellipsis: true,
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      fixed: "right",
+      width: 200,
+      render: (_, record) => {
+        const isPast = moment(record.Date_and_Time).isBefore(moment());
+        const status = record.Status;
+        
+        return (
+          <Space size="small" direction="vertical" style={{ width: '100%' }}>
+            {status === 'Scheduled' && !isPast && (
+              <>
+                <Button 
+                  type="primary" 
+                  size="small" 
+                  icon={<PlayCircleOutlined />}
+                  onClick={() => handleStartSession(record.App_ID)}
+                  style={{ width: '100%' }}
+                >
+                  Start
+                </Button>
+                <Popconfirm
+                  title="Cancel appointment?"
+                  description="Are you sure you want to cancel this appointment?"
+                  onConfirm={() => handleCancel(record.App_ID)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button 
+                    danger 
+                    size="small" 
+                    icon={<CloseCircleOutlined />}
+                    style={{ width: '100%' }}
+                  >
+                    Cancel
+                  </Button>
+                </Popconfirm>
+              </>
+            )}
+            {status === 'Confirmed' && !isPast && (
+              <>
+                <Button 
+                  type="primary" 
+                  size="small" 
+                  icon={<PlayCircleOutlined />}
+                  onClick={() => handleStartSession(record.App_ID)}
+                  style={{ width: '100%' }}
+                >
+                  Start
+                </Button>
+              </>
+            )}
+            {status === 'In Progress' && (
+              <Button 
+                type="primary" 
+                size="small" 
+                icon={<CheckCircleOutlined />}
+                onClick={() => handleComplete(record.App_ID)}
+                style={{ width: '100%', backgroundColor: '#52c41a' }}
+              >
+                Complete
+              </Button>
+            )}
+            {status === 'Completed' && (
+              <Tag color="success" icon={<CheckCircleOutlined />}>
+                Finished
+              </Tag>
+            )}
+            {status === 'Cancelled' && (
+              <Tag color="error" icon={<CloseCircleOutlined />}>
+                Cancelled
+              </Tag>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
@@ -363,7 +473,7 @@ const StaffAppointmentView = () => {
                 dataSource={filteredData}
                 rowKey="App_ID"
                 loading={loading}
-                scroll={{ x: 1300 }}
+                scroll={{ x: 1500 }}
                 className="info-table"
                 pagination={{
                   pageSize: 10,

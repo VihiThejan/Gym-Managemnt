@@ -302,22 +302,6 @@ const MemberAppointment = () => {
     }
   };
 
-  const handleComplete = async (appointmentId) => {
-    try {
-      setLoading(true);
-      await axios.put(
-        `http://localhost:5000/api/v1/appointment/complete/${appointmentId}`
-      );
-      message.success('✅ Appointment marked as completed!');
-      await fetchAppointments(memberId);
-    } catch (error) {
-      console.error('Error completing appointment:', error);
-      message.error('❌ Failed to mark appointment as completed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const getStatusTag = (dateTime, status) => {
     const appointmentDate = moment(dateTime);
     const now = moment();
@@ -460,18 +444,8 @@ const MemberAppointment = () => {
                 </Button>
               </>
             )}
-            {(isPast || isOngoing) && !isCompleted && (
-              <Button
-                type="primary"
-                size="small"
-                icon={<CheckCircleOutlined />}
-                onClick={() => handleComplete(record.App_ID)}
-                style={{ background: '#52c41a', borderColor: '#52c41a' }}
-              >
-                Complete
-              </Button>
-            )}
-            {isCompleted && <Tag color="blue" icon={<CheckCircleOutlined />}>Done</Tag>}
+            {isCompleted && <Tag color="blue" icon={<CheckCircleOutlined />}>Completed</Tag>}
+            {isPast && !isCompleted && <Tag color="default">Past</Tag>}
           </Space>
         );
       }
@@ -586,33 +560,19 @@ const MemberAppointment = () => {
                 </Popconfirm>
               </>
             )}
-            {(isPast || isOngoing) && (
-              <Popconfirm
-                title="Mark as Completed"
-                description="Confirm that this appointment has been completed?"
-                onConfirm={() => handleComplete(appointment.App_ID)}
-                okText="Yes, Complete"
-                cancelText="No"
-              >
-                <Tooltip title="Mark appointment as completed">
-                  <Button 
-                    type="primary"
-                    icon={<CheckCircleOutlined />}
-                    className="action-btn"
-                    loading={loading}
-                    style={{ background: '#52c41a', borderColor: '#52c41a' }}
-                  >
-                    Complete
-                  </Button>
-                </Tooltip>
-              </Popconfirm>
-            )}
           </div>
         )}
         {isCompleted && (
           <div className="appointment-actions">
             <Tag color="blue" icon={<CheckCircleOutlined />} style={{ fontSize: '14px', padding: '8px 16px' }}>
               Appointment Completed
+            </Tag>
+          </div>
+        )}
+        {isPast && !isCompleted && (
+          <div className="appointment-actions">
+            <Tag color="default" icon={<ClockCircleOutlined />} style={{ fontSize: '14px', padding: '8px 16px' }}>
+              Past Appointment
             </Tag>
           </div>
         )}

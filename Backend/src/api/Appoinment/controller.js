@@ -185,12 +185,90 @@ const AppoinmentComplete = async (req, res) => {
     }
 };
 
+const AppoinmentStart = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const updatedAppointment = await prisma.appointment.update({
+        where: { App_ID: parseInt(id) },
+        data: {
+          Status: 'In Progress'
+        },
+      });
+  
+      res.status(200).json({ 
+        code: 200, 
+        message: 'Appointment session started successfully', 
+        data: updatedAppointment 
+      });
+    } catch (ex) {
+      console.error("Error starting appointment:", ex.message);
+      res.status(500).json({ 
+        code: 500, 
+        message: 'Server error.', 
+        error: ex.message 
+      });
+    }
+};
+
+const AppoinmentConfirm = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const updatedAppointment = await prisma.appointment.update({
+        where: { App_ID: parseInt(id) },
+        data: {
+          Status: 'Confirmed'
+        },
+      });
+  
+      res.status(200).json({ 
+        code: 200, 
+        message: 'Appointment confirmed successfully', 
+        data: updatedAppointment 
+      });
+    } catch (ex) {
+      console.error("Error confirming appointment:", ex.message);
+      res.status(500).json({ 
+        code: 500, 
+        message: 'Server error.', 
+        error: ex.message 
+      });
+    }
+};
+
+const AppoinmentCancel = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const updatedAppointment = await prisma.appointment.update({
+        where: { App_ID: parseInt(id) },
+        data: {
+          Status: 'Cancelled'
+        },
+      });
+  
+      res.status(200).json({ 
+        code: 200, 
+        message: 'Appointment cancelled successfully', 
+        data: updatedAppointment 
+      });
+    } catch (ex) {
+      console.error("Error cancelling appointment:", ex.message);
+      res.status(500).json({ 
+        code: 500, 
+        message: 'Server error.', 
+        error: ex.message 
+      });
+    }
+};
+
 module.exports = {
     Appoinmenthandling,
     AppoinmentList,
     AppoinmentDelete,
     AppoinmentEdit,
     AppoinmentGet,
-    AppoinmentComplete
+    AppoinmentComplete,
+    AppoinmentStart,
+    AppoinmentConfirm,
+    AppoinmentCancel
     
 }

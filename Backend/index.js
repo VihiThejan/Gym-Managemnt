@@ -173,6 +173,29 @@ async function startServer() {
 
         // Start the server
         const PORT = process.env.PORT || 5000;
+        
+        // Add error handler for server
+        server.on('error', (error) => {
+            if (error.code === 'EADDRINUSE') {
+                console.error('═══════════════════════════════════════════════');
+                console.error('❌ ERROR: Port already in use!');
+                console.error('═══════════════════════════════════════════════');
+                console.error(`⚠️  Port ${PORT} is already being used by another process.`);
+                console.error('');
+                console.error('To fix this, you can:');
+                console.error('1. Stop the process using this port:');
+                console.error(`   Windows: netstat -ano | findstr :${PORT}`);
+                console.error('   Then: taskkill /F /PID <process_id>');
+                console.error('');
+                console.error('2. Or change the port in your .env file');
+                console.error('═══════════════════════════════════════════════');
+                process.exit(1);
+            } else {
+                console.error('❌ Server error:', error.message);
+                process.exit(1);
+            }
+        });
+        
         server.listen(PORT, () => {
             console.log('═══════════════════════════════════════════════');
             console.log('🏋️  Mega Power Gym Management System');
