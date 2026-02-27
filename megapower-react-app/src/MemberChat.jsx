@@ -393,9 +393,19 @@ export const MemberChat = () => {
                   className="receiver-select"
                   value={receiverId || undefined}
                   onChange={handleReceiverChange}
-                  filterOption={(input, option) =>
-                    option.children.toLowerCase().includes(input.toLowerCase())
-                  }
+                  filterOption={(input, option) => {
+                    // option.children can be a React node, so extract text
+                    let text = '';
+                    if (typeof option.children === 'string') {
+                      text = option.children;
+                    } else if (Array.isArray(option.children)) {
+                      text = option.children.map(child => typeof child === 'string' ? child : (child?.props?.children || '')).join(' ');
+                    } else if (option.children?.props?.children) {
+                      text = option.children.props.children;
+                    }
+                    if (typeof text !== 'string') text = String(text);
+                    return text.toLowerCase().includes(input.toLowerCase());
+                  }}
                 >
                   {allUsers.map((user) => (
                     <Option key={user.uniqueKey} value={user.uniqueKey}>

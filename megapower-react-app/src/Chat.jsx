@@ -162,6 +162,17 @@ function Chat() {
                 });
             }
 
+            // Optionally add current admin user to the list so admin can chat as admin
+            if (currentUser && currentUser.role === 'Admin') {
+                users.push({
+                    id: parseInt(currentUser.id),
+                    uniqueKey: `admin_${currentUser.id}`,
+                    name: currentUser.name,
+                    role: 'Admin',
+                    type: 'admin'
+                });
+            }
+
             setUserList(users);
             console.log('Loaded users:', users.length);
         } catch (error) {
@@ -313,17 +324,17 @@ function Chat() {
                                                 style={{ flex: 1 }}
                                                 size="large"
                                                 filterOption={(input, option) => {
-                                                    const searchText = input.toLowerCase();
-                                                    const user = userList.find(u => u.uniqueKey === option.value);
-                                                    if (!user) return false;
-
-                                                    const fullName = user.name.toLowerCase();
-                                                    const userId = user.id.toString();
-                                                    const role = user.role.toLowerCase();
-
-                                                    return fullName.includes(searchText) ||
-                                                        userId.includes(searchText) ||
-                                                        role.includes(searchText);
+                                                    // option.children can be a React node, so extract text
+                                                    let text = '';
+                                                    if (typeof option.children === 'string') {
+                                                        text = option.children;
+                                                    } else if (Array.isArray(option.children)) {
+                                                        text = option.children.map(child => typeof child === 'string' ? child : (child?.props?.children || '')).join(' ');
+                                                    } else if (option.children?.props?.children) {
+                                                        text = option.children.props.children;
+                                                    }
+                                                    if (typeof text !== 'string') text = String(text);
+                                                    return text.toLowerCase().includes(input.toLowerCase());
                                                 }}
                                             >
                                                 {userList.map((user) => (
